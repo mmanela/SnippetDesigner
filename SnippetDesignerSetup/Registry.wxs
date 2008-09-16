@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment Id="OtherRegistryEntriesFragment">
+    <DirectoryRef Id="TARGETDIR">
+      <!--Registry Entries-->
+      <!--<Component Id="OtherRegistryEntriesComponent" Guid="8C244880-BF26-4400-B1A1-5D9BB9BBF5A6">
+        //TODO: Add registry entries to be installed
+      </Component>-->
+    </DirectoryRef>
+	</Fragment>
+</Wix>

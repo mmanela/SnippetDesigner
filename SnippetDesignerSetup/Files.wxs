@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment Id="FilesFragment">
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Component Id="CreateTargetDirectory" Guid="C06AB827-4393-4465-BF42-4DAF4C0DDE89" DiskId="1" >
+        <CreateFolder />
+      </Component>
+
+      <Component Id="MainFilesComponent" Guid="F7501D99-1E61-41D5-BC1C-6509F676FE0E" DiskId="1">
+        <File Id="PackageDll" Name="SnipDes.dll" LongName="SnippetDesigner.dll" Source="$(var.SnippetDesigner.TargetDir)SnippetDesigner.dll" Vital="yes"/>
+        <File Id="RegistryTools" Name="RegTool.dll" LongName="RegistryTools.dll" Source="$(var.SnippetDesigner.TargetDir)RegistryTools.dll" Vital="yes"/>
+        <File Id="SnippetLibrary" Name="SnipLib.dll" LongName="SnippetLibrary.dll" Source="$(var.SnippetDesigner.TargetDir)SnippetLibrary.dll" Vital="yes"/>
+        <File Id="SnippetEditorConfig" Name="SnipConf.xml" LongName="SnippetEditorConfig.xml" Source="$(var.SnippetDesigner.TargetDir)SnippetEditor\SnippetEditorConfig.xml" Vital="yes"/>
+        <!--//TODO: Add other files and references-->
+        <File Id="Readme.htm" Name="Readme.htm" Source="Files\Readme.htm" Vital="yes" DiskId="1">
+          <Shortcut Id="ReadmeShortcut" Directory="ProgramMenuShortcutDirectory" Name="Readme" Icon="ProductIcon" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" />
+        </File>
+        <RemoveFolder Directory="ProgramMenuShortcutDirectory" On="uninstall" Id="ShortcutRemoveFolder" />
+      </Component>
+      
+      <Directory Id="ProgramMenuFolder" SourceName="USER'S" LongSource="User's Programs Menu">
+        <Directory Id="ProgramMenuShortcutDirectory" Name="Product" LongName="$(loc.ProductName)" />
+      </Directory>
+      
+      <!--VS Templates-->
+      <Directory Id="VSINSTALLDIR">
+          <Directory Id="NewFileItemsDirectory" Name="NewItems" LongName="NewFileItems">
+            <Component Id="NewItemFilesComponent" Guid="50413788-D721-4981-9AE3-332F7B27CA98" DiskId="1">
+              <File Id="SnippetFile" Name="Snippet.sni" LongName="SnippetFile.snippet" Source="$(var.SnippetDesigner.TargetDir)VSDIR\SnippetFile.snippet" Vital="yes"/>
+              <File Id="SnippetDesignerVsdir" Name="SnipDes.vsd" LongName="SnippetDesigner.vsdir" Source="$(var.SnippetDesigner.TargetDir)VSDIR\SnippetDesigner.vsdir" Vital="yes"/>
+            </Component>
+          </Directory>
+        <!--<Directory Id="ItemTemplatesDirectory" Name="ItemTemp" LongName="ItemTemplates">
+          <Directory Id="GeneralDirectory1" Name="General">
+            <Directory Id="_1033Directory1" Name="1033">
+              <Component Id="ItemTemplatesFilesComponent" Guid="50413788-D721-4981-9AE3-332F7B27CA98" DiskId="1">
+                //TODO: Add item templates to be installed
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>
+        <Directory Id="ProjectTemplatesDirectory" Name="ProjTemp" LongName="ProjectTemplates">
+          <Directory Id="GeneralDirectory2" Name="General">
+            <Directory Id="_1033Directory2" Name="1033">
+              <Component Id="ProjectTemplatesFilesComponent" Guid="5D4BE1B0-D88D-4457-9334-9FA210E7261C" DiskId="1">
+                //TODO: Add project templates to be installed
+              </Component>
+            </Directory>
+          </Directory>
+        </Directory>  -->      
+      </Directory>
+      
+      <!--Xsd Schemas-->
+      <!--<Directory Id="VSROOTDIR">
+        <Directory Id="XmlDirectory" Name="xml">
+          <Directory Id="SchemasDirectory" Name="schemas">            
+            <Component Id="XsdFilesComponent" Guid="A1479F3D-78D9-4642-A634-CEC9E5408F2F" DiskId="1">
+              //TODO: Add xsd schemas to be installed
+            </Component>
+          </Directory>
+        </Directory>
+      </Directory>-->
+    </Directory>
+	</Fragment>
+</Wix>

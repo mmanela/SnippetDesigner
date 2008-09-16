@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<SnippetConfiguration>
+  <HiddenProperties>
+    <CSharp>
+      <Property>Snippet Kind</Property>
+      <Property>Imports</Property>
+      <Property>References</Property>
+    </CSharp>
+    <XML>
+      <Property>Snippet Kind</Property>
+      <Property>Imports</Property>
+      <Property>References</Property>
+    </XML>
+    <VB>
+    </VB>
+  </HiddenProperties>
+</SnippetConfiguration>

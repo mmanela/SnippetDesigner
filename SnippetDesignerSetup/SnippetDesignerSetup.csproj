@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{C450E67E-F72C-455E-8F63-A2A33158F4C3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{6F2ABE99-BF25-40BD-BF0E-F98D34E46CAA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <OutputName>SnippetDesignerSetup</OutputName>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SnippetDesignerSetup</RootNamespace>
+    <AssemblyName>SnippetDesignerSetup</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <VerboseOutput>True</VerboseOutput>
+    <LocalizedStringFile>Strings.wxl</LocalizedStringFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>Configuration=Debug</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>Configuration=Release</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>0</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="Files\EULA.rtf" />
+    <Compile Include="UI.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Banner.bmp" />
+    <None Include="Resources\New.ico" />
+    <None Include="Resources\Product.ico" />
+    <None Include="Resources\Up.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Files.wxs" />
+    <None Include="Files\Readme.htm" />
+    <Content Include="PackageRegistry.wxi" />
+    <Content Include="Strings.wxl" />
+    <Compile Include="Registry.wxs" />
+    <Compile Include="PackageRegistry.wxs" />
+    <Compile Include="Main.wxs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SnippetDesigner\SnippetDesigner.csproj">
+      <Project>{904B8674-DAF9-424F-81E5-6123776A0F21}</Project>
+      <Name>SnippetDesigner</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties IsVsPackageSetup="true" />
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(MSBuildExtensionsPath)\VSSDK Assist\wix.targets" />
+</Project>

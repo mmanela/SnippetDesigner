@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+  <Fragment Id="UIFragment">
+    <UI>
+      <!-- Following properties define values for UI parameters. -->
+      <Property Id="EulaForm_Property">No</Property>
+      <Property Id="EulaForm_NextArgs">FolderForm</Property>
+      <Property Id="EulaForm_PrevArgs">WelcomeForm</Property>
+      <Property Id="WelcomeForm_NextArgs">EulaForm</Property>
+      <Property Id="FolderForm_PrevArgs">EulaForm</Property>
+      <Property Id="FolderForm_NextArgs">ConfirmInstallForm</Property>
+      <Property Id="ConfirmInstallForm_PrevArgs">FolderForm</Property>
+      <Property Id="SFF_UpFldrBtn">UpFldrBtn</Property>
+      <Property Id="SFF_NewFldrBtn">NewFldrBtn</Property>
+      <Property Id="MaintenanceForm_Action">Repair</Property>
+      <Property Id="ErrorDialog">ErrorDialog</Property>
+      <Property Id="DefaultUIFont">DefaultUIFont.1</Property>
+      <TextStyle Id="DefaultUIFont.1" FaceName="MS Sans Serif" Size="9" Red="0" Green="0" Blue="0" />
+      <TextStyle Id="VSI_MS_Sans_Serif13.0_0_0" FaceName="MS Sans Serif" Size="9" Red="0" Green="0" Blue="0" />
+      <TextStyle Id="VSI_MS_Sans_Serif16.0_1_0" FaceName="MS Sans Serif" Size="12" Red="0" Green="0" Blue="0" Bold="yes" />
+      <TextStyle Id="VSI_MS_Shell_Dlg13.0_0_0" FaceName="MS Shell Dlg" Size="9" Red="0" Green="0" Blue="0" />
+      <Dialog Id="UserExitForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="CloseButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes" Cancel="yes">
+          <Text>$(loc.CloseButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.BackButtonText)</Text>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.InterruptedBannerText)</Text>
+        </Control>
+        <Control Id="BodyTextRemove" Type="Text" X="9" Y="63" Width="354" Height="180">
+          <Text>$(loc.InterruptedRemoveBodyText)</Text>
+          <Condition Action="show"><![CDATA[REMOVE<>""]]></Condition>
+          <Condition Action="hide">REMOVE=""</Condition>
+        </Control>
+        <Control Id="BodyTextInstall" Type="Text" X="18" Y="63" Width="342" Height="24">
+          <Text>$(loc.InterruptedInstallBodyText)</Text>
+          <Condition Action="show">REMOVE=""</Condition>
+          <Condition Action="hide"><![CDATA[REMOVE<>""]]></Condition>
+        </Control>
+      </Dialog>
+      <Dialog Id="FatalErrorForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="CloseButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes" Cancel="yes">
+          <Text>$(loc.CloseButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.BackButtonText)</Text>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.IncompleteBannerText)</Text>
+        </Control>
+        <Control Id="BodyTextRemove" Type="Text" X="9" Y="63" Width="354" Height="180">
+          <Text>$(loc.InterruptedInstallBodyText)</Text>
+          <Condition Action="show">REMOVE=""</Condition>
+          <Condition Action="hide"><![CDATA[REMOVE<>""]]></Condition>
+        </Control>
+        <Control Id="BodyTextInstall" Type="Text" X="9" Y="63" Width="354" Height="180">
+          <Text>$(loc.InterruptedRemoveBodyText)</Text>
+          <Condition Action="show"><![CDATA[REMOVE<>""]]></Condition>
+          <Condition Action="hide">REMOVE=""</Condition>
+        </Control>
+      </Dialog>
+      <Dialog Id="MaintenanceForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="FinishButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes">
+          <Text>$(loc.FinishButtonText)</Text>
+          <Publish Property="REINSTALL" Value="ALL">MaintenanceForm_Action="Repair"</Publish>
+          <Publish Event="Reinstall" Value="ALL">MaintenanceForm_Action="Repair"</Publish>
+          <Publish Property="REMOVE" Value="ALL">MaintenanceForm_Action="Remove"</Publish>
+          <Publish Event="Remove" Value="ALL">MaintenanceForm_Action="Remove"</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="RepairRadioGroup" Type="RadioButtonGroup" X="18" Y="108" Width="348" Height="48" Property="MaintenanceForm_Action">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiRadioButtonGroup</Text>
+          <RadioButtonGroup Property="MaintenanceForm_Action">
+            <RadioButton Value="Repair" X="0" Y="0" Width="348" Height="17" Text="$(loc.RepairProduct)" />
+            <RadioButton Value="Remove" X="0" Y="18" Width="348" Height="17" Text="$(loc.RemoveProduct)" />
+          </RadioButtonGroup>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="SpawnDialog" Value="Cancel"></Publish>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.BackButtonText)</Text>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.WelcomeBanner)</Text>
+        </Control>
+        <Control Id="BodyText" Type="Text" X="9" Y="63" Width="354" Height="42">
+          <Text>$(loc.RepairRemoveBodyText)</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="ResumeForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="FinishButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes">
+          <Text>$(loc.FinishButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="SpawnDialog" Value="Cancel"></Publish>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.BackButtonText)</Text>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.WelcomeBanner)</Text>
+        </Control>
+        <Control Id="BodyText" Type="Text" X="9" Y="63" Width="354" Height="180">
+          <Text>$(loc.ResumeBodyText)</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="FinishedForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="CloseButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes" Cancel="yes">
+          <Text>$(loc.CloseButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.BackButtonText)</Text>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.FinishedBanner)</Text>
+        </Control>
+        <Control Id="BodyTextRemove" Type="Text" X="9" Y="63" Width="354" Height="138">
+          <Text>$(loc.FinishedRemoveBodyText)</Text>
+          <Condition Action="show"><![CDATA[REMOVE<>""]]></Condition>
+          <Condition Action="hide">REMOVE=""</Condition>
+        </Control>
+        <Control Id="UpdateText" Type="Text" X="9" Y="216" Width="354" Height="36">
+          <Text>$(loc.UpdateNetFramework)</Text>
+          <Condition Action="show">REMOVE=""</Condition>
+          <Condition Action="hide"><![CDATA[REMOVE<>""]]></Condition>
+        </Control>
+        <Control Id="BodyText" Type="Text" X="9" Y="63" Width="354" Height="138">
+          <Text>$(loc.FinishedInstallBodyText)</Text>
+          <Condition Action="show">REMOVE=""</Condition>
+          <Condition Action="hide"><![CDATA[REMOVE<>""]]></Condition>
+        </Control>
+      </Dialog>
+      <Dialog Id="Cancel" Width="271" Height="78" Title="[ProductName]" NoMinimize="yes">
+        <Control Id="NoButton" Type="PushButton" X="198" Y="48" Width="65" Height="21" Default="yes" Cancel="yes">
+          <Text>$(loc.NoButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return"></Publish>
+        </Control>
+        <Control Id="YesButton" Type="PushButton" X="126" Y="48" Width="65" Height="21">
+          <Text>$(loc.YesButtonText)</Text>
+          <Publish Event="EndDialog" Value="Exit"></Publish>
+        </Control>
+        <Control Id="BodyText" Type="Text" X="6" Y="9" Width="258" Height="24">
+          <Text>$(loc.IncompleteBodyText)</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="WelcomeForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="NextButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes">
+          <Text>$(loc.NextButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return">WelcomeForm_NextArgs=""</Publish>
+          <Publish Event="NewDialog" Value="[WelcomeForm_NextArgs]"><![CDATA[WelcomeForm_NextArgs<>""]]></Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="SpawnDialog" Value="Cancel"></Publish>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18">
+          <Text>$(loc.BackButtonText)</Text>
+          <Publish Event="NewDialog" Value="[WelcomeForm_PrevArgs]"><![CDATA[WelcomeForm_PrevArgs<>""]]></Publish>
+          <Condition Action="disable">WelcomeForm_PrevArgs=""</Condition>
+          <Condition Action="enable"><![CDATA[WelcomeForm_PrevArgs<>""]]></Condition>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.WelcomeBanner)</Text>
+        </Control>
+        <Control Id="CopyrightWarningText" Type="Text" X="9" Y="186" Width="354" Height="66">
+          <Text>$(loc.CopyrightWarning)</Text>
+        </Control>
+        <Control Id="WelcomeText" Type="Text" X="9" Y="63" Width="354" Height="114">
+          <Text>$(loc.WelcomeBodyText)</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="FolderForm" Width="373" Height="287" Title="[ProductName]" TrackDiskSpace="yes">
+        <Control Id="NextButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes">
+          <Text>$(loc.NextButtonText)</Text>
+          <Publish Event="SetTargetPath" Value="TARGETDIR">1</Publish>
+          <Publish Event="EndDialog" Value="Return"><![CDATA[FolderForm_NextArgs="" AND OutOfDiskSpace<>1]]></Publish>
+          <Publish Event="NewDialog" Value="[FolderForm_NextArgs]"><![CDATA[FolderForm_NextArgs<>"" AND OutOfDiskSpace<>1]]></Publish>
+          <Publish Event="DoAction" Value="FindRelatedProducts">1</Publish>
+        </Control>
+        <Control Id="FolderLabel" Type="Text" X="18" Y="114" Width="348" Height="12" TabSkip="no">
+          <Text>$(loc.FolderLabel)</Text>
+        </Control>
+        <Control Id="FolderEdit" Type="PathEdit" X="18" Y="126" Width="252" Height="18" Property="TARGETDIR" Sunken="yes">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiPathEdit</Text>
+        </Control>
+        <Control Id="BrowseButton" Type="PushButton" X="276" Y="126" Width="90" Height="18">
+          <Text>$(loc.BrowseButtonText)</Text>
+          <Publish Property="SelectFolderDialog_Property" Value="TARGETDIR">1</Publish>
+          <Publish Event="SpawnDialog" Value="SelectFolderDialog">1</Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="SpawnDialog" Value="Cancel"></Publish>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18">
+          <Text>$(loc.BackButtonText)</Text>
+          <Publish Event="NewDialog" Value="[FolderForm_PrevArgs]"><![CDATA[FolderForm_PrevArgs<>""]]></Publish>
+          <Condition Action="disable">FolderForm_PrevArgs=""</Condition>
+          <Condition Action="enable"><![CDATA[FolderForm_PrevArgs<>""]]></Condition>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.SelectFolderBanner)</Text>
+        </Control>
+        <Control Id="Body" Type="Text" X="9" Y="63" Width="354" Height="48">
+          <Text>$(loc.SelectFolderBodyText)</Text>
+        </Control>
+        <Control Id="AllUsersText" Type="Text" X="18" Y="186" Width="348" Height="24">
+          <Text>$(loc.AllUsersText)</Text>
+          <Condition Action="show"><![CDATA[VersionNT>=400 AND Privileged=1 AND FolderForm_AllUsersVisible=1]]></Condition>
+          <Condition Action="hide"><![CDATA[NOT (VersionNT>=400 AND Privileged=1 AND FolderForm_AllUsersVisible=1)]]></Condition>
+        </Control>
+      </Dialog>
+      <Dialog Id="SelectFolderDialog" Width="313" Height="223" Title="$(loc.BrowseForFolderTitle)" NoMinimize="yes">
+        <Control Id="OKButton" Type="PushButton" X="168" Y="198" Width="66" Height="18" Default="yes">
+          <Text>$(loc.OKButtonText)</Text>
+          <Publish Event="SetTargetPath" Value="[SelectFolderDialog_Property]">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="240" Y="198" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="Reset" Value="{}">1</Publish>
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+        <Control Id="BrowseText" Type="Text" X="6" Y="9" Width="60" Height="12" TabSkip="no">
+          <Text>$(loc.BrowseLabel)</Text>
+        </Control>
+        <Control Id="FolderCombo" Type="DirectoryCombo" X="66" Y="6" Width="198" Height="120" Property="SelectFolderDialog_Property" Indirect="yes" Removable="yes" Fixed="yes" Remote="yes" RAMDisk="yes" Floppy="yes">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiDirectoryCombo</Text>
+        </Control>
+        <Control Id="FolderUpButton" Type="PushButton" X="270" Y="6" Width="18" Height="18" Icon="yes" FixedSize="yes" IconSize="16" Text="[SFF_UpFldrBtn]">
+          <Publish Event="DirectoryListUp" Value="{}">1</Publish>
+        </Control>
+        <Control Id="NewFolderButton" Type="PushButton" X="288" Y="6" Width="18" Height="18" Icon="yes" FixedSize="yes" IconSize="16" Text="[SFF_NewFldrBtn]">
+          <Publish Event="DirectoryListNew" Value="{}">1</Publish>
+        </Control>
+        <Control Id="FolderList" Type="DirectoryList" X="6" Y="30" Width="300" Height="129" Property="SelectFolderDialog_Property" Sunken="yes" Indirect="yes" TabSkip="no">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiDirectoryList</Text>
+        </Control>
+        <Control Id="FolderText" Type="Text" X="6" Y="171" Width="60" Height="12" TabSkip="no">
+          <Text>$(loc.FolderLabel)</Text>
+        </Control>
+        <Control Id="FolderPathEdit" Type="PathEdit" X="66" Y="168" Width="240" Height="18" Property="SelectFolderDialog_Property" Sunken="yes" Indirect="yes">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiPathEdit</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="ConfirmInstallForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="NextButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes">
+          <Text>$(loc.NextButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return">ConfirmInstallForm_NextArgs=""</Publish>
+          <Publish Event="NewDialog" Value="[ConfirmInstallForm_NextArgs]"><![CDATA[ConfirmInstallForm_NextArgs<>""]]></Publish>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="SpawnDialog" Value="Cancel"></Publish>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18">
+          <Text>$(loc.BackButtonText)</Text>
+          <Publish Event="NewDialog" Value="[ConfirmInstallForm_PrevArgs]"><![CDATA[ConfirmInstallForm_PrevArgs<>""]]></Publish>
+          <Condition Action="disable">ConfirmInstallForm_PrevArgs=""</Condition>
+          <Condition Action="enable"><![CDATA[ConfirmInstallForm_PrevArgs<>""]]></Condition>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.ConfirmBanner)</Text>
+        </Control>
+        <Control Id="BodyText1" Type="Text" X="9" Y="63" Width="354" Height="180">
+          <Text>$(loc.ConfirmBodyText)</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="EulaForm" Width="373" Height="287" Title="[ProductName]">
+        <Control Id="LicenseText" Type="ScrollableText" X="18" Y="105" Width="348" Height="120" Sunken="yes" TabSkip="no">
+          <Text src="Files\EULA.rtf" />
+        </Control>
+        <Control Id="AgreeRadioGroup" Type="RadioButtonGroup" X="18" Y="231" Width="348" Height="15" Property="EulaForm_Property">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiRadioButtonGroup</Text>
+          <RadioButtonGroup Property="EulaForm_Property">
+            <RadioButton Value="No" X="0" Y="0" Width="138" Height="15" Text="$(loc.DoNotAgreeButtonText)" />
+            <RadioButton Value="Yes" X="138" Y="0" Width="138" Height="15" Text="$(loc.AgreeButtonText)" />
+          </RadioButtonGroup>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="SpawnDialog" Value="Cancel"></Publish>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18">
+          <Text>$(loc.BackButtonText)</Text>
+          <Publish Event="NewDialog" Value="[EulaForm_PrevArgs]"><![CDATA[EulaForm_PrevArgs<>""]]></Publish>
+          <Condition Action="disable">EulaForm_PrevArgs=""</Condition>
+          <Condition Action="enable"><![CDATA[EulaForm_PrevArgs<>""]]></Condition>
+        </Control>
+        <Control Id="NextButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Default="yes">
+          <Text>$(loc.NextButtonText)</Text>
+          <Publish Event="EndDialog" Value="Return">EulaForm_NextArgs=""</Publish>
+          <Publish Event="NewDialog" Value="[EulaForm_NextArgs]"><![CDATA[EulaForm_NextArgs<>""]]></Publish>
+          <Subscribe Event="EulaEvent" Attribute="Enabled" />
+          <Condition Action="disable"><![CDATA[EulaForm_Property<>"Yes"]]></Condition>
+          <Condition Action="enable">EulaForm_Property="Yes"</Condition>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="BannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.LicenseBanner)</Text>
+        </Control>
+        <Control Id="BodyText" Type="Text" X="9" Y="63" Width="360" Height="40">
+          <Text>$(loc.LicenseBodyText)</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="ProgressForm" Width="373" Height="287" Title="[ProductName]" Modeless="yes">
+        <Control Id="NextButton" Type="PushButton" X="300" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.NextButtonText)</Text>
+        </Control>
+        <Control Id="CancelButton" Type="PushButton" X="156" Y="261" Width="66" Height="18" Cancel="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="SpawnDialog" Value="Cancel"></Publish>
+        </Control>
+        <Control Id="PreviousButton" Type="PushButton" X="228" Y="261" Width="66" Height="18" Disabled="yes">
+          <Text>$(loc.BackButtonText)</Text>
+        </Control>
+        <Control Id="BannerBmp" Type="Bitmap" X="0" Y="0" Width="375" Height="52" TabSkip="no" Text="BannerBitmap" />
+        <Control Id="Line1" Type="Line" X="0" Y="52" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="Line2" Type="Line" X="0" Y="252" Width="375" Height="6">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiHorizontalLine</Text>
+        </Control>
+        <Control Id="ProgressBar" Type="ProgressBar" X="18" Y="108" Width="336" Height="15">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiProgressBar</Text>
+          <Subscribe Event="StopServices" Attribute="Progress" />
+          <Subscribe Event="DeleteServices" Attribute="Progress" />
+          <Subscribe Event="RemoveRegistryValues" Attribute="Progress" />
+          <Subscribe Event="RemoveFiles" Attribute="Progress" />
+          <Subscribe Event="MoveFiles" Attribute="Progress" />
+          <Subscribe Event="InstallFiles" Attribute="Progress" />
+          <Subscribe Event="WriteRegistryValues" Attribute="Progress" />
+          <Subscribe Event="WriteIniValues" Attribute="Progress" />
+          <Subscribe Event="StartServices" Attribute="Progress" />
+          <Subscribe Event="InstallAdminPackage" Attribute="Progress" />
+          <Subscribe Event="UnmoveFiles" Attribute="Progress" />
+          <Subscribe Event="SetProgress" Attribute="Progress" />
+        </Control>
+        <Control Id="ProgressLabel" Type="Text" X="18" Y="96" Width="336" Height="12">
+          <Text>$(loc.ProgressLabel)</Text>
+        </Control>
+        <Control Id="InstalledBody" Type="Text" X="9" Y="63" Width="354" Height="12">
+          <Text>$(loc.InstallingBodyText)</Text>
+          <Condition Action="show">REMOVE=""</Condition>
+          <Condition Action="hide"><![CDATA[REMOVE<>""]]></Condition>
+        </Control>
+        <Control Id="RemovedBody" Type="Text" X="18" Y="63" Width="336" Height="12">
+          <Text>$(loc.RemovingBodyText)</Text>
+          <Condition Action="show"><![CDATA[REMOVE<>""]]></Condition>
+          <Condition Action="hide">REMOVE=""</Condition>
+        </Control>
+        <Control Id="RemoveBannerText" Type="Text" X="9" Y="9" Width="306" Height="33" Transparent="yes">
+          <Text>$(loc.RemovingBanner)</Text>
+          <Condition Action="show"><![CDATA[REMOVE<>""]]></Condition>
+          <Condition Action="hide">REMOVE=""</Condition>
+        </Control>
+        <Control Id="InstalledBannerText" Type="Text" X="9" Y="9" Width="255" Height="33" Transparent="yes">
+          <Text>$(loc.InstallingBanner)</Text>
+          <Condition Action="show">REMOVE=""</Condition>
+          <Condition Action="hide"><![CDATA[REMOVE<>""]]></Condition>
+        </Control>
+      </Dialog>
+      <Dialog Id="ErrorDialog" Width="330" Height="101" Title="[ProductName]" ErrorDialog="yes">
+        <Control Id="ErrorText" Type="Text" X="6" Y="9" Width="318" Height="48" Disabled="yes" TabSkip="no">
+          <Text></Text>
+        </Control>
+        <Control Id="N" Type="PushButton" X="120" Y="72" Width="81" Height="21" TabSkip="yes">
+          <Text>$(loc.NoButtonText)</Text>
+          <Publish Event="EndDialog" Value="ErrorNo"></Publish>
+        </Control>
+        <Control Id="Y" Type="PushButton" X="240" Y="72" Width="81" Height="21" TabSkip="yes">
+          <Text>$(loc.YesButtonText)</Text>
+          <Publish Event="EndDialog" Value="ErrorYes"></Publish>
+        </Control>
+        <Control Id="A" Type="PushButton" X="0" Y="72" Width="81" Height="21" TabSkip="yes">
+          <Text>$(loc.ExitButtonText)</Text>
+          <Publish Event="EndDialog" Value="ErrorAbort"></Publish>
+        </Control>
+        <Control Id="C" Type="PushButton" X="42" Y="72" Width="81" Height="21" TabSkip="yes">
+          <Text>$(loc.CancelButtonText)</Text>
+          <Publish Event="EndDialog" Value="ErrorCancel"></Publish>
+        </Control>
+        <Control Id="I" Type="PushButton" X="81" Y="72" Width="81" Height="21" TabSkip="yes">
+          <Text>$(loc.ContinueButtonText)</Text>
+          <Publish Event="EndDialog" Value="ErrorIgnore"></Publish>
+        </Control>
+        <Control Id="O" Type="PushButton" X="159" Y="72" Width="81" Height="21" TabSkip="yes">
+          <Text>$(loc.OKButtonText)</Text>
+          <Publish Event="EndDialog" Value="ErrorOk"></Publish>
+        </Control>
+        <Control Id="R" Type="PushButton" X="198" Y="72" Width="81" Height="21" TabSkip="yes">
+          <Text>$(loc.TryAgainButtonText)</Text>
+          <Publish Event="EndDialog" Value="ErrorRetry"></Publish>
+        </Control>
+      </Dialog>
+      <Dialog Id="ConfirmRemoveDialog" Width="271" Height="78" Title="$(loc.ConfirmRemoveTitle)" NoMinimize="yes">
+        <Control Id="NoButton" Type="PushButton" X="198" Y="48" Width="65" Height="21" Default="yes" Cancel="yes">
+          <Text>$(loc.NoButtonText)</Text>
+          <Publish Property="WelcomeForm_ConfirmRemove" Value="No"></Publish>
+          <Publish Event="EndDialog" Value="Return"></Publish>
+        </Control>
+        <Control Id="YesButton" Type="PushButton" X="126" Y="48" Width="65" Height="21">
+          <Text>$(loc.YesButtonText)</Text>
+          <Publish Property="WelcomeForm_ConfirmRemove" Value="Yes"></Publish>
+          <Publish Event="EndDialog" Value="Return"></Publish>
+        </Control>
+        <Control Id="BodyText" Type="Text" X="6" Y="9" Width="258" Height="24">
+          <Text>$(loc.ConfirmRemoveBodyText)</Text>
+        </Control>
+      </Dialog>
+      <Dialog Id="FilesInUse" Width="361" Height="177" Title="$(loc.FilesInUseTitle)" NoMinimize="yes">
+        <Control Id="RetryButton" Type="PushButton" X="99" Y="150" Width="81" Height="18" Default="yes">
+          <Text>$(loc.TryAgainButtonText)</Text>
+          <Publish Event="EndDialog" Value="Retry"></Publish>
+        </Control>
+        <Control Id="ContinueButton" Type="PushButton" X="186" Y="150" Width="81" Height="18">
+          <Text>$(loc.ContinueButtonText)</Text>
+          <Publish Event="EndDialog" Value="Ignore"></Publish>
+        </Control>
+        <Control Id="ExitButton" Type="PushButton" X="273" Y="150" Width="81" Height="18" Cancel="yes">
+          <Text>$(loc.ExitButtonText)</Text>
+          <Publish Event="EndDialog" Value="Exit"></Publish>
+        </Control>
+        <Control Id="ListFilesInUse" Type="ListBox" X="6" Y="51" Width="348" Height="90" Property="FileInUseProcess" Sunken="yes" Sorted="yes">
+          <Text>{\VSI_MS_Sans_Serif13.0_0_0}MsiFilesInUse</Text>
+        </Control>
+        <Control Id="InstallBodyText" Type="Text" X="6" Y="9" Width="345" Height="36">
+          <Text>$(loc.InstallFilesInUseBodyText)</Text>
+          <Condition Action="show">REMOVE=""</Condition>
+          <Condition Action="hide"><![CDATA[REMOVE<>""]]></Condition>
+        </Control>
+        <Control Id="RemoveBodyText" Type="Text" X="6" Y="9" Width="345" Height="36">
+          <Text>$(loc.RemoveFilesInUseBodyText)</Text>
+          <Condition Action="show"><![CDATA[REMOVE<>""]]></Condition>
+          <Condition Action="hide">REMOVE=""</Condition>
+        </Control>
+      </Dialog>
+    </UI>
+  </Fragment>
+</Wix>

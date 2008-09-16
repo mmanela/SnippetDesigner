@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment Id="PackageRegistryEntriesFragment">
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="PackageRegistryEntriesComponent" Guid="0DF56D13-15FE-4612-86BB-A1EACB69CCC4">
+        <?include PackageRegistry.wxi ?>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>
