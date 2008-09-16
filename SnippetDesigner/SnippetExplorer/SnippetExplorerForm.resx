@@ -247,10 +247,10 @@
     <value>Fill</value>
   </data>
   <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 37</value>
+    <value>3, 35</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 91</value>
+    <value>336, 55</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -280,7 +280,7 @@
     <value>0, 22</value>
   </data>
   <data name="searchOptionBar.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 131</value>
+    <value>0, 93</value>
   </data>
   <data name="searchOptionBar.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 3</value>
@@ -334,10 +334,10 @@
     <value>Fill</value>
   </data>
   <data name="searchResultView.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 162</value>
+    <value>3, 124</value>
   </data>
   <data name="searchResultView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 185</value>
+    <value>336, 223</value>
   </data>
   <data name="searchResultView.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -384,17 +384,17 @@
   <data name="&gt;&gt;searchBox.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="searchButton.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
-    <value>Top, Right</value>
+  <data name="searchButton.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Right</value>
   </data>
   <data name="searchButton.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="searchButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>258, 3</value>
+    <value>261, 0</value>
   </data>
   <data name="searchButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 22</value>
+    <value>75, 26</value>
   </data>
   <data name="searchButton.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -421,7 +421,7 @@
     <value>3, 3</value>
   </data>
   <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 28</value>
+    <value>336, 26</value>
   </data>
   <data name="panel2.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -502,7 +502,7 @@
     <value>previewCodeWindow</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Type" xml:space="preserve">
-    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d33c5886d302fdee</value>
+    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.0.3181.19041, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Parent" xml:space="preserve">
     <value>snippetExplorerSplitter.Panel2</value>
