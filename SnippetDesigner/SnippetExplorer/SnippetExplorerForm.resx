@@ -268,7 +268,7 @@
     <value>0</value>
   </data>
   <metadata name="searchOptionBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>0, 131</value>
+    <value>0, 93</value>
   </metadata>
   <data name="searchOptionBar.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -502,7 +502,7 @@
     <value>previewCodeWindow</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Type" xml:space="preserve">
-    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.0.3181.19041, Culture=neutral, PublicKeyToken=null</value>
+    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.0.3181.25055, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Parent" xml:space="preserve">
     <value>snippetExplorerSplitter.Panel2</value>

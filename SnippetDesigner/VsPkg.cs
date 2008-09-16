@@ -28,7 +28,6 @@ using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.RegistryTools;
 using System.IO;
 
-//[assembly: SecurityPermission(SecurityAction.RequestMinimum)]
 
 namespace Microsoft.SnippetDesigner
 {
@@ -455,8 +454,8 @@ namespace Microsoft.SnippetDesigner
 
 
         /////////////////////////////////////////////////////////////////////////////
-        // Overriden SACPackage Implementation
-        #region SACPackage Members
+        // Overriden Package Implementation
+        #region Package Members
 
         public new Object GetService(System.Type serviceType)
         {

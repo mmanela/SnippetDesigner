@@ -37,10 +37,10 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private string pathCellName = "Path";
         private DTE2 dte2;
         private readonly int maxResultCount = 50; //max number of snippets to return from a search\
-        //keep track of the mouse click poistions
-        private int mouseClickX = 0;
-        private int mouseClickY = 0;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SnippetExplorerForm"/> class.
+        /// </summary>
         public SnippetExplorerForm()
         {
             InitializeComponent();
@@ -52,6 +52,10 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
         #region public properties
 
+        /// <summary>
+        /// Gets the preview code window.
+        /// </summary>
+        /// <value>The preview code window.</value>
         public CodeWindow PreviewCodeWindow
         {
             get
@@ -114,6 +118,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
 
 
+        /// <summary>
+        /// Handles the Load event of the SnippetExplorerForm control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void SnippetExplorerForm_Load(object sender, EventArgs e)
         {
             dte2 = (DTE2)SnippetDesignerPackage.Instance.DTE;
@@ -130,10 +139,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             searchResultView.Columns.Add(descriptionCellName, descriptionCellName);
             searchResultView.Columns.Add(codeLanguageCellName, codeLanguageCellName);
             searchResultView.Columns.Add(pathCellName, pathCellName);
-
-
-            //make title column full width
-            //searchResultView.Columns[snippetContent.TitleField].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
         }
 
 
@@ -331,12 +336,13 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         }
 
 
+        /// <summary>
+        /// Handles the MouseDown event of the searchResultView control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.Windows.Forms.MouseEventArgs"/> instance containing the event data.</param>
         private void searchResultView_MouseDown(object sender, MouseEventArgs e)
         {
-            //store the last click
-            mouseClickX = e.X;
-            mouseClickY = e.Y;
-
             DataGridView.HitTestInfo info = searchResultView.HitTest(e.X, e.Y);
             if (e.Button == MouseButtons.Right)
             {
@@ -441,11 +447,21 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             }
         }
 
+        /// <summary>
+        /// Handles the Click event of the searchButton control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void searchButton_Click(object sender, EventArgs e)
         {
             PerformSearch(searchBox.Text);
         }
 
+        /// <summary>
+        /// Handles the KeyDown event of the searchBox control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.Windows.Forms.KeyEventArgs"/> instance containing the event data.</param>
         private void searchBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)

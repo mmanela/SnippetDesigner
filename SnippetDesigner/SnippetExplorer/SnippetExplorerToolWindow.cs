@@ -21,11 +21,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 {
     /// <summary>
     /// This class implements the tool window exposed by this sacPackage and hosts a user snippetExplorerForm.
-    ///
-    /// In Visual Studio tool windows are composed of a frame (implemented by the shell) and a pane, 
+    /// In Visual Studio tool windows are composed of a frame (implemented by the shell) and a pane,
     /// usually implemented by the sacPackage implementer.
-    ///
-    /// This class derives from the ToolWindowPane class provided from the MPF in order to use its 
+    /// This class derives from the ToolWindowPane class provided from the MPF in order to use its
     /// implementation of the IVsWindowPane interface.
     /// </summary>
     [Guid(GuidList.snippetExplorerString)]
@@ -57,44 +55,10 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // the strip being 16x16.
             this.BitmapResourceID = 301;
             this.BitmapIndex = 1;
-           
 
             snippetExplorerForm = new SnippetExplorerForm();
         }
 
-
-
-
-       
-        public override void OnToolBarAdded()
-        {
-            base.OnToolBarAdded();
-
-
-
-
-            // In general it is not useful to override this method,
-            // but it is useful when the tool window hosts a toolbar
-            // with a drop-down (combo box) that needs to be initialized.
-            // If that were the case, the initalization would happen here.
-        }
-
-
-
-
-
-
-        /// <summary>
-        /// This method can be overriden by the derived class to execute any code that
-        /// needs to run after the IVsWindowFrame is created.  If the toolwindow has
-        /// a toolbar with a combobox, it should make sure its command handler are set
-        /// by the time they return from this method.  This is called when someone set
-        /// the Frame property.
-        /// </summary>
-        public override void OnToolWindowCreated()
-        {
-            base.OnToolWindowCreated();
-        }
 
         /// <summary>
         /// This property returns the handle to the user snippetExplorerForm that should
@@ -107,38 +71,5 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 return (IWin32Window)snippetExplorerForm;
             }
         }
-
-        /// <summary>
-        /// Define a command handler.
-        /// When the user presses the button corresponding to the CommandID,
-        /// then the EventHandler will be called.
-        /// </summary>
-        /// <param name="id">The CommandID (Guid/ID pair) as defined in the .ctc file</param>
-        /// <param name="handler">Method that should be called to implement the command</param>
-        /// <returns>The menu command. This can be used to set parameter such as the default visibility once the package is loaded</returns>
-        private OleMenuCommand DefineCommandHandler(EventHandler handler, CommandID id)
-        {
-            // First add it to the package. This is to keep the visibility
-            // of the command on the toolbar constant when the tool window does
-            // not have focus. In addition, it creates the command object for us.
-            SnippetDesignerPackage package = SnippetDesignerPackage.Instance;
-            OleMenuCommand command = package.DefineCommandHandler(handler, id);
-            // Verify that the command was added
-            if (command == null)
-                return command;
-
-            // Get the OleCommandService object provided by the base window pane class; this object is the one
-            // responsible for handling the collection of commands implemented by the package.
-            OleMenuCommandService menuService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-
-            if (null != menuService)
-            {
-                // Add the command handler
-                menuService.AddCommand(command);
-            }
-            return command;
-        }
-
-
     }
 }
