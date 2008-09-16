@@ -1,0 +1,7 @@
+<ignore xmlns='http://www.codeplex.com/schema/IgnoreListSchema-1.0.xsd'>
+  <add recursive='true'>bin</add>
+  <add recursive='true'>obj</add>
+  <add recursive='true'>*.suo</add>
+  <add recursive='true'>*.user</add>
+  <add>*.gpState</add>
+</ignore>
