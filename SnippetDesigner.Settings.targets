@@ -1,0 +1,42 @@
+<!--
+***********************************************************************************************
+SnippetDesigner.Settings.targets
+
+WARNING:  DO NOT CHECK IN this file to a community source tree when it contains paths to any dependencies. These paths
+are machine/configuration specific and should not be stored in a community source tree.
+
+This file is where you should set local paths to third party tools that are used when building 
+and/or testing Snippet Designer. Currently, Snippet Designer has a dependency on WiX for building the SnippetDesigner installer. Each tool has a property which specifies
+the absolute path to that tool. These properties are accessed in the SnippetDesigner project files and
+all these properties must be set prior to building SnippetDesigner.
+
+When adding a new third party dependency to SnippetDesigner, a property should be created in this file
+that represents a path to that tool's directory. The ErrorText property can be overriden to 
+display an error message if a file in the tool's directory doesn't exist. For example, the 
+ErrorText property for Wix checks that wix.targets resides in $(WiXDir). If 
+wix.targets isn't present, the ErrorText property is set with an error message.
+
+Copyright (C) Microsoft Corporation. All rights reserved.
+***********************************************************************************************
+-->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <SettingsFileName>SnippetDesigner.Settings.targets</SettingsFileName>
+
+    <!-- The Installer for the Snippet Designer are built with WiX 2.0.5805;
+	 download the WiX binaries at http://sourceforge.net/projects/wix/ -->
+    <WiXDir>E:\Projects\MyTools\WiX\2.0.5805\</WiXDir>
+    <ErrorText Condition=" !Exists('$(WiXDir)wix.targets') ">
+      "$(WiXDir)wix.targets" could not be found; WiXDir must be set to a valid path in $(SettingsFileName).
+    </ErrorText>
+
+    <CoreCompileDependsOn Condition=" '$(ErrorText)' != '' ">MissingDependency</CoreCompileDependsOn>
+  </PropertyGroup>
+
+  <Target Name="MissingDependency">
+    <Error
+      Text="$(ErrorText)" />
+  </Target>
+
+</Project>
