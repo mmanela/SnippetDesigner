@@ -4,5 +4,6 @@
   <add recursive='true'>*.suo</add>
     <add recursive='true'>*.cache</add>
   <add recursive='true'>*.user</add>
+  <add>SnippetDesigner.Settings.targets</add>
   <add>*.gpState</add>
 </ignore>

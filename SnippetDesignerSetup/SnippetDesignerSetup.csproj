@@ -58,8 +58,4 @@
     <ToolPath>$(WiXDir)</ToolPath>
   </PropertyGroup>
   <Import Project="$(WiXDir)wix.targets" />
-          
-  <Target Name="Clean">
-    <Error Text="$(Configuration)+++$(Platform)+++$(WiXDir)+++$(TargetExt)" />
-  </Target>
 </Project>
