@@ -30,7 +30,6 @@ Global
 		{F49D29B5-63FE-4A5E-B20C-D7B785FCE9BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F49D29B5-63FE-4A5E-B20C-D7B785FCE9BC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A305F21D-70A0-44D4-A726-62800397FE21}.Debug|Any CPU.ActiveCfg = Release|Any CPU
-		{A305F21D-70A0-44D4-A726-62800397FE21}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{A305F21D-70A0-44D4-A726-62800397FE21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A305F21D-70A0-44D4-A726-62800397FE21}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
