@@ -4,7 +4,6 @@ using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.SnippyLib;
-using Microsoft.ShareAndCollaborate.mmanela;
 namespace Microsoft.ShareAndCollaborate.ContentTypes
 {
     /// <summary>

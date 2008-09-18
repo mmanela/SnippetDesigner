@@ -46,7 +46,7 @@
   <Import Project="..\SnippetDesigner.Settings.targets" />
   
   <PropertyGroup>
-    <DefineConstants>SnippetDesigner.TargetDir=C:\Users\mmanela.REDMOND\Documents\CodeplexProject\SnippetDesigner\SnippetDesignerSetup\..\SnippetDesigner\bin\Release\</DefineConstants>
+    <DefineConstants>SnippetDesigner.TargetDir=..\SnippetDesigner\bin\Release\</DefineConstants>
     <VerboseOutput>True</VerboseOutput>
     <VerboseOutputLevel>0</VerboseOutputLevel>
     <WarningLevel>0</WarningLevel>
