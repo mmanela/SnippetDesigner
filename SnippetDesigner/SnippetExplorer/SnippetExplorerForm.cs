@@ -48,6 +48,47 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             languageFilterBoxList.Add(this.CSharpFilterBox);
             languageFilterBoxList.Add(this.vbFilterBox);
             languageFilterBoxList.Add(this.xmlFilterBox);
+            this.Load += new EventHandler(SnippetExplorerForm_Load);
+            
+        }
+
+        /// <summary>
+        /// Handles the PropertyChanged event of the Instance control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
+        void Instance_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName != null)
+            {
+                if (e.PropertyName.Equals("IsIndexLoaded", StringComparison.InvariantCulture))
+                {
+                    UpdateStatusLabel();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Updates the status label.
+        /// </summary>
+        private void UpdateStatusLabel()
+        {
+            if (SnippetDesignerPackage.Instance.IsIndexLoaded)
+            {
+                this.Invoke(
+                    (MethodInvoker)delegate
+                    {
+                        statusLabel.Text = "";
+                    });
+            }
+            else
+            {
+                this.Invoke(
+                    (MethodInvoker)delegate
+                    {
+                        statusLabel.Text = "Loading Snippet Index...";
+                    });
+            }
         }
 
         #region public properties
@@ -139,6 +180,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             searchResultView.Columns.Add(descriptionCellName, descriptionCellName);
             searchResultView.Columns.Add(codeLanguageCellName, codeLanguageCellName);
             searchResultView.Columns.Add(pathCellName, pathCellName);
+
+            UpdateStatusLabel();
+            SnippetDesignerPackage.Instance.PropertyChanged += new PropertyChangedEventHandler(Instance_PropertyChanged);
         }
 
 
@@ -164,7 +208,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             searchResultView.Rows.Clear();
 
             int totalFoundCount = 0;
-            foundSnippets = snippetIndex.PerformSnippetSearch(searchString, langsToDisplay,maxResultCount);
+            foundSnippets = snippetIndex.PerformSnippetSearch(searchString, langsToDisplay, maxResultCount);
             if (foundSnippets != null && foundSnippets.Count > 0)
             {
                 AddItemsToGridView(foundSnippets);
@@ -406,7 +450,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 if (item != null)
                 {
                     row.Cells[e.ColumnIndex].ToolTipText = item.Description;
-                } 
+                }
             }
         }
 

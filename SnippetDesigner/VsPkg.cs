@@ -27,6 +27,7 @@ using MsOle = Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.RegistryTools;
 using System.IO;
+using System.ComponentModel;
 
 
 namespace Microsoft.SnippetDesigner
@@ -37,7 +38,7 @@ namespace Microsoft.SnippetDesigner
     /// The minimum requirement for a class to be considered a valid package for Visual Studio
     /// is to implement the IVsPackage interface and register itself with the shell.
     /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the SACPackage class that provides the implementation of the 
+    /// to do it: it derives from the Package class that provides the implementation of the 
     /// IVsPackage interface and uses the registration attributes defined in the framework to 
     /// register itself and its components with the shell.
     /// </summary>
@@ -78,14 +79,14 @@ namespace Microsoft.SnippetDesigner
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
 
     [ProvideEditorExtension(typeof(EditorFactory), StringConstants.SnippetExtension, 32,
-             ProjectGuid = GuidList.provideEditorExtensionProject, 
+             ProjectGuid = GuidList.provideEditorExtensionProject,
              DefaultName = "Snippet Designer"
              )]
 
     [ProvideEditorLogicalView(typeof(EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
     [ComVisible(true)]
-    public sealed class SnippetDesignerPackage : Package, IVsSelectionEvents, IDisposable, IVsInstalledProduct
+    public sealed class SnippetDesignerPackage : Package, IVsSelectionEvents, IDisposable, IVsInstalledProduct, INotifyPropertyChanged
     {
         internal static SnippetDesignerPackage Instance;
         private EditorFactory editorFactory;
@@ -108,6 +109,8 @@ namespace Microsoft.SnippetDesigner
 
         //index of snippets
         private SnippetIndex snippetIndex;
+        private bool isIndexLoaded;
+
 
 
         /// <summary>
@@ -123,6 +126,27 @@ namespace Microsoft.SnippetDesigner
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is index loaded.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance is index loaded; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsIndexLoaded
+        {
+            get
+            {
+                return isIndexLoaded;
+            }
+            set
+            {
+                if (isIndexLoaded != value)
+                {
+                    isIndexLoaded = value;
+                    OnPropertyChanged("IsIndexLoaded");
+                }
+            }
+        }
 
         /// <summary>
         /// Return the snippet index for this package
@@ -222,6 +246,41 @@ namespace Microsoft.SnippetDesigner
         {
             exportData = null;
         }
+
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Fire the property changed event for the given property name
+        /// </summary>
+        /// <param name="propertyName">Name of the property</param>
+        private void OnPropertyChanged(string propertyName)
+        {
+            VerifyProperty(propertyName);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        /// <summary>
+        /// Used in debug mode only.  Checks to make sure the property name string
+        /// is actually a property on the object.
+        /// </summary>
+        /// <param name="propertyName">Name of the property</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)"), Conditional("DEBUG")]
+        private void VerifyProperty(string propertyName)
+        {
+            bool propertyExists = TypeDescriptor.GetProperties(this).Find(propertyName, false) != null;
+            if (!propertyExists)
+            {
+                Debug.Fail(String.Format("The property {0} could not be found in {1}", propertyName, GetType().FullName));
+            }
+        }
+        #endregion
+
         #region Static Methods
 
         internal static string GetResourceString(string resourceName)
@@ -534,14 +593,21 @@ namespace Microsoft.SnippetDesigner
 
             //initialize the snippet index
             snippetIndex = new SnippetIndex();
+            System.Threading.ThreadPool.QueueUserWorkItem(
+                delegate
+                {
+                    //read it in and if it doesnt exist create it
+                    // In future we need a way to rebuild this file or
+                    // check for new snippets on the computer
+                    if (!snippetIndex.ReadIndexFile())
+                    {
+                        snippetIndex.CreateIndexFile();
+                        IsIndexLoaded = true;
+                    }
 
-            //read it in and if it doesnt exist create it
-            // In future we need a way to rebuild this file or
-            // check for new snippets on the computer
-            if (!snippetIndex.ReadIndexFile())
-            {
-                snippetIndex.CreateIndexFile();
-            }
+                }
+            );
+
         }
 
 
@@ -676,5 +742,7 @@ namespace Microsoft.SnippetDesigner
         }
 
         #endregion
+
+
     }
 }
