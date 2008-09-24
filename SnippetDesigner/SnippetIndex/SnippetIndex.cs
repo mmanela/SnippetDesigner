@@ -26,50 +26,19 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         private List<SnippetIndexItem> snippetItemCollection;
 
         //snippet directories
-        public static Dictionary<string, string> userSnippetDirectories = new Dictionary<string, string>();
-        public static Dictionary<string, string> vsSnippetDirectories = new Dictionary<string, string>();
+        public static List<string> allSnippetDirectories = new List<string>();
 
         public SnippetIndex()
         {
             string snippetIndexFileDir = Application.CommonAppDataPath;
             //make sure this directory exists if now make it
-            if(!Directory.Exists(snippetIndexFileDir))
+            if (!Directory.Exists(snippetIndexFileDir))
             {
                 Directory.CreateDirectory(snippetIndexFileDir);
             }
-            snippetIndexFilePath = snippetIndexFileDir + Path.DirectorySeparatorChar + snippetIndexFileName;
-            
-     
+            snippetIndexFilePath = Path.Combine(snippetIndexFileDir, snippetIndexFileName);
 
-            //build the snippet directories - should put part of this in a config file maybe
-            string vsDocDir = RegistryLocations.GetVisualStudioUserDataPath();
-            string snippetDir = vsDocDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirectoryName;
-            userSnippetDirectories[Resources.DisplayNameCSharp] = snippetDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirNameCSharp + Path.DirectorySeparatorChar + ConstantStrings.MySnippetsDir;
-            userSnippetDirectories[Resources.DisplayNameVisualBasic] = snippetDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirNameVisualBasic + Path.DirectorySeparatorChar + ConstantStrings.MySnippetsDir;
-            userSnippetDirectories[Resources.DisplayNameXML] = snippetDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirNameXML + Path.DirectorySeparatorChar + ConstantStrings.MyXmlSnippetsDir;
-            userSnippetDirectories[String.Empty] = snippetDir;
-
-            //get path to vs directory
-            string fullName = SnippetDesignerPackage.Instance.DTE.Application.FullName;
-            string[] parts = fullName.Split('\\');
-            string vsDirPath = "";
-            if (parts.Length >= 3)
-            {
-                vsDirPath = parts[0] + Path.DirectorySeparatorChar + parts[1] + Path.DirectorySeparatorChar + parts[2];
-            }
-            else
-            {
-                vsDirPath = RegistryLocations.GetVSInstallDir() + @"..\..\";
-            }
-
-
-            
-            string vsSnippetsDir = SnippetSearch.VSSnippetDir;
-            string lcidString = CultureInfo.CurrentCulture.LCID.ToString();
-            vsSnippetDirectories[Resources.DisplayNameCSharp] = vsDirPath + Path.DirectorySeparatorChar + SnippetSearch.VSCSharpDirName + Path.DirectorySeparatorChar + vsSnippetsDir + Path.DirectorySeparatorChar + lcidString;
-            vsSnippetDirectories[Resources.DisplayNameVisualBasic] = vsDirPath + Path.DirectorySeparatorChar + SnippetSearch.VSVBDirName + Path.DirectorySeparatorChar + vsSnippetsDir + Path.DirectorySeparatorChar + lcidString;
-            vsSnippetDirectories[Resources.DisplayNameXML] = vsDirPath + Path.DirectorySeparatorChar + SnippetSearch.VSXmlDirName + Path.DirectorySeparatorChar + lcidString + Path.DirectorySeparatorChar + vsSnippetsDir;
-
+            allSnippetDirectories = SnippetDirectories.Instance.AllSnippetDirectories;
 
         }
 
@@ -156,7 +125,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             return foundSnippets;
 
         }
-       
+
 
         /// <summary>
         /// delete the content associated with this item
@@ -203,8 +172,8 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
 
             //add snippet files
-            AddVSDirectorySnippets();
-            AddUserDirectorySnippets();
+            AddSnippetsToIndex();
+            
 
             //write the snippetitemcolllection to disk
             return SaveIndexFile();
@@ -212,7 +181,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
 
-       
+
 
         /// <summary>
         /// Read the index file from disk into memory
@@ -233,7 +202,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     return true;
 
             }
-            catch(FileNotFoundException)
+            catch (FileNotFoundException)
             {
                 return false;
             }
@@ -244,7 +213,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     stream.Close();
                 }
             }
-            
+
         }
 
         /// <summary>
@@ -437,7 +406,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             {
                 XmlSerializer ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
                 ser.Serialize(stream, snippetItemCollection);
-                
+
             }
             catch (System.IO.PathTooLongException)
             {
@@ -445,7 +414,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             }
             catch (System.ArgumentNullException)
             {
-                return false; 
+                return false;
             }
             catch (System.UnauthorizedAccessException)
             {
@@ -459,44 +428,20 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
         }
 
-
         /// <summary>
-        /// Parse the user directories and add the snippets to the list
+        /// Parse snippets on the compuer and add to index
         /// </summary>
-        private void AddUserDirectorySnippets()
+        private void AddSnippetsToIndex()
         {
-            foreach (string key in userSnippetDirectories.Keys)
+            foreach (string path in allSnippetDirectories)
             {
 
-                if (!Directory.Exists(userSnippetDirectories[key]))
-                {
-                    continue;
-                }
-                string[] snippets = Directory.GetFiles(userSnippetDirectories[key], SnippetSearch.AllSnippets, SearchOption.TopDirectoryOnly);
-                foreach (string snippet in snippets)
-                {
-                    AddItemDataFromSnippetFile(snippet);
-                }
-            }
-        }
-
-
-
-
-        /// <summary>
-        /// Parse the vs directories and add the snippets to the list
-        /// </summary>
-        private void AddVSDirectorySnippets()
-        {
-            foreach (string key in vsSnippetDirectories.Keys)
-            {
-
-                if (!Directory.Exists(vsSnippetDirectories[key]))
+                if (!Directory.Exists(path))
                 {
                     continue;
                 }
 
-                string[] snippets = Directory.GetFiles(vsSnippetDirectories[key], SnippetSearch.AllSnippets, SearchOption.AllDirectories);
+                string[] snippets = Directory.GetFiles(path, SnippetSearch.AllSnippets, SearchOption.AllDirectories);
                 foreach (string snippet in snippets)
                 {
                     AddItemDataFromSnippetFile(snippet);

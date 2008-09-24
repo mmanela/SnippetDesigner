@@ -53,6 +53,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchBox = new System.Windows.Forms.TextBox();
             this.searchButton = new System.Windows.Forms.Button();
             this.previewCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
+            this.Icon = new System.Windows.Forms.DataGridViewImageColumn();
+            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Language = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.snippetExplorerSplitter.Panel1.SuspendLayout();
             this.snippetExplorerSplitter.Panel2.SuspendLayout();
             this.snippetExplorerSplitter.SuspendLayout();
@@ -152,6 +157,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // searchResultView
             // 
             this.searchResultView.AllowUserToAddRows = false;
+            this.searchResultView.AllowUserToDeleteRows = false;
             this.searchResultView.AllowUserToOrderColumns = true;
             dataGridViewCellStyle1.BackColor = System.Drawing.Color.AliceBlue;
             dataGridViewCellStyle1.ForeColor = System.Drawing.Color.Black;
@@ -163,6 +169,12 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchResultView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.searchResultView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.searchResultView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.searchResultView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Icon,
+            this.Title,
+            this.Description,
+            this.Language,
+            this.Path});
             this.searchResultView.ContextMenuStrip = this.snippetExplorerContextMenu;
             resources.ApplyResources(this.searchResultView, "searchResultView");
             this.searchResultView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditProgrammatically;
@@ -243,6 +255,44 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             resources.ApplyResources(this.previewCodeWindow, "previewCodeWindow");
             this.previewCodeWindow.Name = "previewCodeWindow";
             // 
+            // Icon
+            // 
+            this.Icon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.Icon.HeaderText = global::Microsoft.SnippetDesigner.Resources.Empty;
+            this.Icon.Name = "Icon";
+            this.Icon.ReadOnly = true;
+            this.Icon.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Icon.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            resources.ApplyResources(this.Icon, "Icon");
+            // 
+            // Title
+            // 
+            this.Title.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Title.DividerWidth = 1;
+            resources.ApplyResources(this.Title, "Title");
+            this.Title.Name = "Title";
+            this.Title.ReadOnly = true;
+            // 
+            // Description
+            // 
+            resources.ApplyResources(this.Description, "Description");
+            this.Description.Name = "Description";
+            this.Description.ReadOnly = true;
+            // 
+            // Language
+            // 
+            this.Language.DividerWidth = 1;
+            resources.ApplyResources(this.Language, "Language");
+            this.Language.Name = "Language";
+            this.Language.ReadOnly = true;
+            // 
+            // Path
+            // 
+            this.Path.DividerWidth = 1;
+            resources.ApplyResources(this.Path, "Path");
+            this.Path.Name = "Path";
+            this.Path.ReadOnly = true;
+            // 
             // SnippetExplorerForm
             // 
             resources.ApplyResources(this, "$this");
@@ -287,6 +337,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TextBox searchBox;
         private System.Windows.Forms.Button searchButton;
+        private System.Windows.Forms.DataGridViewImageColumn Icon;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Title;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Description;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Language;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Path;
 
     }
 }

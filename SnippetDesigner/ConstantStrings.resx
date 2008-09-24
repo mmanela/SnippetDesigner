@@ -275,4 +275,7 @@
   <data name="VSXmlDirName" xml:space="preserve">
     <value>Xml</value>
   </data>
+  <data name="VSSnippetDir" xml:space="preserve">
+    <value>Snippets</value>
+  </data>
 </root>

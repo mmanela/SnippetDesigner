@@ -86,41 +86,5 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer {
                 return ResourceManager.GetString("PrimeKeyName", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to VC#.
-        /// </summary>
-        internal static string VSCSharpDirName {
-            get {
-                return ResourceManager.GetString("VSCSharpDirName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Snippets.
-        /// </summary>
-        internal static string VSSnippetDir {
-            get {
-                return ResourceManager.GetString("VSSnippetDir", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to VB.
-        /// </summary>
-        internal static string VSVBDirName {
-            get {
-                return ResourceManager.GetString("VSVBDirName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Xml.
-        /// </summary>
-        internal static string VSXmlDirName {
-            get {
-                return ResourceManager.GetString("VSXmlDirName", resourceCulture);
-            }
-        }
     }
 }

@@ -126,16 +126,4 @@
   <data name="PrimeKeyName" xml:space="preserve">
     <value>PrimaryKey</value>
   </data>
-  <data name="VSCSharpDirName" xml:space="preserve">
-    <value>VC#</value>
-  </data>
-  <data name="VSSnippetDir" xml:space="preserve">
-    <value>Snippets</value>
-  </data>
-  <data name="VSVBDirName" xml:space="preserve">
-    <value>VB</value>
-  </data>
-  <data name="VSXmlDirName" xml:space="preserve">
-    <value>Xml</value>
-  </data>
 </root>

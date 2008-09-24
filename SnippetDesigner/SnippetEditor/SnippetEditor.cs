@@ -307,7 +307,6 @@ namespace Microsoft.SnippetDesigner
             if (propFrame != null)
             {
                 propFrame.Show();
-
             }
         }
 
@@ -435,14 +434,13 @@ namespace Microsoft.SnippetDesigner
                 initialFileName = snippetDirectories[String.Empty];
             }
 
-            initialFileName += Path.DirectorySeparatorChar;
             if (isFileNew)
             {
-                initialFileName += this.SnippetTitle;
+                initialFileName = Path.Combine(initialFileName, this.SnippetTitle);
             }
             else
             {
-                initialFileName += Path.GetFileName(fileName);
+                initialFileName += Path.Combine(initialFileName,Path.GetFileName(fileName));
             }
 
 

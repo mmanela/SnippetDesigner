@@ -11,11 +11,11 @@ namespace Microsoft.SnippetDesigner
     public class LanguageMaps
     {
 
-        public static LanguageMaps languageMap = null;
+        public static LanguageMaps LanguageMap = new LanguageMaps();
 
-        //hash that maps what the xml names of the programming langyages are to the dispaly names we use
+        //hash that maps what the xml names of the programming languages are to the dispaly names we use
         private Dictionary<string, string> xmlLanguageToDisplay = new Dictionary<string, string>();
-        //hash that maps what the display names of the programming langyages are to the xml names the schema specifies
+        //hash that maps what the display names of the programming languages are to the xml names the snippet schema specifies
         private Dictionary<string, string> displayLanguageToXML = new Dictionary<string, string>();
 
         public Dictionary<string, string> XmlLanguageToDisplay
@@ -31,19 +31,6 @@ namespace Microsoft.SnippetDesigner
             get
             {
                 return displayLanguageToXML;
-            }
-        }
-
-
-        public static LanguageMaps LanguageMap
-        {
-            get
-            {
-                if (languageMap == null)
-                {
-                    languageMap = new LanguageMaps();
-                }
-                return languageMap;
             }
         }
 

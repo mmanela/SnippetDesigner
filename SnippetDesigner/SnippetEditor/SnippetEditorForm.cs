@@ -46,7 +46,7 @@ namespace Microsoft.SnippetDesigner
         private int snippetIndex; // index of the snippet in the snippetFile
         private Snippet activeSnippet; //represents the current snippet in memory
 
-      //hash which maps the dispaly names of the languages to the path to thier snippet directory
+        //hash which maps the dispaly names of the languages to the path to their user snippet directory
         internal Dictionary<string, string> snippetDirectories = new Dictionary<string, string>();
 
         //hash of the header field to its data
@@ -192,7 +192,7 @@ namespace Microsoft.SnippetDesigner
             set
             {
                 snippetTitle = value;
-                
+
             }
         }
 
@@ -491,17 +491,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public SnippetEditorForm()
         {
-
-            
-            //build the snippet directories - should put part of this in a config file maybe
-            string vsDocDir = RegistryLocations.GetVisualStudioUserDataPath();
-            string snippetDir = vsDocDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirectoryName;
-            snippetDirectories[Resources.DisplayNameCSharp] = snippetDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirNameCSharp + Path.DirectorySeparatorChar + ConstantStrings.MySnippetsDir;
-            snippetDirectories[Resources.DisplayNameVisualBasic] = snippetDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirNameVisualBasic + Path.DirectorySeparatorChar + ConstantStrings.MySnippetsDir;
-            snippetDirectories[Resources.DisplayNameXML] = snippetDir + Path.DirectorySeparatorChar + ConstantStrings.SnippetDirNameXML + Path.DirectorySeparatorChar + ConstantStrings.MyXmlSnippetsDir;
-            snippetDirectories[String.Empty] = snippetDir;
-
-
+            snippetDirectories = SnippetDirectories.Instance.UserSnippetDirectories;
 
             validReplacement = new Regex(ConstantStrings.ValidReplacementString, RegexOptions.Compiled);
         }
@@ -601,7 +591,7 @@ namespace Microsoft.SnippetDesigner
                 snippetTypes.Add(new SnippetType(ConstantStrings.SnippetTypeExpansion));
             }
             else
-            { 
+            {
                 this.SnippetTypes = activeSnippet.SnippetTypes;
             }
 
@@ -758,11 +748,11 @@ namespace Microsoft.SnippetDesigner
                 if (!String.IsNullOrEmpty(newTitle) && newTitle != activeSnippet.Title)
                 {
                     UpdateSnippetInMemory();
-                    
+
                     //foreach (Snippet sn in snippetFile.Snippets)
-                    for(int i = 0; i < snippetFile.Snippets.Count; i++)
+                    for (int i = 0; i < snippetFile.Snippets.Count; i++)
                     {
-                        if ( snippetFile.Snippets[i].Title.Equals(newTitle, StringComparison.InvariantCulture))
+                        if (snippetFile.Snippets[i].Title.Equals(newTitle, StringComparison.InvariantCulture))
                         {
                             snippetIndex = i;
                             activeSnippet = snippetFile.Snippets[i];
@@ -851,7 +841,7 @@ namespace Microsoft.SnippetDesigner
             if (grid != null)
             {
 
-                
+
                 if (grid.Columns[e.ColumnIndex].Name == ConstantStrings.ColumnID)
                 {
                     previousIDValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
@@ -1058,7 +1048,7 @@ namespace Microsoft.SnippetDesigner
         {
             if (SnippetDesignerPackage.Instance == null)
             {
-                return; 
+                return;
             }
             int lineToClear = -1;
             if (currentLineOnly)
@@ -1292,7 +1282,7 @@ namespace Microsoft.SnippetDesigner
             if (info.RowIndex >= 0)
             {
                 replacementGridView.Rows[info.RowIndex].Selected = true;
-            } 
+            }
         }
 
 

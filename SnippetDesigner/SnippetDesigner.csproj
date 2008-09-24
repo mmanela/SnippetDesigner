@@ -71,6 +71,7 @@
     <Compile Include="CodeWindow\CodeWindow.designer.cs">
       <DependentUpon>CodeWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="SnippetDirectories.cs" />
     <Compile Include="SnippetEditor\CommandFilter.cs" />
     <Compile Include="ConstantStrings.Designer.cs">
       <AutoGen>True</AutoGen>

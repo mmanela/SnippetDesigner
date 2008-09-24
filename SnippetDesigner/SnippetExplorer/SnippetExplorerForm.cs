@@ -30,7 +30,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
         private SnippetIndex snippetIndex; // class which gets snippet data and how to display
         List<CheckBox> languageFilterBoxList = new List<CheckBox>();
-        private string iconCellName = "iconCell";
+        private string iconCellName = "Icon";
         private string titleCellName = "Title";
         private string descriptionCellName = "Description";
         private string codeLanguageCellName = "Language";
@@ -48,8 +48,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             languageFilterBoxList.Add(this.CSharpFilterBox);
             languageFilterBoxList.Add(this.vbFilterBox);
             languageFilterBoxList.Add(this.xmlFilterBox);
-            this.Load += new EventHandler(SnippetExplorerForm_Load);
-            
         }
 
         /// <summary>
@@ -168,18 +166,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             dte2 = (DTE2)SnippetDesignerPackage.Instance.DTE;
             snippetIndex = SnippetDesignerPackage.Instance.SnippetIndex;
-
-            DataGridViewImageColumn sourceColumn = new DataGridViewImageColumn(false);
-            sourceColumn.HeaderText = String.Empty;
-            sourceColumn.Name = iconCellName;
-            sourceColumn.ImageLayout = DataGridViewImageCellLayout.Normal;
-            int colIndex = searchResultView.Columns.Add(sourceColumn);
-
-
-            searchResultView.Columns.Add(titleCellName, titleCellName);
-            searchResultView.Columns.Add(descriptionCellName, descriptionCellName);
-            searchResultView.Columns.Add(codeLanguageCellName, codeLanguageCellName);
-            searchResultView.Columns.Add(pathCellName, pathCellName);
 
             UpdateStatusLabel();
             SnippetDesignerPackage.Instance.PropertyChanged += new PropertyChangedEventHandler(Instance_PropertyChanged);
@@ -342,7 +328,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             }
             return deleteHappened;
         }
-
 
         /// <summary>
         /// When a key is pressed on a row

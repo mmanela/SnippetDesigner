@@ -421,6 +421,15 @@ namespace Microsoft.SnippetDesigner {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Snippets.
+        /// </summary>
+        internal static string VSSnippetDir {
+            get {
+                return ResourceManager.GetString("VSSnippetDir", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to VB.
         /// </summary>
         internal static string VSVBDirName {

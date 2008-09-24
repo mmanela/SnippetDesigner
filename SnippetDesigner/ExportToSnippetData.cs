@@ -17,6 +17,10 @@ namespace Microsoft.SnippetDesigner
         Dictionary<string, string> exportNameToSchemaName = new Dictionary<string, string>();
 
 
+        /// <summary>
+        /// Gets the code.
+        /// </summary>
+        /// <value>The code.</value>
         internal string Code
         {
             get
@@ -25,6 +29,10 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
+        /// <summary>
+        /// Gets the language.
+        /// </summary>
+        /// <value>The language.</value>
         internal string Language
         {
             get

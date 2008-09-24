@@ -581,7 +581,7 @@ namespace Microsoft.SnippetDesigner
             markerService = new HighlightMarkerService(this);
             ((IServiceContainer)this).AddService(markerService.GetType(), markerService, true);
 
-
+            
             //create the dte automation object so rest of package can access the automation model
             dte = (DTE)GetService(typeof(DTE));
             if (dte == null)
@@ -602,6 +602,10 @@ namespace Microsoft.SnippetDesigner
                     if (!snippetIndex.ReadIndexFile())
                     {
                         snippetIndex.CreateIndexFile();
+                        IsIndexLoaded = true;
+                    }
+                    else
+                    {
                         IsIndexLoaded = true;
                     }
 

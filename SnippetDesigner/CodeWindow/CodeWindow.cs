@@ -36,10 +36,11 @@ namespace Microsoft.SnippetDesigner
         private uint cookieTextViewEvents;
         private uint cookieTextLineEvents;
         private bool isHandleCreated;
-        private Dictionary<string, Guid> langServ = new Dictionary<string,Guid>();
+        private Dictionary<string, Guid> langServ = new Dictionary<string, Guid>();
         private IVsTextLines vsTextBuffer;
         private Guid defaultLanguage;
-
+        IConnectionPoint textViewEventsConnectionPoint; 
+        IConnectionPoint textLinesEventsConnectionPoint;
         #region properties
 
         public IVsCodeWindow VsCodeWindow
@@ -83,16 +84,16 @@ namespace Microsoft.SnippetDesigner
             }
             set
             {
-                
+
                 IVsTextLines vsTextLines = this.TextLines;
                 if (vsTextLines != null)
                 {
                     SetText(value);
                 }
 
-                
-                
-                
+
+
+
             }
         }
 
@@ -251,6 +252,37 @@ namespace Microsoft.SnippetDesigner
             defaultLanguage = GuidList.csLangSvc;
         }
 
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (components != null)
+                {
+                    components.Dispose();
+                }
+                if (cookieTextLineEvents != 0)
+                {
+                    textLinesEventsConnectionPoint.Unadvise(cookieTextLineEvents);
+                }
+                if (cookieTextViewEvents != 0)
+                {
+                    textViewEventsConnectionPoint.Unadvise(cookieTextViewEvents);
+                }
+
+                if (vsCodeWindow != null)
+                {
+                    vsCodeWindow.Close();
+                    vsCodeWindow = null;
+                }
+
+            }
+            base.Dispose(disposing);
+        }
+
 
         /// <summary>
         /// This gets called once this snippetExplorerForm has recieved its windows handle
@@ -297,6 +329,7 @@ namespace Microsoft.SnippetDesigner
                     //if we dont recognize the language then set it to the deafult
                     langGuid = defaultLanguage;
                 }
+
                 ErrorHandler.ThrowOnFailure(vsTextLines.SetLanguageServiceID(ref langGuid));
 
             }
@@ -324,7 +357,7 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                if(this.TextLines != null)
+                if (this.TextLines != null)
                 {
                     int lineCount;
                     this.TextLines.GetLineCount(out lineCount);
@@ -352,7 +385,7 @@ namespace Microsoft.SnippetDesigner
                 }
                 else
                 {
-                    TextSpan empty =  new TextSpan();
+                    TextSpan empty = new TextSpan();
                     return empty;
                 }
             }
@@ -675,7 +708,7 @@ namespace Microsoft.SnippetDesigner
 
             //is this span surrounded by the replcement markers
             if (!IsSpanReplacement(quoteSpan))
-            { 
+            {
                 return false;
             }
 
@@ -751,7 +784,7 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-         /// <summary>
+        /// <summary>
         ///Find a word starting at a specifc point in the buffer
         /// </summary>
         /// <param name="textToFind">textToFind to find</param>
@@ -759,7 +792,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>The span of the textToFind</returns>
         internal bool FindReplaceableString(string word, TextPoint startPositon, out TextSpan returnSpan)
         {
-          
+
             int lastLine = LineCount - 1;
             return FindReplaceableString(word, startPositon, new TextPoint(lastLine, LineLength(lastLine)), out returnSpan);
 
@@ -773,14 +806,14 @@ namespace Microsoft.SnippetDesigner
         /// <returns>The span of the textToFind</returns>
         internal bool FindReplaceableString(string textToFind, TextPoint startPositon, TextPoint endPositon, out TextSpan returnSpan)
         {
-            if ( startPositon == null || endPositon == null || textToFind == null)
+            if (startPositon == null || endPositon == null || textToFind == null)
             {
                 returnSpan = new TextSpan();
                 return false;
             }
 
             IVsTextLines textLines = this.TextLines;
-           
+
             int lineLength;
             string lineText;
             returnSpan = new TextSpan();
@@ -797,18 +830,18 @@ namespace Microsoft.SnippetDesigner
                 }
                 //retrieve all the text on this line as a string
                 textLines.GetLineText(line, 0, line, lineLength, out lineText);
-                
+
                 int position = startPositon.Index;//initialize the start position
                 int index = -1;
                 //find the next index where textToFind appears starting from position
                 while (position < lineLength && ((index = lineText.IndexOf(textToFind, position)) > -1))
                 {
-                    
+
                     //only three items are valid replaceable strings
-                   //1. a word which is [A-Za-z0-9_]+
+                    //1. a word which is [A-Za-z0-9_]+
                     //2. if the string begins and ends with the replacement symbol then we are replacing a replacement
                     //3. if the string beings and ends with quotes then this is a quote string we are replacing
-                    if (GetWordFromPosition(new TextPoint(line, index)) == textToFind || 
+                    if (GetWordFromPosition(new TextPoint(line, index)) == textToFind ||
                         //or is this the text we are looking for 
                         textToFind[0] == SnippetDesigner.ConstantStrings.SymbolReplacement[0] && textToFind[textToFind.Length - 1] == SnippetDesigner.ConstantStrings.SymbolReplacement[0] ||
                         textToFind[0] == SnippetDesigner.ConstantStrings.DoubleQuoteString[0] && textToFind[textToFind.Length - 1] == SnippetDesigner.ConstantStrings.DoubleQuoteString[0]
@@ -826,7 +859,7 @@ namespace Microsoft.SnippetDesigner
                 startPositon.Index = 0;//only offset from first line
             }
             return false;
-            
+
         }
 
         /// <summary>
@@ -847,7 +880,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="line">The line to get the text from</param>
         internal string GetLineText(int line)
         {
-            
+
             if (line >= 0 && line < LineCount)
             {
                 TextSpan span = new TextSpan();
@@ -858,7 +891,7 @@ namespace Microsoft.SnippetDesigner
             }
             else
             {
-               return string.Empty;
+                return string.Empty;
             }
 
         }
@@ -935,7 +968,7 @@ namespace Microsoft.SnippetDesigner
             textView.GetWordExtent(positon.Line, positon.Index, 0, span);
             return span[0];
         }
-        
+
 
         #endregion
 
@@ -947,21 +980,21 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if success</returns>
         private int CreateVsCodeWindow()
         {
-            
+
             int hr = VSConstants.S_OK;
             Guid clsidVsCodeWindow = typeof(VsCodeWindowClass).GUID;
             Guid iidVsCodeWindow = typeof(IVsCodeWindow).GUID;
             Guid clsidVsTextBuffer = typeof(VsTextBufferClass).GUID;
             Guid iidVsTextLines = typeof(IVsTextLines).GUID;
 
-             //create/site a VsTextBuffer object
+            //create/site a VsTextBuffer object
             vsTextBuffer = (IVsTextLines)SnippetDesignerPackage.Instance.CreateInstance(ref clsidVsTextBuffer, ref iidVsTextLines, typeof(IVsTextLines));
             IObjectWithSite ows = (IObjectWithSite)vsTextBuffer;
 
             //set the site of the buffer to the parent editor
             ows.SetSite(codeWindowHost.ServiceProvider);
 
-            //tell the text buffer to not attempt to try to figure out the language service on its own
+            // tell the text buffer to not attempt to try to figure out the language service on its own
             // we only want it to use the language service we explicitly tell it to use
             Guid VsBufferDetectLangSID = Microsoft.VisualStudio.Package.EditorFactory.GuidVSBufferDetectLangSid;
             IVsUserData vsUserData = (IVsUserData)vsTextBuffer;
@@ -971,10 +1004,9 @@ namespace Microsoft.SnippetDesigner
             // create/initialize a VsCodeWindow object
             vsCodeWindow = (IVsCodeWindow)SnippetDesignerPackage.Instance.CreateInstance(ref clsidVsCodeWindow, ref iidVsCodeWindow, typeof(IVsCodeWindow));
 
-
             //set readonly value based codewindowhosts readonly value
             uint readOnlyValue = 0;
-            if(codeWindowHost.ReadOnlyCodeWindow)
+            if (codeWindowHost.ReadOnlyCodeWindow)
             {
                 readOnlyValue = (uint)TextViewInitFlags2.VIF_READONLY;
             }
@@ -985,6 +1017,8 @@ namespace Microsoft.SnippetDesigner
             initView[0].fWidgetMargin = 0;//no widget margin
             initView[0].fDragDropMove = 1;//allow drag and drop of text
             initView[0].fVirtualSpace = 0;//no virtual space
+            initView[0].IndentStyle = Microsoft.VisualStudio.TextManager.Interop.vsIndentStyle.vsIndentStyleDefault;
+
             IVsCodeWindowEx vsCodeWindowEx = (IVsCodeWindowEx)vsCodeWindow;
             hr = vsCodeWindowEx.Initialize((uint)_codewindowbehaviorflags.CWB_DISABLEDROPDOWNBAR | (uint)_codewindowbehaviorflags.CWB_DISABLESPLITTER,
                 0, null, null,
@@ -1017,22 +1051,22 @@ namespace Microsoft.SnippetDesigner
                 // sink IVsTextViewEvents, so we can determine when a VsCodeWindow object actually has the focus.
                 IConnectionPointContainer connptCntr = (IConnectionPointContainer)vsTextView;
                 Guid riid = typeof(IVsTextViewEvents).GUID;
-                IConnectionPoint cp;
+                
                 //find the desired connection point
-                connptCntr.FindConnectionPoint(ref riid, out cp);
+                connptCntr.FindConnectionPoint(ref riid, out textViewEventsConnectionPoint);
                 //connect to this connection point to be advised of changes
-                cp.Advise(snippetEditor, out cookieTextViewEvents);
+                textViewEventsConnectionPoint.Advise(snippetEditor, out cookieTextViewEvents);
 
 
                 // sink IVsTextLineEvents, so we can determine when the buffer is changed
                 connptCntr = (IConnectionPointContainer)TextLines;
                 riid = typeof(IVsTextLinesEvents).GUID;
-                IConnectionPoint cp2;
+                
                 //find the desired connection point
-                connptCntr.FindConnectionPoint(ref riid, out cp2);
+                connptCntr.FindConnectionPoint(ref riid, out textLinesEventsConnectionPoint);
                 //connect to this connection point to be advised of changes
-                cp2.Advise(snippetEditor, out cookieTextLineEvents);
-
+                textLinesEventsConnectionPoint.Advise(snippetEditor, out cookieTextLineEvents);
+                
             }
 
             return hr;
@@ -1045,9 +1079,9 @@ namespace Microsoft.SnippetDesigner
         /// <param name="e"></param>
         private void CodeWindow_SizeChanged(object sender, EventArgs e)
         {
-            NativeMethods.SetWindowPos(hWndCodeWindow, IntPtr.Zero, 
-                0,0,
-                this.Width, 
+            NativeMethods.SetWindowPos(hWndCodeWindow, IntPtr.Zero,
+                0, 0,
+                this.Width,
                 this.Height, 0);
         }
 
