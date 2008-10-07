@@ -1010,10 +1010,10 @@ namespace Microsoft.SnippetDesigner
             {
                 readOnlyValue = (uint)TextViewInitFlags2.VIF_READONLY;
             }
-
+   
             //set the inital view properties of the code window
             INITVIEW[] initView = new INITVIEW[1];
-            initView[0].fSelectionMargin = 0;//no selection margin
+            initView[0].fSelectionMargin = 1;//use selection margin
             initView[0].fWidgetMargin = 0;//no widget margin
             initView[0].fDragDropMove = 1;//allow drag and drop of text
             initView[0].fVirtualSpace = 0;//no virtual space

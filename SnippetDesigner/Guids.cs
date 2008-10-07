@@ -7,7 +7,7 @@ using System;
 namespace Microsoft.SnippetDesigner
 {
 
-    internal static class GuidList
+    public static class GuidList
     {
 
         //string representation of the guids described below
@@ -37,20 +37,20 @@ namespace Microsoft.SnippetDesigner
          internal const string snippetExplorerString = "8332D89B-E52F-46d7-8D9E-6D201943C631";
 
         //guid for sacPackage
-        internal static readonly Guid SnippetDesignerPkg = new Guid(SnippetDesignerPkgString);
+         public static readonly Guid SnippetDesignerPkg = new Guid(SnippetDesignerPkgString);
 
         //guid for commmand set that all SnippetDesigner commands belong to
-        internal static readonly Guid SnippetDesignerCmdSet = new Guid(SnippetDesignerCmdSetString);
+         public static readonly Guid SnippetDesignerCmdSet = new Guid(SnippetDesignerCmdSetString);
 
         //guid for tool window object
-        internal static readonly Guid toolWindowPersistance = new Guid(toolWindowPersistanceString);
+         public static readonly Guid toolWindowPersistance = new Guid(toolWindowPersistanceString);
 
         //guid for codeWindowHost factory
-        internal static readonly Guid snippetEditorFactory = new Guid(editorFactoryString);
+         public static readonly Guid snippetEditorFactory = new Guid(editorFactoryString);
 
         //Guid defined by enviorment for a text codeWindowHost factory, we use this for those keybinding 
         //in setsite 
-        internal static readonly Guid textEditorFactory = new Guid("{8B382828-6202-11d1-8870-0000F87579D2}");
+         public static readonly Guid textEditorFactory = new Guid("{8B382828-6202-11d1-8870-0000F87579D2}");
 
         //Language service guids - these are used to tell a text buffer which language service to attach to
         internal static readonly Guid textLangSvc = new Guid("{8239bec4-ee87-11d0-8c98-00c04fc2ab22}");

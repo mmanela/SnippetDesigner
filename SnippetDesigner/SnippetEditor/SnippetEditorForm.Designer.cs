@@ -36,7 +36,6 @@ namespace Microsoft.SnippetDesigner
             this.languageLabel = new System.Windows.Forms.ToolStripLabel();
             this.toolStripLanguageBox = new System.Windows.Forms.ToolStripComboBox();
             this.codeReplacementsSplitter = new System.Windows.Forms.SplitContainer();
-            this.snippetCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
             this.replacementTable = new System.Windows.Forms.TableLayoutPanel();
             this.replacementGridView = new System.Windows.Forms.DataGridView();
             this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -49,6 +48,7 @@ namespace Microsoft.SnippetDesigner
             this.replacementGridMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeReplacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replacementLabel = new System.Windows.Forms.Label();
+            this.snippetCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
             this.topCommandBar.SuspendLayout();
             this.codeReplacementsSplitter.Panel1.SuspendLayout();
             this.codeReplacementsSplitter.Panel2.SuspendLayout();
@@ -82,7 +82,7 @@ namespace Microsoft.SnippetDesigner
             resources.ApplyResources(this.toolStripSnippetTitles, "toolStripSnippetTitles");
             this.toolStripSnippetTitles.Name = "toolStripSnippetTitles";
             this.toolStripSnippetTitles.SelectedIndexChanged += new System.EventHandler(this.toolStripSnippetsTitles_SelectedIndexChanged);
-            this.toolStripSnippetTitles.Leave += new System.EventHandler(this.toolStripSnippetTitles_TextUpdate);
+            this.toolStripSnippetTitles.TextUpdate += new System.EventHandler(this.toolStripSnippetTitles_TextUpdate);
             // 
             // languageLabel
             // 
@@ -113,14 +113,6 @@ namespace Microsoft.SnippetDesigner
             // codeReplacementsSplitter.Panel2
             // 
             this.codeReplacementsSplitter.Panel2.Controls.Add(this.replacementTable);
-            // 
-            // snippetCodeWindow
-            // 
-            resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
-            this.snippetCodeWindow.CodeText = global::Microsoft.SnippetDesigner.Resources.Empty;
-            this.snippetCodeWindow.MinimumSize = new System.Drawing.Size(250, 100);
-            this.snippetCodeWindow.Name = "snippetCodeWindow";
-            this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
             // 
             // replacementTable
             // 
@@ -220,6 +212,14 @@ namespace Microsoft.SnippetDesigner
             // 
             resources.ApplyResources(this.replacementLabel, "replacementLabel");
             this.replacementLabel.Name = "replacementLabel";
+            // 
+            // snippetCodeWindow
+            // 
+            resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
+            this.snippetCodeWindow.CodeText = global::Microsoft.SnippetDesigner.Resources.Empty;
+            this.snippetCodeWindow.MinimumSize = new System.Drawing.Size(250, 100);
+            this.snippetCodeWindow.Name = "snippetCodeWindow";
+            this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
             // 
             // SnippetEditorForm
             // 

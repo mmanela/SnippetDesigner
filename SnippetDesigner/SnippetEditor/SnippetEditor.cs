@@ -54,7 +54,7 @@ namespace Microsoft.SnippetDesigner
         IVsFileBackup    //to support backup of files. Visual Studio File Recovery 
     {
 
-
+        private SnippetDesignerPackage snippetDesignerPackage;
         private IOleServiceProvider vsServiceProvider;
 
         private IVsTextView activeTextView;
@@ -191,9 +191,9 @@ namespace Microsoft.SnippetDesigner
         /// tell the codewindow that we are its parent so he can site us
         /// </summary>
         /// <param name="sacPackage"></param>
-        public SnippetEditor()
+        public SnippetEditor(SnippetDesignerPackage package)
         {
-
+            snippetDesignerPackage = package;
             vsFileChangeCookie = VSConstants.VSCOOKIE_NIL;//initialize the file change cookie to null
 
             changesToIgnore = 0;//start with no changes to ignore
@@ -361,13 +361,13 @@ namespace Microsoft.SnippetDesigner
         private void LoadDataFromExport()
         {
             //get the current export data object
-            ExportToSnippetData exportData = SnippetDesignerPackage.Instance.ExportSnippetData;
+            ExportToSnippetData exportData = snippetDesignerPackage.ExportSnippetData;
             if (exportData != null)//if this object isnt null
             {
 
                 this.SnippetCode = exportData.Code;//read the code
                 this.SnippetLanguage = exportData.Language;//read the language
-                SnippetDesignerPackage.Instance.ClearSnippetExportData();//clear the export data
+                snippetDesignerPackage.ClearSnippetExportData();//clear the export data
             }
         }
 
@@ -391,7 +391,6 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public void ShowContextMenu()
         {
-
             // Get a reference to the UIShell.
             IVsUIShell uiShell = SnippetDesignerPackage.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
             if (null == uiShell)

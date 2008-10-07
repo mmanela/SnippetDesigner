@@ -27,12 +27,13 @@ using Microsoft.Win32;
 using IServiceProvider = System.IServiceProvider;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.RegistryTools;
+using System.Diagnostics;
 
 namespace Microsoft.SnippetDesigner
 {
     /// <summary>
     /// The form which represents the GUI of the snippet editor.
-    /// It implements ISnippetEditor which defines what properties and functions a snippet editor 
+    /// It implements ISnippetEditor which defines what properties and functions a snippet editor
     /// must use.
     /// </summary>
     [ComVisible(true)]
@@ -506,12 +507,9 @@ namespace Microsoft.SnippetDesigner
         public bool SaveSnippet()
         {
             UpdateSnippetInMemory();
-            foreach (Snippet snippetItem in snippetFile.Snippets)
+            if (SnippetDesignerPackage.Instance != null)
             {
-                if (SnippetDesignerPackage.Instance != null)
-                {
-                    SnippetDesignerPackage.Instance.SnippetIndex.UpdateSnippetItem(snippetItem, snippetFile.FileName);
-                }
+                SnippetDesignerPackage.Instance.SnippetIndex.UpdateSnippetFile(snippetFile);
             }
             snippetFile.Save();
             return true;
@@ -659,9 +657,6 @@ namespace Microsoft.SnippetDesigner
             //literals and objects
             activeSnippet.Literals = this.SnippetReplacements;
 
-            //update snippet list
-            this.SnippetTitles = GetSnippetTitles();
-
         } //end UpdateSnippetInMemory
 
 
@@ -737,8 +732,8 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// New snippet has been chosen so updated form
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void toolStripSnippetsTitles_SelectedIndexChanged(object sender, EventArgs e)
         {
             ToolStripComboBox snippetsBox = sender as ToolStripComboBox;
@@ -779,13 +774,15 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// When a value in the snippet titles box is changed reflect the change in memory
+        /// Handles the TextUpdate event of the toolStripSnippetTitles control.
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void toolStripSnippetTitles_TextUpdate(object sender, EventArgs e)
         {
             ToolStripComboBox snippetsBox = sender as ToolStripComboBox;
+            Debug.WriteLine("Text Update " + snippetsBox.Text);
+
             if (snippetsBox != null)
             {
                 string newTitle = snippetsBox.Text;
@@ -793,14 +790,12 @@ namespace Microsoft.SnippetDesigner
                 {
                     snippetsBox.Items.Remove(snippetTitle);
                     snippetTitle = newTitle;
-
                     UpdateSnippetInMemory();
                     isFormDirty = true;
                 }
 
             }
         }
-
 
         /// <summary>
         /// Set or disable the type field since its only valid for a replacement that is an object
@@ -1284,6 +1279,9 @@ namespace Microsoft.SnippetDesigner
                 replacementGridView.Rows[info.RowIndex].Selected = true;
             }
         }
+
+
+
 
 
 

@@ -23,10 +23,12 @@ namespace Microsoft.SnippetDesigner.ContentTypes
     {
         private string snippetIndexFilePath;
         private readonly string snippetIndexFileName = "SnippetIndex.xml";
-        private List<SnippetIndexItem> snippetItemCollection;
+
+        // Maps SnippetFilePath|SnippetTitle to SnippetIndexItem
+        private Dictionary<String, SnippetIndexItem> indexedSnippets;
 
         //snippet directories
-        public static List<string> allSnippetDirectories = new List<string>();
+        public List<string> allSnippetDirectories = new List<string>();
 
         public SnippetIndex()
         {
@@ -39,20 +41,19 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             snippetIndexFilePath = Path.Combine(snippetIndexFileDir, snippetIndexFileName);
 
             allSnippetDirectories = SnippetDirectories.Instance.AllSnippetDirectories;
+            indexedSnippets = new Dictionary<string, SnippetIndexItem>();
 
         }
 
-
         /// <summary>
-        /// Collection of all the snippet items
+        /// Gets the dictionary key.
         /// </summary>
-        public List<SnippetIndexItem> SnippetItems
+        /// <param name="filePath">The file path.</param>
+        /// <param name="title">The title.</param>
+        /// <returns></returns>
+        private string GetDictionaryKey(string filePath, string title)
         {
-            get
-            {
-                return snippetItemCollection;
-            }
-
+            return filePath.ToUpperInvariant().Trim() + "|" + title.ToUpperInvariant().Trim();
         }
 
         /// <summary>
@@ -67,10 +68,14 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
 
             List<SnippetIndexItem> foundSnippets = new List<SnippetIndexItem>();
-            int found = 0;
-            for (int i = 0; i < SnippetItems.Count && found < maxResultCount; i++)
+            foreach (KeyValuePair<string, SnippetIndexItem> pair in indexedSnippets)
             {
-                SnippetIndexItem item = SnippetItems[i];
+                if (foundSnippets.Count >= maxResultCount)
+                {
+                    break;
+                }
+
+                SnippetIndexItem item = pair.Value;
 
                 //filter out the languages we dont want to show
                 if (!languagesToGet.Contains(item.Language.ToLower()))
@@ -89,7 +94,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 if (String.IsNullOrEmpty(searchString))
                 {
                     foundSnippets.Add(item);
-                    found++;
                 }
                 else
                 {
@@ -113,7 +117,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                             if (allMatch)
                             {
                                 foundSnippets.Add(item);
-                                found++;
                                 break;
                             }
                         }
@@ -131,26 +134,31 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// delete the content associated with this item
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        public void DeleteFileFromIndex(string filePath)
+        /// <param name="title">The title.</param>
+        public void DeleteSnippetFile(string filePath, string title)
         {
+            if (string.IsNullOrEmpty(filePath)) throw new ArgumentNullException("filePath", "filePath must not be null");
+            if (string.IsNullOrEmpty(title)) throw new ArgumentNullException("title", "title must not be null");
+
             try
             {
 
-                if (!String.IsNullOrEmpty(filePath) && File.Exists(filePath))
+                lock (indexedSnippets)
                 {
-                    //delete file on disk
-                    File.Delete(filePath);
-
-                    SnippetIndexItem itemToRemove = GetSnippetItem(filePath);
-                    if (itemToRemove != null)
+                    if (File.Exists(filePath))
                     {
-                        snippetItemCollection.Remove(itemToRemove);
+                        //delete file on disk
+                        File.Delete(filePath);
                     }
+
+                    // Remove file from index
+                    indexedSnippets.Remove(GetDictionaryKey(filePath, title));
 
                     //save index file changes to disk
                     SaveIndexFile();
-
                 }
+
+
             }
             catch (IOException)
             {
@@ -158,29 +166,96 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             }
         }
 
+        /// <summary>
+        /// Update a snippet index item with new values
+        /// </summary>
+        /// <param name="item">item to update</param>
+        /// <param name="snippetData">snipept data to update it with</param>
+        private void UpdateIndexItemData(SnippetIndexItem item, Snippet snippetData)
+        {
+            item.Title = snippetData.Title;
+            item.Author = snippetData.Author;
+            item.Description = snippetData.Description;
+            item.Keywords = String.Join(",", snippetData.Keywords.ToArray());
+            item.Language = snippetData.CodeLanguageAttribute;
+            item.Code = snippetData.Code;
+
+        }
+
+        /// <summary>
+        /// Reads the snippet object and adds the right data to the index
+        /// </summary>
+        /// <param name="filePath">the path of the file</param>
+        public void CreateIndexItemDataFromSnippet(Snippet currentSnippet, string filePath)
+        {
+            SnippetIndexItem item = new SnippetIndexItem();
+            UpdateIndexItemData(item, currentSnippet);
+            item.File = filePath;
+
+            lock (indexedSnippets)
+            {
+                indexedSnippets.Add(GetDictionaryKey(filePath, item.Title), item);
+            }
+        }
+
+        /// <summary>
+        /// Loads the data for this index item from a snippet file
+        /// </summary>
+        /// <param name="filePath">the path of the file</param>
+        private bool AddOrUpdateSnippetsToIndexFromSnippetFile(string filePath)
+        {
+            try
+            {
+                SnippetFile snippetFile = new SnippetFile(filePath);
+                foreach (Snippet currentSnippet in snippetFile.Snippets)
+                {
+                    SnippetIndexItem existingItem = null;
+                    indexedSnippets.TryGetValue(GetDictionaryKey(filePath, currentSnippet.Title), out existingItem);
+                    if (existingItem == null)
+                    {
+                        //add the item to the collection
+                        CreateIndexItemDataFromSnippet(currentSnippet, filePath);
+                    }
+                    else
+                    {
+                        UpdateIndexItemData(existingItem, currentSnippet);
+                    }
+                }
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         /// <summary>
         /// Create a new index file by reading all snippet files 
         /// and building them in internal memory then writing them to the index file
         /// </summary>
         /// <returns></returns>
-        public bool CreateIndexFile()
+        public bool CreateOrUpdateIndexFile()
         {
 
-            //create the index item collection
-            snippetItemCollection = new List<SnippetIndexItem>();
+            foreach (string path in allSnippetDirectories)
+            {
+                if (!Directory.Exists(path))
+                {
+                    continue;
+                }
 
-
-            //add snippet files
-            AddSnippetsToIndex();
-            
+                string[] snippetFilePaths = Directory.GetFiles(path, SnippetSearch.AllSnippets, SearchOption.AllDirectories);
+                foreach (string snippetPath in snippetFilePaths)
+                {
+                    AddOrUpdateSnippetsToIndexFromSnippetFile(snippetPath);
+                }
+            }
 
             //write the snippetitemcolllection to disk
             return SaveIndexFile();
 
         }
-
-
 
 
         /// <summary>
@@ -194,12 +269,27 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             {
                 //load the index file into memory
                 stream = new FileStream(snippetIndexFilePath, FileMode.Open);
-                snippetItemCollection = Load(stream);
-
-                if (snippetItemCollection == null || snippetItemCollection.Count == 0)
+                List<SnippetIndexItem> items = Load(stream);
+                if (items == null || items.Count == 0)
+                {
                     return false;
+                }
                 else
+                {
+                    foreach (SnippetIndexItem item in items)
+                    {
+                        
+                        lock (indexedSnippets)
+                        {
+                            if (File.Exists(item.File))
+                            {
+                                indexedSnippets.Add(GetDictionaryKey(item.File, item.Title), item);
+                            }
+                        }
+                    }
                     return true;
+                }
+
 
             }
             catch (FileNotFoundException)
@@ -216,67 +306,87 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
         }
 
-        /// <summary>
-        /// Get the entry in the local snipept index
-        /// </summary>
-        /// <param name="filePath">full path to snippet</param>
-        /// <returns>item found null if not found</returns>
-        public SnippetIndexItem GetSnippetItem(string filePath)
-        {
-            foreach (SnippetIndexItem item in snippetItemCollection)
-            {
-                if (String.Compare(item.File, filePath, true) == 0)
-                {
-                    return item;
-                }
-
-            }
-            return null;
-        }
-
 
 
         /// <summary>
         /// Update a  snippet item in the collection based upon the current filepath
-        /// 
         /// then swap the item with the new one
         /// </summary>
-        /// <param name="updatedItem"></param>
-        /// <param name="filePath"></param>
+        /// <param name="updatedSnippet">The updated snippet.</param>
         /// <returns></returns>
-        public bool UpdateSnippetItem(Snippet updatedSnippet, string path)
+        public bool UpdateSnippetFile(SnippetFile updatedSnippetFile)
         {
-            SnippetIndexItem currentItem = GetSnippetItem(path);
-            if (currentItem != null)
-            {
-                UpdateIndexItemData(currentItem, updatedSnippet);
-                SaveIndexFile();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+            // Find keys to remove
+            List<string> keysToRemove = new List<string>();
+            // Keys we found and updated
+            List<string> foundKeys = new List<string>();
 
-        /// <summary>
-        /// Reads the snippet object and adds the right data to the index
-        /// </summary>
-        /// <param name="filePath">the path of the file</param>
-        public void CreateIndexItemDataFromSnippet(Snippet currentSnippet, string filePath)
-        {
-            SnippetIndexItem item = new SnippetIndexItem();
-            item.Title = currentSnippet.Title;
-            item.Author = currentSnippet.Author;
-            item.Code = currentSnippet.Code;
-            item.Description = currentSnippet.Description;
-            item.File = filePath;
-            item.Keywords = String.Join(",", currentSnippet.Keywords.ToArray()); ;
-            item.Language = currentSnippet.CodeLanguageAttribute.ToLower();
-            item.UsesNum = "0";
-            item.DateAdded = DateTime.Today.ToFileTime().ToString();
+            // These have title changes to we need to create a new key for them
+            List<Snippet> snippetsToAdd = new List<Snippet>();
 
-            snippetItemCollection.Add(item);
+            // Update snippets that have not changed titles
+            foreach (Snippet snippet in updatedSnippetFile.Snippets)
+            {
+                SnippetIndexItem item = null;
+                string key = GetDictionaryKey(updatedSnippetFile.FileName, snippet.Title);
+                indexedSnippets.TryGetValue(key, out item);
+                if (item != null)
+                {
+                    UpdateIndexItemData(item, snippet);
+                    foundKeys.Add(key);
+                }
+                else
+                {
+                    snippetsToAdd.Add(snippet);
+                }
+            }
+
+
+            if (snippetsToAdd.Count > 0)
+            {
+                // Figure out which keys are no longer valid
+                foreach (string key in indexedSnippets.Keys)
+                {
+                    if (key.Contains(updatedSnippetFile.FileName.ToUpperInvariant()) &&
+                        !foundKeys.Contains(key))
+                    {
+                        keysToRemove.Add(key);
+                    }
+                }
+
+                // Since this file only has one snippet we know the one to update 
+                // so we don't need to re-add it
+                if (updatedSnippetFile.Snippets.Count == 1 && keysToRemove.Count == 1)
+                {
+                    SnippetIndexItem item = null;
+                    indexedSnippets.TryGetValue(keysToRemove[0], out item);
+                    if (item != null)
+                    {
+                        UpdateIndexItemData(item, updatedSnippetFile.Snippets[0]);
+                    }
+                }
+                else
+                {
+
+                    // Remove those keys
+                    foreach (string key in keysToRemove)
+                    {
+                        lock (indexedSnippets)
+                        {
+                            indexedSnippets.Remove(key);
+                        }
+                    }
+
+                    // Add update snippet items
+                    foreach (Snippet snippet in snippetsToAdd)
+                    {
+                        CreateIndexItemDataFromSnippet(snippet, updatedSnippetFile.FileName);
+                    }
+                }
+            }
+
+            return SaveIndexFile();
+
         }
 
 
@@ -311,46 +421,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
         }
 
-
-
-        /// <summary>
-        /// Update a snippet index item with new values
-        /// </summary>
-        /// <param name="item">item to update</param>
-        /// <param name="snippetData">snipept data to update it with</param>
-        private void UpdateIndexItemData(SnippetIndexItem item, Snippet snippetData)
-        {
-            item.Title = snippetData.Title;
-            item.Author = snippetData.Author;
-            item.Description = snippetData.Description;
-            item.Keywords = String.Join(",", snippetData.Keywords.ToArray());
-            item.Language = snippetData.CodeLanguageAttribute;
-            item.Code = snippetData.Code;
-
-        }
-
-        /// <summary>
-        /// Loads the data for this index item from a snippet file
-        /// </summary>
-        /// <param name="filePath">the path of the file</param>
-        private bool AddItemDataFromSnippetFile(string filePath)
-        {
-            try
-            {
-                SnippetFile snippetFile = new SnippetFile(filePath);
-                foreach (Snippet currentSnippet in snippetFile.Snippets)
-                {
-                    //add the item to the collection
-                    CreateIndexItemDataFromSnippet(currentSnippet, filePath);
-                }
-            }
-            catch (IOException)
-            {
-                return false;
-            }
-
-            return true;
-        }
 
         /// <summary>
         ///  Deserialize or Load this object member values from an XML file
@@ -405,7 +475,8 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             try
             {
                 XmlSerializer ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
-                ser.Serialize(stream, snippetItemCollection);
+                List<SnippetIndexItem> items = new List<SnippetIndexItem>(indexedSnippets.Values);
+                ser.Serialize(stream, items);
 
             }
             catch (System.IO.PathTooLongException)
@@ -428,28 +499,5 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
         }
 
-        /// <summary>
-        /// Parse snippets on the compuer and add to index
-        /// </summary>
-        private void AddSnippetsToIndex()
-        {
-            foreach (string path in allSnippetDirectories)
-            {
-
-                if (!Directory.Exists(path))
-                {
-                    continue;
-                }
-
-                string[] snippets = Directory.GetFiles(path, SnippetSearch.AllSnippets, SearchOption.AllDirectories);
-                foreach (string snippet in snippets)
-                {
-                    AddItemDataFromSnippetFile(snippet);
-
-                }
-
-            }
-
-        }
     }
 }

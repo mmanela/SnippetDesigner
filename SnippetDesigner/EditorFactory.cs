@@ -26,10 +26,13 @@ namespace Microsoft.SnippetDesigner
         private ServiceProvider vsServiceProvider;
         private bool disposed;
 
-        public EditorFactory()
+        private SnippetDesignerPackage editorPackage;
+
+
+        public EditorFactory(SnippetDesignerPackage package)
         {
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering {0} constructor", this.ToString()));
-
+            editorPackage = package;
         }
 
 
@@ -140,7 +143,7 @@ namespace Microsoft.SnippetDesigner
             }
 
             // Create the Document (codeWindowHost)
-            SnippetEditor snipEditor = new SnippetEditor();
+            SnippetEditor snipEditor = new SnippetEditor(editorPackage);
             ppunkDocView = Marshal.GetIUnknownForObject(snipEditor);
             ppunkDocData = Marshal.GetIUnknownForObject(snipEditor);
             pbstrEditorCaption = String.Empty;

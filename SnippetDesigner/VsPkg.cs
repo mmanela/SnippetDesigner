@@ -109,8 +109,8 @@ namespace Microsoft.SnippetDesigner
 
         //index of snippets
         private SnippetIndex snippetIndex;
-        private bool isIndexLoaded;
-
+        private bool isIndexLoading;
+        bool isIndexUpdating;
 
 
         /// <summary>
@@ -126,24 +126,48 @@ namespace Microsoft.SnippetDesigner
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 
+
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is index loaded.
+        /// Gets or sets a value indicating whether this instance is index updating.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this instance is index loaded; otherwise, <c>false</c>.
+        /// 	<c>true</c> if this instance is index updating; otherwise, <c>false</c>.
         /// </value>
-        public bool IsIndexLoaded
+        public bool IsIndexUpdating
         {
             get
             {
-                return isIndexLoaded;
+                return isIndexUpdating;
             }
             set
             {
-                if (isIndexLoaded != value)
+                if (isIndexUpdating != value)
                 {
-                    isIndexLoaded = value;
-                    OnPropertyChanged("IsIndexLoaded");
+                    isIndexUpdating = value;
+                    OnPropertyChanged("IsIndexUpdating");
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is index loading.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance is index loading; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsIndexLoading
+        {
+            get
+            {
+                return isIndexLoading;
+            }
+            set
+            {
+                if (isIndexLoading != value)
+                {
+                    isIndexLoading = value;
+                    OnPropertyChanged("IsIndexLoading");
                 }
             }
         }
@@ -531,7 +555,7 @@ namespace Microsoft.SnippetDesigner
 
 
             //Create Editor Factory
-            editorFactory = new EditorFactory();
+            editorFactory = new EditorFactory(this);
             base.RegisterEditorFactory(editorFactory);
 
 
@@ -596,18 +620,14 @@ namespace Microsoft.SnippetDesigner
             System.Threading.ThreadPool.QueueUserWorkItem(
                 delegate
                 {
-                    //read it in and if it doesnt exist create it
-                    // In future we need a way to rebuild this file or
-                    // check for new snippets on the computer
-                    if (!snippetIndex.ReadIndexFile())
-                    {
-                        snippetIndex.CreateIndexFile();
-                        IsIndexLoaded = true;
-                    }
-                    else
-                    {
-                        IsIndexLoaded = true;
-                    }
+                    IsIndexLoading = true;
+                    snippetIndex.ReadIndexFile();
+                    IsIndexLoading = false;
+
+                    IsIndexUpdating = true;
+                    snippetIndex.CreateOrUpdateIndexFile();
+                    IsIndexUpdating = false;
+                        
 
                 }
             );

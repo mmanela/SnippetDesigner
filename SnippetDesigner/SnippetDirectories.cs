@@ -8,6 +8,7 @@ using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.Win32;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -50,8 +51,13 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private SnippetDirectories()
         {
+
+            IUIHostLocale localeHost = (IUIHostLocale)SnippetDesignerPackage.Instance.GetService(typeof(IUIHostLocale));
+            uint lcid = (uint)CultureInfo.CurrentCulture.LCID;
+            localeHost.GetUILocale(out lcid);
+
             registryPathReplacements.Add("%InstallRoot%", GetInstallRoot());
-            registryPathReplacements.Add("%LCID%", CultureInfo.CurrentCulture.LCID.ToString());
+            registryPathReplacements.Add("%LCID%", lcid.ToString());
             registryPathReplacements.Add("%MyDocs%", RegistryLocations.GetVisualStudioUserDataPath());
             replaceRegex = new Regex("(%InstallRoot%)|(%LCID%)|(%MyDocs%)", RegexOptions.Compiled);
 

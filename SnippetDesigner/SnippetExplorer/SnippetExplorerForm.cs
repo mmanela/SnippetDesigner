@@ -59,7 +59,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             if (e.PropertyName != null)
             {
-                if (e.PropertyName.Equals("IsIndexLoaded", StringComparison.InvariantCulture))
+                if (e.PropertyName.Equals("IsIndexLoading", StringComparison.Ordinal) ||
+                    e.PropertyName.Equals("IsIndexUpdating", StringComparison.Ordinal) 
+                    )
                 {
                     UpdateStatusLabel();
                 }
@@ -71,7 +73,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         private void UpdateStatusLabel()
         {
-            if (SnippetDesignerPackage.Instance.IsIndexLoaded)
+            if (!SnippetDesignerPackage.Instance.IsIndexLoading)
             {
                 this.Invoke(
                     (MethodInvoker)delegate
@@ -85,6 +87,23 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     (MethodInvoker)delegate
                     {
                         statusLabel.Text = "Loading Snippet Index...";
+                    });
+            }
+
+            if (!SnippetDesignerPackage.Instance.IsIndexUpdating)
+            {
+                this.Invoke(
+                    (MethodInvoker)delegate
+                    {
+                        statusLabel.Text = "";
+                    });
+            }
+            else
+            {
+                this.Invoke(
+                    (MethodInvoker)delegate
+                    {
+                        statusLabel.Text = "Updating Snippet Index...";
                     });
             }
         }
@@ -284,6 +303,13 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     string quotedFilePath = "\"" + item.File + "\"";
                     dte2.ExecuteCommand(openFileCommand, quotedFilePath);
                 }
+                else
+                {
+                    MessageBox.Show("Unable to open Snippet.",
+                        dte2.Application.Name,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Asterisk);
+                }
             }
 
         }
@@ -320,7 +346,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                         MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
                     {
-                        snippetIndex.DeleteFileFromIndex(item.File);
+                        snippetIndex.DeleteSnippetFile(item.File,item.Title);
                         deleteHappened = true;
                     }
 
