@@ -13,22 +13,68 @@ using Microsoft.SnippetDesigner.SnippetExplorer;
 using System.Windows.Forms;
 using Microsoft.RegistryTools;
 using System.Text.RegularExpressions;
+using System.ComponentModel;
+using System.Diagnostics;
 
 namespace Microsoft.SnippetDesigner.ContentTypes
 {
     /// <summary>
     /// Represents the index file of snippets
     /// </summary>
-    public class SnippetIndex
+    public class SnippetIndex : INotifyPropertyChanged
     {
         private string snippetIndexFilePath;
         private readonly string snippetIndexFileName = "SnippetIndex.xml";
 
         // Maps SnippetFilePath|SnippetTitle to SnippetIndexItem
         private Dictionary<String, SnippetIndexItem> indexedSnippets;
+        private bool isIndexLoading;
+        private bool isIndexUpdating;
 
-        //snippet directories
-        public List<string> allSnippetDirectories = new List<string>();
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is index updating.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance is index updating; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsIndexUpdating
+        {
+            get
+            {
+                return isIndexUpdating;
+            }
+            set
+            {
+                if (isIndexUpdating != value)
+                {
+                    isIndexUpdating = value;
+                    OnPropertyChanged("IsIndexUpdating");
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this instance is index loading.
+        /// </summary>
+        /// <value>
+        /// 	<c>true</c> if this instance is index loading; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsIndexLoading
+        {
+            get
+            {
+                return isIndexLoading;
+            }
+            set
+            {
+                if (isIndexLoading != value)
+                {
+                    isIndexLoading = value;
+                    OnPropertyChanged("IsIndexLoading");
+                }
+            }
+        }
 
         public SnippetIndex()
         {
@@ -40,7 +86,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             }
             snippetIndexFilePath = Path.Combine(snippetIndexFileDir, snippetIndexFileName);
 
-            allSnippetDirectories = SnippetDirectories.Instance.AllSnippetDirectories;
             indexedSnippets = new Dictionary<string, SnippetIndexItem>();
 
         }
@@ -231,14 +276,33 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
         /// <summary>
+        /// Rebuilds the index of the snippet.
+        /// </summary>
+        public void RebuildSnippetIndex()
+        {
+            try
+            {
+                lock (indexedSnippets)
+                {
+                    indexedSnippets.Clear();
+                }
+                CreateOrUpdateIndexFile();
+            }
+            catch (System.IO.IOException)
+            {
+
+            }
+        }
+
+        /// <summary>
         /// Create a new index file by reading all snippet files 
         /// and building them in internal memory then writing them to the index file
         /// </summary>
         /// <returns></returns>
         public bool CreateOrUpdateIndexFile()
         {
-
-            foreach (string path in allSnippetDirectories)
+            IsIndexUpdating = true;
+            foreach (string path in SnippetDesignerPackage.Instance.Settings.IndexedSnippetDirectories)
             {
                 if (!Directory.Exists(path))
                 {
@@ -251,6 +315,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     AddOrUpdateSnippetsToIndexFromSnippetFile(snippetPath);
                 }
             }
+            IsIndexUpdating = false;
 
             //write the snippetitemcolllection to disk
             return SaveIndexFile();
@@ -264,6 +329,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// <returns></returns>
         public bool ReadIndexFile()
         {
+            IsIndexLoading = true;
             FileStream stream = null;
             try
             {
@@ -302,6 +368,8 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 {
                     stream.Close();
                 }
+
+                IsIndexLoading = false;
             }
 
         }
@@ -498,6 +566,41 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             return true;
 
         }
+
+
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Fire the property changed event for the given property name
+        /// </summary>
+        /// <param name="propertyName">Name of the property</param>
+        private void OnPropertyChanged(string propertyName)
+        {
+            VerifyProperty(propertyName);
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        /// <summary>
+        /// Used in debug mode only.  Checks to make sure the property name string
+        /// is actually a property on the object.
+        /// </summary>
+        /// <param name="propertyName">Name of the property</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)"), Conditional("DEBUG")]
+        private void VerifyProperty(string propertyName)
+        {
+            bool propertyExists = TypeDescriptor.GetProperties(this).Find(propertyName, false) != null;
+            if (!propertyExists)
+            {
+                Debug.Fail(String.Format("The property {0} could not be found in {1}", propertyName, GetType().FullName));
+            }
+        }
+        #endregion
 
     }
 }

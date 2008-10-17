@@ -28,6 +28,7 @@ using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.RegistryTools;
 using System.IO;
 using System.ComponentModel;
+using Microsoft.SnippetDesigner.OptionPages;
 
 
 namespace Microsoft.SnippetDesigner
@@ -62,13 +63,17 @@ namespace Microsoft.SnippetDesigner
     // package needs to have a valid load key (it can be requested at 
     // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
     // package has a load key embedded in its resources.
-    [ProvideLoadKey("Standard", "1.0", "Snippet Designer", "Microsoft", 1)]
+    [ProvideLoadKey("Standard", "1.1", "Snippet Designer", "Microsoft", 1)]
 
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource(1000, 1)]
 
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(SnippetExplorerToolWindow))]
+
+    // Options pages
+    [ProvideOptionPageAttribute(typeof(SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
+    [ProvideOptionPageAttribute(typeof(ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
 
     // These arrtibutes registers the HighLightMarker service and two custom markers 
     [ProvideService(typeof(HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
@@ -86,7 +91,7 @@ namespace Microsoft.SnippetDesigner
     [ProvideEditorLogicalView(typeof(EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
     [ComVisible(true)]
-    public sealed class SnippetDesignerPackage : Package, IVsSelectionEvents, IDisposable, IVsInstalledProduct, INotifyPropertyChanged
+    public sealed class SnippetDesignerPackage : Package, IVsSelectionEvents, IDisposable, IVsInstalledProduct
     {
         internal static SnippetDesignerPackage Instance;
         private EditorFactory editorFactory;
@@ -109,9 +114,10 @@ namespace Microsoft.SnippetDesigner
 
         //index of snippets
         private SnippetIndex snippetIndex;
-        private bool isIndexLoading;
-        bool isIndexUpdating;
 
+
+        // options pages
+        SnippetDesignerOptions snippetDesignerOptions;
 
         /// <summary>
         /// Default constructor of the package.
@@ -128,47 +134,19 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is index updating.
+        /// Gets the settings.
         /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is index updating; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsIndexUpdating
+        /// <value>The settings.</value>
+        public SnippetDesignerOptions Settings
         {
             get
             {
-                return isIndexUpdating;
-            }
-            set
-            {
-                if (isIndexUpdating != value)
+                if (snippetDesignerOptions == null)
                 {
-                    isIndexUpdating = value;
-                    OnPropertyChanged("IsIndexUpdating");
-                }
-            }
-        }
 
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this instance is index loading.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is index loading; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsIndexLoading
-        {
-            get
-            {
-                return isIndexLoading;
-            }
-            set
-            {
-                if (isIndexLoading != value)
-                {
-                    isIndexLoading = value;
-                    OnPropertyChanged("IsIndexLoading");
+                    snippetDesignerOptions = this.GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
                 }
+                return snippetDesignerOptions;
             }
         }
 
@@ -272,38 +250,7 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        #region INotifyPropertyChanged Members
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        /// <summary>
-        /// Fire the property changed event for the given property name
-        /// </summary>
-        /// <param name="propertyName">Name of the property</param>
-        private void OnPropertyChanged(string propertyName)
-        {
-            VerifyProperty(propertyName);
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
-        }
-
-        /// <summary>
-        /// Used in debug mode only.  Checks to make sure the property name string
-        /// is actually a property on the object.
-        /// </summary>
-        /// <param name="propertyName">Name of the property</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)"), Conditional("DEBUG")]
-        private void VerifyProperty(string propertyName)
-        {
-            bool propertyExists = TypeDescriptor.GetProperties(this).Find(propertyName, false) != null;
-            if (!propertyExists)
-            {
-                Debug.Fail(String.Format("The property {0} could not be found in {1}", propertyName, GetType().FullName));
-            }
-        }
-        #endregion
 
         #region Static Methods
 
@@ -605,7 +552,7 @@ namespace Microsoft.SnippetDesigner
             markerService = new HighlightMarkerService(this);
             ((IServiceContainer)this).AddService(markerService.GetType(), markerService, true);
 
-            
+
             //create the dte automation object so rest of package can access the automation model
             dte = (DTE)GetService(typeof(DTE));
             if (dte == null)
@@ -620,15 +567,8 @@ namespace Microsoft.SnippetDesigner
             System.Threading.ThreadPool.QueueUserWorkItem(
                 delegate
                 {
-                    IsIndexLoading = true;
                     snippetIndex.ReadIndexFile();
-                    IsIndexLoading = false;
-
-                    IsIndexUpdating = true;
                     snippetIndex.CreateOrUpdateIndexFile();
-                    IsIndexUpdating = false;
-                        
-
                 }
             );
 

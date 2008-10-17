@@ -247,8 +247,8 @@ namespace Microsoft.SnippetDesigner
             langServ.Add(SnippetDesigner.Resources.DisplayNameVisualBasic, GuidList.vbLangSvc);
             langServ.Add(SnippetDesigner.Resources.DisplayNameCSharp, GuidList.csLangSvc);
             langServ.Add(SnippetDesigner.Resources.DisplayNameXML, GuidList.xmlLangSvc);
-            //deafult to csharp
-            //TODO: see what the users preference is, if it is C# or VB make the default that
+
+            //default to csharp
             defaultLanguage = GuidList.csLangSvc;
         }
 

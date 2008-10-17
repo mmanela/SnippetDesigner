@@ -1,39 +1,40 @@
 ﻿<Include>
 
-  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Text Editor\External Markers\{2f9008c7-282f-4fa7-adb9-31219a86bbd4}" Value="Yellow Highlight Marker" Type="string">
-    <Registry Name="DisplayName" Value="#200" Type="string" />
-    <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
-    <Registry Name="Service" Value="{bd9fe285-9066-4553-9c6a-c2f49a24777e}" Type="string" />
-  </Registry>
+<Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Text Editor\External Markers\{2f9008c7-282f-4fa7-adb9-31219a86bbd4}" Value="Yellow Highlight Marker" Type="string">
+   <Registry Name="DisplayName" Value="#200" Type="string" />
+   <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
+   <Registry Name="Service" Value="{bd9fe285-9066-4553-9c6a-c2f49a24777e}" Type="string" />
+ </Registry>
 
-  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Text Editor\External Markers\{35f885ca-0d3f-4bfa-8a05-69c810690fda}" Value="Yellow Highlight Marker with Border" Type="string">
-    <Registry Name="DisplayName" Value="#201" Type="string" />
-    <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
-    <Registry Name="Service" Value="{bd9fe285-9066-4553-9c6a-c2f49a24777e}" Type="string" />
-  </Registry>
-
+ <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Text Editor\External Markers\{35f885ca-0d3f-4bfa-8a05-69c810690fda}" Value="Yellow Highlight Marker with Border" Type="string">
+   <Registry Name="DisplayName" Value="#201" Type="string" />
+   <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
+   <Registry Name="Service" Value="{bd9fe285-9066-4553-9c6a-c2f49a24777e}" Type="string" />
+ </Registry>
+ 
+ 
   <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\InstalledProducts\SnippetDesignerPackage">
     <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
     <Registry Name="UseInterface" Value="1" Type="integer" />
   </Registry>
 
-  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Packages\{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Value="Microsoft.SnippetDesigner.SnippetDesignerPackage, SnippetDesigner, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d33c5886d302fdee" Type="string">
+  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Packages\{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Value="Microsoft.SnippetDesigner.SnippetDesignerPackage, SnippetDesigner, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null" Type="string">
     <Registry Name="InprocServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
     <Registry Name="Class" Value="Microsoft.SnippetDesigner.SnippetDesignerPackage" Type="string" />
-    <Registry Name="CodeBase" Value="[#PackageDll]" Type="string" />
-    <Registry Name="Assembly" Value="SnippetDesigner, Version=1.0.0.0, Culture=neutral, PublicKeyToken=d33c5886d302fdee" Type="string" />
+    <Registry Name="Assembly" Value="SnippetDesigner, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null" Type="string" />
     <Registry Name="ID" Value="1" Type="integer" />
+    <Registry Name="CodeBase" Value="[#PackageDll]" Type="string" />
     <Registry Name="MinEdition" Value="Standard" Type="string" />
-    <Registry Name="ProductVersion" Value="1.0" Type="string" />
+    <Registry Name="ProductVersion" Value="1.1" Type="string" />
     <Registry Name="ProductName" Value="Snippet Designer" Type="string" />
     <Registry Name="CompanyName" Value="Microsoft" Type="string" />
   </Registry>
-
+  
   <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\AutoLoadPackages\{f1536ef8-92ec-443c-9ed7-fdadf150da82}">
     <Registry Name="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Value="0" Type="integer" />
   </Registry>
 
-  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Editors\{9325357b-c69b-4f03-9d82-0e28723378fe}">
+  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Editors\{9325357b-c69b-4f03-9d82-0e28723378fe}" Value="Snippet Designer" Type="string">
     <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
   </Registry>
 
@@ -53,6 +54,30 @@
     <Registry Name="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Value=", 1000, 1" Type="string" />
   </Registry>
 
+  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\ToolsOptionsPages\Snippet Designer" Value="#14340" Type="string">
+    <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\ToolsOptionsPages\Snippet Designer\General Options" Value="#17770" Type="string">
+    <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
+    <Registry Name="Page" Value="{2863817e-cd3a-45b9-a0d3-7a8547563cfb}" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\ToolsOptionsPages\Snippet Designer\Reset" Value="#17771" Type="string">
+    <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
+    <Registry Name="Page" Value="{0f9d79a2-121f-484e-8de9-62a1ef289301}" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\AutomationProperties\Snippet Designer\General Options">
+    <Registry Name="Name" Value="Snippet Designer.General Options" Type="string" />
+    <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
+  </Registry>
+
+  <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\AutomationProperties\Snippet Designer\Reset">
+    <Registry Name="Name" Value="Snippet Designer.Reset" Type="string" />
+    <Registry Name="Package" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string" />
+  </Registry>
+
   <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Services\{bd9fe285-9066-4553-9c6a-c2f49a24777e}" Value="{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Type="string">
     <Registry Name="Name" Value="HighlightMarkerService" Type="string" />
   </Registry>
@@ -61,4 +86,3 @@
     <Registry Name="Name" Value="Microsoft.SnippetDesigner.SnippetExplorer.SnippetExplorerToolWindow" Type="string" />
   </Registry>
 </Include>
-

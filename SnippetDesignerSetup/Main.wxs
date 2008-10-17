@@ -1,7 +1,12 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="F8C34EAE-0C8A-4834-8E2C-24BFA8A4FDCE" Name="$(loc.ProductName)" Language="1033" Version="1.0.0.0" Manufacturer="$(loc.Manufacturer)" UpgradeCode="634FC257-B249-480E-97C9-65A5619E79DA">
-    <Package Id="EA227B61-3F2B-4F19-ABED-3FF10E06BCCC" Platforms="Intel" Description="$(loc.Description)" Comments="$(loc.Comments)" Manufacturer="$(loc.Manufacturer)" InstallerVersion="200" Compressed="yes" Languages="1033" />
+  <?define ProductVersion="1.1" ?>
+  <?define UpgradeCode="{634FC257-B249-480E-97C9-65A5619E79DA}"?>
+  <?define ProductCode="{F8C34EAE-0C8A-4834-8E2C-24BFA8A4FDCE}"?>
+  <?define PackageCode="{????????-????-????-????-????????????}"?>
+
+  <Product Id="$(var.ProductCode)" Name="$(loc.ProductName)" Language="1033" Version="$(var.ProductVersion)" Manufacturer="$(loc.Manufacturer)" UpgradeCode="$(var.UpgradeCode)">
+    <Package Id="$(var.PackageCode)" Platforms="Intel" Description="$(loc.Description)" Comments="$(loc.Comments)" Manufacturer="$(loc.Manufacturer)" InstallerVersion="200" Compressed="yes" Languages="1033" />
 
     <Media Id="1" Cabinet="Package.cab" EmbedCab="yes" />
 
@@ -22,7 +27,7 @@
     <!-- Add/Remove Programs -->
     <Property Id="ARPCONTACT"><![CDATA[$(loc.Manufacturer)]]></Property>
     <Property Id="ARPPRODUCTICON">ProductIcon</Property>
-    <Property Id="ARPURLINFOABOUT"><![CDATA[http://www..com]]></Property>
+    <Property Id="ARPURLINFOABOUT"><![CDATA[http://www.codeplex.com\snippetdesigner]]></Property>
 
     <Property Id="ALLUSERS">2</Property>
 
@@ -67,11 +72,11 @@
       <ComponentRef Id="NewItemFilesComponent" />
       <!--//TODO: Add reference to other components-->
       <!--
-		<ComponentRef Id="ItemTemplatesFilesComponent" />
-		<ComponentRef Id="ProjectTemplatesFilesComponent" />
-		<ComponentRef Id="XsdFilesComponent" />
-		<ComponentRef Id="OtherRegistryEntriesComponent" />
-		-->
+        <ComponentRef Id="ItemTemplatesFilesComponent" />
+        <ComponentRef Id="ProjectTemplatesFilesComponent" />
+        <ComponentRef Id="XsdFilesComponent" />
+        <ComponentRef Id="OtherRegistryEntriesComponent" />
+        -->
     </Feature>
 
     <!--Refs-->

@@ -18,6 +18,7 @@ using Microsoft.SnippetLibrary;
 
 using IServiceProvider = System.IServiceProvider;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using Microsoft.SnippetDesigner.OptionPages;
 
 namespace Microsoft.SnippetDesigner.SnippetExplorer
 {
@@ -60,7 +61,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             if (e.PropertyName != null)
             {
                 if (e.PropertyName.Equals("IsIndexLoading", StringComparison.Ordinal) ||
-                    e.PropertyName.Equals("IsIndexUpdating", StringComparison.Ordinal) 
+                    e.PropertyName.Equals("IsIndexUpdating", StringComparison.Ordinal)
                     )
                 {
                     UpdateStatusLabel();
@@ -73,7 +74,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         private void UpdateStatusLabel()
         {
-            if (!SnippetDesignerPackage.Instance.IsIndexLoading)
+            if (!snippetIndex.IsIndexLoading)
             {
                 this.Invoke(
                     (MethodInvoker)delegate
@@ -90,7 +91,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     });
             }
 
-            if (!SnippetDesignerPackage.Instance.IsIndexUpdating)
+            if (!snippetIndex.IsIndexUpdating)
             {
                 this.Invoke(
                     (MethodInvoker)delegate
@@ -187,7 +188,13 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             snippetIndex = SnippetDesignerPackage.Instance.SnippetIndex;
 
             UpdateStatusLabel();
-            SnippetDesignerPackage.Instance.PropertyChanged += new PropertyChangedEventHandler(Instance_PropertyChanged);
+
+            snippetIndex.PropertyChanged += new PropertyChangedEventHandler(Instance_PropertyChanged);
+
+            SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
+            CSharpFilterBox.Checked = !options.HideCSharp;
+            vbFilterBox.Checked = !options.HideVisualBasic;
+            xmlFilterBox.Checked = !options.HideXML;
         }
 
 
@@ -277,7 +284,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     string lang = snippet.Language;
                     if (!String.IsNullOrEmpty(lang))
                     {
-                        this.previewCodeWindow.SetLanguageService(LanguageMaps.LanguageMap.XmlLanguageToDisplay[lang.ToLower()]);
+                        this.previewCodeWindow.SetLanguageService(LanguageMaps.LanguageMap.SnippetSchemaLanguageToDisplay[lang.ToLower()]);
                     }
 
 
@@ -346,7 +353,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                         MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
                     {
-                        snippetIndex.DeleteSnippetFile(item.File,item.Title);
+                        snippetIndex.DeleteSnippetFile(item.File, item.Title);
                         deleteHappened = true;
                     }
 

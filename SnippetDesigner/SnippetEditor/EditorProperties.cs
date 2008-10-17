@@ -60,10 +60,8 @@ namespace Microsoft.SnippetDesigner
 
         protected override object CreateInstance(Type itemType)
 		{
-
             string newString = String.Empty;
             return newString;
-
 		}
 
         protected override string GetDisplayText(object value)

@@ -71,6 +71,18 @@
     <Compile Include="CodeWindow\CodeWindow.designer.cs">
       <DependentUpon>CodeWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="OptionPages\ResetOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OptionPages\ResetOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionPages\ResetOptionsControl.Designer.cs">
+      <DependentUpon>ResetOptionsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPages\SnippetDesignerOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="SnippetDirectories.cs" />
     <Compile Include="SnippetEditor\CommandFilter.cs" />
     <Compile Include="ConstantStrings.Designer.cs">
@@ -143,6 +155,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
       <CustomToolNamespace>Microsoft.SnippetDesigner</CustomToolNamespace>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPages\ResetOptionsControl.resx">
+      <DependentUpon>ResetOptionsControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

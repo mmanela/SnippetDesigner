@@ -363,17 +363,20 @@ namespace Microsoft.SnippetDesigner
 
             set
             {
-
-                if (!String.IsNullOrEmpty(value))
+                string language = String.Empty;
+                if (!String.IsNullOrEmpty(value) && LanguageMaps.LanguageMap.SnippetSchemaLanguageToDisplay.ContainsKey(value.ToLower()))
                 {
-                    if (LanguageMaps.LanguageMap.XmlLanguageToDisplay.ContainsKey(value.ToLower()))
-                    {
-                        this.toolStripLanguageBox.SelectedIndex = this.toolStripLanguageBox.Items.IndexOf(LanguageMaps.LanguageMap.XmlLanguageToDisplay[value.ToLower()]);
-                    }
-                    else
-                    {
-                        this.toolStripLanguageBox.SelectedIndex = 0;//select first
-                    }
+                    language = LanguageMaps.LanguageMap.SnippetSchemaLanguageToDisplay[value.ToLower()];
+                }
+                else
+                {
+                    language = LanguageMaps.LanguageMap.ToDisplayForm(SnippetDesignerPackage.Instance.Settings.DefaultLanguage);
+                }
+
+                int index = this.toolStripLanguageBox.Items.IndexOf(language);
+                if (index >= 0)
+                {
+                    this.toolStripLanguageBox.SelectedIndex = index;
                 }
                 else
                 {
@@ -688,7 +691,6 @@ namespace Microsoft.SnippetDesigner
                 string languageText = langCombo.SelectedItem.ToString();
                 if (previousLanguageSelected != languageText) //make sure this is actually a change
                 {
-
                     if (!this.snippetCodeWindow.LangServices.ContainsKey(languageText))
                     {
                         languageText = String.Empty;
