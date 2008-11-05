@@ -78,7 +78,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
         public SnippetIndex()
         {
-            string snippetIndexFileDir = Application.CommonAppDataPath;
+            string snippetIndexFileDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnippetDesigner";
             //make sure this directory exists if now make it
             if (!Directory.Exists(snippetIndexFileDir))
             {

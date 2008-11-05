@@ -141,11 +141,6 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                if (snippetDesignerOptions == null)
-                {
-
-                    snippetDesignerOptions = this.GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
-                }
                 return snippetDesignerOptions;
             }
         }
@@ -497,80 +492,89 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         protected override void Initialize()
         {
-            base.Initialize();
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
-
-
-            //Create Editor Factory
-            editorFactory = new EditorFactory(this);
-            base.RegisterEditorFactory(editorFactory);
-
-
-            //load the configuration file
-            configSettings = new SnippetEditorConfiguration();
-            if (!configSettings.LoadConfigFile(ConstantStrings.ConfigurationFile))
+            try
             {
-                string path = Path.Combine(Environment.CurrentDirectory, ConstantStrings.ConfigurationFile);
-                Debug.WriteLine("Unable to find configuration file: " + path);
-            }
+                base.Initialize();
+                Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
 
 
-            //Set up Selection Events so that I can tell when a new window in VS has become active.
-            uint cookieForSelection = 0;
-            IVsMonitorSelection selMonitor = GetService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
-
-            if (selMonitor != null)
-            {
-                selMonitor.AdviseSelectionEvents((IVsSelectionEvents)this, out cookieForSelection);
-            }
-
-            // Add our command handlers for menu (commands must exist in the .vstc file)
-
-            // Create the command for the tool window
-            CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidSnippetExplorer);
-            DefineCommandHandler(new EventHandler(ShowSnippetExplorer), snippetExplorerCommandID);
-
-
-            //DefineCommandHandler not used for these since extra properties need to be set
-            // Create the command for the context menu export snippet
-            CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidExportToSnippet);
-            snippetExportCommand = DefineCommandHandler(new EventHandler(ExportToSnippet), contextcmdID);
-            snippetExportCommand.Visible = false;
-
-            // commandline command for exporting as snippet
-            CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidExportToSnippetCommandLine);
-            OleMenuCommand snippetExportCommandLine = DefineCommandHandler(new EventHandler(ExportToSnippet), exportCmdLineID);
-            snippetExportCommandLine.ParametersDescription = SnippetDesigner.ConstantStrings.ArgumentStartMarker;//a space means arguments are coming
-
-
-            // Create the command for CreateSnippet
-            CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidCreateSnippet);
-            OleMenuCommand createCommand = DefineCommandHandler(new EventHandler(CreateSnippet), createcmdID);
-            createCommand.ParametersDescription = SnippetDesigner.ConstantStrings.ArgumentStartMarker;//a space means arguments are coming
-
-            // Create and proffer the marker service
-            markerService = new HighlightMarkerService(this);
-            ((IServiceContainer)this).AddService(markerService.GetType(), markerService, true);
-
-
-            //create the dte automation object so rest of package can access the automation model
-            dte = (DTE)GetService(typeof(DTE));
-            if (dte == null)
-            {
-                //if dte is null then we throw a excpetion
-                //this is a fatal error
-                throw new ArgumentNullException(SnippetDesigner.Resources.ErrorDTENull);
-            }
-
-            //initialize the snippet index
-            snippetIndex = new SnippetIndex();
-            System.Threading.ThreadPool.QueueUserWorkItem(
-                delegate
+                //create the dte automation object so rest of package can access the automation model
+                dte = (DTE)GetService(typeof(DTE));
+                if (dte == null)
                 {
-                    snippetIndex.ReadIndexFile();
-                    snippetIndex.CreateOrUpdateIndexFile();
+                    //if dte is null then we throw a excpetion
+                    //this is a fatal error
+                    throw new ArgumentNullException(SnippetDesigner.Resources.ErrorDTENull);
                 }
-            );
+
+                snippetDesignerOptions = this.GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
+
+                //Create Editor Factory
+                editorFactory = new EditorFactory(this);
+                base.RegisterEditorFactory(editorFactory);
+
+
+                //load the configuration file
+                configSettings = new SnippetEditorConfiguration();
+                if (!configSettings.LoadConfigFile(ConstantStrings.ConfigurationFile))
+                {
+                    string path = Path.Combine(Environment.CurrentDirectory, ConstantStrings.ConfigurationFile);
+                    Debug.WriteLine("Unable to find configuration file: " + path);
+                }
+
+
+                //Set up Selection Events so that I can tell when a new window in VS has become active.
+                uint cookieForSelection = 0;
+                IVsMonitorSelection selMonitor = GetService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
+
+                if (selMonitor != null)
+                {
+                    selMonitor.AdviseSelectionEvents((IVsSelectionEvents)this, out cookieForSelection);
+                }
+
+                // Add our command handlers for menu (commands must exist in the .vstc file)
+
+                // Create the command for the tool window
+                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidSnippetExplorer);
+                DefineCommandHandler(new EventHandler(ShowSnippetExplorer), snippetExplorerCommandID);
+
+
+                //DefineCommandHandler not used for these since extra properties need to be set
+                // Create the command for the context menu export snippet
+                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidExportToSnippet);
+                snippetExportCommand = DefineCommandHandler(new EventHandler(ExportToSnippet), contextcmdID);
+                snippetExportCommand.Visible = false;
+
+                // commandline command for exporting as snippet
+                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidExportToSnippetCommandLine);
+                OleMenuCommand snippetExportCommandLine = DefineCommandHandler(new EventHandler(ExportToSnippet), exportCmdLineID);
+                snippetExportCommandLine.ParametersDescription = SnippetDesigner.ConstantStrings.ArgumentStartMarker;//a space means arguments are coming
+
+
+                // Create the command for CreateSnippet
+                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidCreateSnippet);
+                OleMenuCommand createCommand = DefineCommandHandler(new EventHandler(CreateSnippet), createcmdID);
+                createCommand.ParametersDescription = SnippetDesigner.ConstantStrings.ArgumentStartMarker;//a space means arguments are coming
+
+                // Create and proffer the marker service
+                markerService = new HighlightMarkerService(this);
+                ((IServiceContainer)this).AddService(markerService.GetType(), markerService, true);
+
+                //initialize the snippet index
+                snippetIndex = new SnippetIndex();
+                System.Threading.ThreadPool.QueueUserWorkItem(
+                    delegate
+                    {
+                        snippetIndex.ReadIndexFile();
+                        snippetIndex.CreateOrUpdateIndexFile();
+                    }
+                );
+            }
+            catch (Exception e)
+            {
+                Debug.WriteLine(e);
+                throw;
+            }
 
         }
 
