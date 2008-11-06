@@ -9,7 +9,7 @@ namespace Microsoft.SnippetDesigner
     /// <summary>
     /// Reads a snippet editor configuration file and parses it for settings
     /// </summary>
-    internal class SnippetEditorConfiguration
+    public class SnippetEditorConfiguration
     {
 
         private string configFile = String.Empty;

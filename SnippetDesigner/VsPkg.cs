@@ -75,7 +75,18 @@ namespace Microsoft.SnippetDesigner
     [ProvideOptionPageAttribute(typeof(SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
     [ProvideOptionPageAttribute(typeof(ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
 
-    // These arrtibutes registers the HighLightMarker service and two custom markers 
+    // Language Service
+    // This attribute is needed to indicate that the we offer this language service
+    [ProvideService(typeof(CSharpSnippetLanguageService))]
+    [ProvideLanguageService(typeof(CSharpSnippetLanguageService), "CSharp Snippets", 202)]
+
+    [ProvideService(typeof(VBSnippetLanguageService))]
+    [ProvideLanguageService(typeof(VBSnippetLanguageService), "VB Snippets", 203)]
+
+    [ProvideService(typeof(XMLSnippetLanguageService))]
+    [ProvideLanguageService(typeof(XMLSnippetLanguageService), "XML Snippets", 204)]
+
+    // These attributes registers the HighLightMarker service and two custom markers 
     [ProvideService(typeof(HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
     [ProvideCustomMarker(StringConstants.YellowHighlightMarkerName, 200, typeof(YellowHighlightMarker), typeof(SnippetDesignerPackage), typeof(HighlightMarkerService))]
     [ProvideCustomMarker(StringConstants.YellowHighlightMarkerWithBorderName, 201, typeof(YellowHighlightMarkerWithBorder), typeof(SnippetDesignerPackage), typeof(HighlightMarkerService))]
@@ -105,11 +116,15 @@ namespace Microsoft.SnippetDesigner
         private Window previousWindow = null;
         private Window currentWindow = null;
 
-        //needed for the custom tpye descriptor provider
+        private CSharpSnippetLanguageService csharpSnippetLangService;
+        private VBSnippetLanguageService vbSnippetLangService;
+        private XMLSnippetLanguageService xmlSnippetLangService;
+
+        //needed for the custom type descriptor provider
         private string activeSnippetTitle = String.Empty;
         private string activeSnippetLanguage = String.Empty;
 
-        //config fiel for snipept designer
+        //config file for snippet designer
         private SnippetEditorConfiguration configSettings;
 
         //index of snippets
@@ -132,7 +147,7 @@ namespace Microsoft.SnippetDesigner
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
         }
 
-
+        #region Public Properties
         /// <summary>
         /// Gets the settings.
         /// </summary>
@@ -160,7 +175,7 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Get the service which you can aquire highlight markers from
         /// </summary>
-        internal HighlightMarkerService MarkerService
+        public HighlightMarkerService MarkerService
         {
             get
             {
@@ -200,7 +215,7 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Retuns the configuration settings class
         /// </summary>
-        internal SnippetEditorConfiguration ConfigurationSettings
+        public SnippetEditorConfiguration ConfigurationSettings
         {
             get
             {
@@ -225,7 +240,7 @@ namespace Microsoft.SnippetDesigner
         /// Get the export snippet data
         /// contains language and code of the snippet
         /// </summary>
-        internal ExportToSnippetData ExportSnippetData
+        public ExportToSnippetData ExportSnippetData
         {
 
             get
@@ -239,12 +254,12 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        internal void ClearSnippetExportData()
+        public void ClearSnippetExportData()
         {
             exportData = null;
         }
 
-
+        #endregion
 
 
         #region Static Methods
@@ -344,8 +359,6 @@ namespace Microsoft.SnippetDesigner
         /// <param name="e"></param>
         private void ExportToSnippet(object sender, EventArgs e)
         {
-
-
             // The selected item is the active window pane
             // in Visual Studio. 
 
@@ -507,7 +520,25 @@ namespace Microsoft.SnippetDesigner
                     throw new ArgumentNullException(SnippetDesigner.Resources.ErrorDTENull);
                 }
 
+
+
                 snippetDesignerOptions = this.GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
+
+
+                // Create instance of RegularExpressionLanguageService type
+                csharpSnippetLangService = new CSharpSnippetLanguageService();
+                csharpSnippetLangService.SetSite(this);
+
+                vbSnippetLangService = new VBSnippetLanguageService();
+                vbSnippetLangService.SetSite(this);
+
+                xmlSnippetLangService = new XMLSnippetLanguageService();
+                xmlSnippetLangService.SetSite(this);
+
+                // Add our language service objects to packages services container
+                ((IServiceContainer)this).AddService(typeof(CSharpSnippetLanguageService), csharpSnippetLangService, true);
+                ((IServiceContainer)this).AddService(typeof(VBSnippetLanguageService), vbSnippetLangService, true);
+                ((IServiceContainer)this).AddService(typeof(XMLSnippetLanguageService), xmlSnippetLangService, true);
 
                 //Create Editor Factory
                 editorFactory = new EditorFactory(this);

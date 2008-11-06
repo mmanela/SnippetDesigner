@@ -28,7 +28,7 @@ namespace Microsoft.SnippetDesigner
     /// Service which proffers the markers and also has fucntions to isnert markers
     /// </summary>
     [Guid(GuidList.markerServiceString)]
-    internal class HighlightMarkerService : IVsTextMarkerTypeProvider
+    public class HighlightMarkerService : IVsTextMarkerTypeProvider
     {
 
         private SnippetDesignerPackage package;

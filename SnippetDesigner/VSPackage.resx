@@ -173,4 +173,13 @@
   <data name="17771" xml:space="preserve">
     <value>Reset </value>
   </data>
+  <data name="202" xml:space="preserve">
+    <value>CSharp Snippets</value>
+  </data>
+  <data name="203" xml:space="preserve">
+    <value>VB Snippets</value>
+  </data>
+  <data name="204" xml:space="preserve">
+    <value>XML Snippets</value>
+  </data>
 </root>

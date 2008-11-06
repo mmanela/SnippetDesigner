@@ -9,7 +9,7 @@ namespace Microsoft.SnippetDesigner
     /// <summary>
     /// Represents the data that is exported from a code file to the snippet codeWindowHost
     /// </summary>
-    internal class ExportToSnippetData
+    public class ExportToSnippetData
     {
         //member variables
         private string snippetCode;

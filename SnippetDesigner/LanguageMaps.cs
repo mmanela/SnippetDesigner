@@ -24,6 +24,16 @@ namespace Microsoft.SnippetDesigner
         //hash that maps what the display names of the programming languages are to the xml names the snippet schema specifies
         private Dictionary<string, string> displayLanguageToXML = new Dictionary<string, string>();
 
+        private Dictionary<Language, Guid> languageGuids = new Dictionary<Language, Guid>();
+
+        public Dictionary<Language, Guid> LanguageGuids
+        {
+            get
+            {
+                return languageGuids;
+            }
+        }
+
         public Dictionary<string, string> SnippetSchemaLanguageToDisplay
         {
             get
@@ -96,7 +106,11 @@ namespace Microsoft.SnippetDesigner
             displayLanguageToXML[Resources.DisplayNameCSharp] = ConstantStrings.SchemaNameCSharp;
             displayLanguageToXML[Resources.DisplayNameXML] = ConstantStrings.SchemaNameXML;
             displayLanguageToXML[String.Empty] = String.Empty;
-            
+
+            languageGuids[Language.CSharp] = GuidList.csLangSvc;
+            languageGuids[Language.VisualBasic] = GuidList.vbLangSvc;
+            languageGuids[Language.XML] = GuidList.xmlLangSvc;
+
         }
     }
 }
