@@ -509,7 +509,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public bool SaveSnippet()
         {
-            UpdateSnippetInMemory();
+            PushFieldsIntoActiveSnippet();
             if (SnippetDesignerPackage.Instance != null)
             {
                 SnippetDesignerPackage.Instance.SnippetIndex.UpdateSnippetFile(snippetFile);
@@ -525,7 +525,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public bool SaveSnippetAs(string fileName)
         {
-            UpdateSnippetInMemory();
+            PushFieldsIntoActiveSnippet();
             foreach (Snippet snippetItem in snippetFile.Snippets)
             {
                 if (SnippetDesignerPackage.Instance != null)
@@ -556,7 +556,7 @@ namespace Microsoft.SnippetDesigner
                 //set this snippet as the active snippet
                 activeSnippet = snippetFile.Snippets[snippetIndex]; ;
                 //populate the gui with this snippets information
-                PopulateFieldsFromActiveSnippet();
+                PullFieldsFromActiveSnippet();
                 //indicate that this snippet is not dirty
                 isFormDirty = false;
             }
@@ -573,7 +573,7 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Takes data from in memory snippet file and populates the gui form
         /// </summary>
-        public void PopulateFieldsFromActiveSnippet()
+        public void PullFieldsFromActiveSnippet()
         {
 
             //snippet information
@@ -622,7 +622,7 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Takes the data from the form and adds it to the in memory xml document
         /// </summary>
-        public void UpdateSnippetInMemory()
+        public void PushFieldsIntoActiveSnippet()
         {
 
             //add header info
@@ -744,7 +744,7 @@ namespace Microsoft.SnippetDesigner
                 string newTitle = snippetsBox.SelectedItem as string;
                 if (!String.IsNullOrEmpty(newTitle) && newTitle != activeSnippet.Title)
                 {
-                    UpdateSnippetInMemory();
+                    PushFieldsIntoActiveSnippet();
 
                     //foreach (Snippet sn in snippetFile.Snippets)
                     for (int i = 0; i < snippetFile.Snippets.Count; i++)
@@ -756,7 +756,7 @@ namespace Microsoft.SnippetDesigner
                         }
                     }
 
-                    PopulateFieldsFromActiveSnippet();
+                    PullFieldsFromActiveSnippet();
 
                     //clear and show all markers
                     ClearAllMarkers(false);
@@ -792,7 +792,7 @@ namespace Microsoft.SnippetDesigner
                 {
                     snippetsBox.Items.Remove(snippetTitle);
                     snippetTitle = newTitle;
-                    UpdateSnippetInMemory();
+                    PushFieldsIntoActiveSnippet();
                     isFormDirty = true;
                 }
 

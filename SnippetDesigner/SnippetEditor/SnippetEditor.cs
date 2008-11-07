@@ -343,7 +343,7 @@ namespace Microsoft.SnippetDesigner
             object captionValue;
             //get caption and make it title without its extension
             EditorFrame.GetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, out captionValue);
-            this.SnippetTitle = Path.GetFileNameWithoutExtension(captionValue.ToString());
+            this.ActiveSnippet.Title = this.SnippetTitle = Path.GetFileNameWithoutExtension(captionValue.ToString());
 
             //add titles to snippet titles property
             List<string> titles = new List<string>();
@@ -352,7 +352,7 @@ namespace Microsoft.SnippetDesigner
             this.SnippetAuthor = SnippetDesignerPackage.VSRegisteredName;
 
             //make sure title is in snippets data memory
-            UpdateSnippetInMemory();
+            PushFieldsIntoActiveSnippet();
         }
 
         /// <summary>

@@ -37,7 +37,7 @@ namespace Microsoft.SnippetDesigner
          internal const string snippetExplorerString = "8332D89B-E52F-46d7-8D9E-6D201943C631";
 
          internal const string csharpSnippetLanguageServiceString = "6F34A178-46D5-485a-A636-18DEDEFA0299";
-         internal const string vbSnippetLanguageServiceString = "005A3641-D402-40af-8782-1BA0FFB83D73";
+         internal const string vbSnippetLanguageServiceString = "D98C5203-FF7B-4690-9253-8EA75DFA1878";
          internal const string xmlSnippetLanguageServiceString = "005A3641-D402-40af-8782-1BA0FFB83D73";
 
         //guid for sacPackage

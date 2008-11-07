@@ -9,10 +9,18 @@ using MsOle = Microsoft.VisualStudio.OLE.Interop;
 
 namespace Microsoft.SnippetDesigner
 {
+    /// <summary>
+    /// The base snipet language service.  This is a kind of "proxy" language service.  
+    /// It deferers certain language service opertaions to another language service like C#.
+    /// This lets us get the C# language service to colorize the snippet code but not report errors from it.
+    /// </summary>
     public abstract class SnippetLanguageService : LanguageService
     {
         private Language language;
         private IVsLanguageInfo languageInfo;
+
+        // Cached colorizers
+        private List<SnippetColorizer> colorizers = new List<SnippetColorizer>();
 
         public SnippetLanguageService(Language lang)
         {
@@ -57,7 +65,7 @@ namespace Microsoft.SnippetDesigner
 
         public override int GetColorableItem(int index, out IVsColorableItem item)
         {
-            
+
             return ((IVsProvideColorableItems)languageInfo).GetColorableItem(index, out item);
         }
 
@@ -66,57 +74,37 @@ namespace Microsoft.SnippetDesigner
             return ((IVsProvideColorableItems)languageInfo).GetItemCount(out count);
         }
 
+        /// <summary>
+        /// Gets the colorizer.
+        /// </summary>
+        /// <param name="buffer">The buffer.</param>
+        /// <returns></returns>
         public override Colorizer GetColorizer(IVsTextLines buffer)
         {
 
+            foreach (SnippetColorizer cachedColorizer in colorizers)
+            {
+                if (cachedColorizer.Buffer == buffer)
+                {
+                    return cachedColorizer;
+                }
+            }
+
             IVsColorizer colorizer = null;
             languageInfo.GetColorizer(buffer, out colorizer);
+            SnippetColorizer colorizerWrapper = new SnippetColorizer(this, buffer, null, colorizer);
+            colorizers.Add(colorizerWrapper);
 
-            Colorizer colorizerWrapper = new SnippetColorizer(this, buffer, null, colorizer);
             return colorizerWrapper;
         }
 
-        /// <summary>
-        /// A colorier which delegates the colorization to a IVsColorizer interface
-        /// </summary>
-        class SnippetColorizer : Colorizer
+        public virtual void OnCloseColorizer(SnippetColorizer sc)
         {
-            IVsColorizer colorizer;
-            public SnippetColorizer(LanguageService svc, IVsTextLines buffer, IScanner scanner, IVsColorizer colorizer)
-                : base(svc, buffer, scanner)
+            if ((this.colorizers != null) && colorizers.Contains(sc))
             {
-                this.colorizer = colorizer;
+                colorizers.Remove(sc);
             }
 
-
-            public override int GetStartState(out int start)
-            {
-                int res = colorizer.GetStartState(out start);
-                return res;
-            }
-
-            public override int GetStateMaintenanceFlag(out int flag)
-            {
-                int res = colorizer.GetStateMaintenanceFlag(out flag);
-                return res;
-            }
-
-            public override int GetStateAtEndOfLine(int line, int length, IntPtr ptr, int state)
-            {
-                int res = colorizer.GetStateAtEndOfLine(line, length, ptr, state);
-                return res;
-            }
-
-            public override int GetColorInfo(string line, int length, int state)
-            {
-                return base.GetColorInfo(line, length, state);
-            }
-
-            public override int ColorizeLine(int line, int length, IntPtr ptr, int state, uint[] attrs)
-            {
-                int res = colorizer.ColorizeLine(line, length, ptr, state, attrs);
-                return res;
-            }
         }
 
         public override IScanner GetScanner(IVsTextLines buffer)
@@ -137,5 +125,23 @@ namespace Microsoft.SnippetDesigner
         {
             throw new NotImplementedException();
         }
+
+        #region IDisposable Members
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            if (colorizers != null)
+            {
+                foreach (SnippetColorizer colorizer in colorizers)
+                {
+                    colorizer.Dispose();
+                }
+                colorizers.Clear();
+                colorizers = null;
+            }
+        }
+
+        #endregion
     }
 }

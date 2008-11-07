@@ -133,13 +133,13 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Takes data from in memory snippet file and populates the gui form
         /// </summary>
-        void PopulateFieldsFromActiveSnippet();
+        void PullFieldsFromActiveSnippet();
 
 
          /// <summary>
         /// Takes the data from the form and adds it to the in memory xml document
         /// </summary>
-        void UpdateSnippetInMemory();
+        void PushFieldsIntoActiveSnippet();
 
         #endregion
 

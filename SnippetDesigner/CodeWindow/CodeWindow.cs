@@ -246,7 +246,7 @@ namespace Microsoft.SnippetDesigner
             //add the languages we support to a has that maps a display name of a language to its guid
             langServ.Add(SnippetDesigner.Resources.DisplayNameVisualBasic, GuidList.vbSnippetLanguageService);
             langServ.Add(SnippetDesigner.Resources.DisplayNameCSharp, GuidList.csharpSnippetLanguageService);
-            langServ.Add(SnippetDesigner.Resources.DisplayNameXML, GuidList.xmlLangSvc);
+            langServ.Add(SnippetDesigner.Resources.DisplayNameXML, GuidList.xmlSnippetLanguageService);
 
             //default to text
             defaultLanguage = GuidList.textLangSvc;

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -73,6 +73,7 @@
     <Compile Include="CodeWindow\CodeWindow.designer.cs">
       <DependentUpon>CodeWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="LanguageService\SnippetColorizer.cs" />
     <Compile Include="LanguageService\XMLSnippetLanguageService.cs" />
     <Compile Include="LanguageService\VBSnippetLanguageService.cs" />
     <Compile Include="LanguageService\CSharpSnippetLanguageService.cs" />
