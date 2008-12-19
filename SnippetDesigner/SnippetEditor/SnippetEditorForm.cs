@@ -759,8 +759,7 @@ namespace Microsoft.SnippetDesigner
                     PullFieldsFromActiveSnippet();
 
                     //clear and show all markers
-                    ClearAllMarkers(false);
-                    UpdateReplacementMarkers(false);
+                    //RefreshReplacementMarkers(false);
 
                     //not the best way to do this but since I dont know if we want to move the change current snippet to the 
                     // porperties window this will have to do for now
@@ -837,8 +836,6 @@ namespace Microsoft.SnippetDesigner
             DataGridView grid = sender as DataGridView;
             if (grid != null)
             {
-
-
                 if (grid.Columns[e.ColumnIndex].Name == ConstantStrings.ColumnID)
                 {
                     previousIDValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
@@ -859,8 +856,7 @@ namespace Microsoft.SnippetDesigner
             if (grid != null)
             {
                 currentlySelectedId = grid.Rows[e.RowIndex].Cells[ConstantStrings.ColumnID].Value as string;
-                ClearAllMarkers(false);
-                UpdateReplacementMarkers(false);
+                RefreshReplacementMarkers();
             }
         }
 
@@ -899,13 +895,13 @@ namespace Microsoft.SnippetDesigner
                             //replace all occurances of the oldReplacement with newReplacement
                             //set false so it allows us to overdie existing replacements
                             this.CodeWindow.ReplaceAll(oldReplacement, newReplacement, false);
+                            this.CodeWindow.ReplaceAll(newIdValue, newReplacement, true);
 
                             //add any existing instances of this vairable as new replacement
-                            ReplacementMake(newIdValue);
+                            //ReplacementMake(newIdValue);
 
-                            //a update was made so refresh markers
-                            ClearAllMarkers(false);
-                            UpdateReplacementMarkers(false);
+                            //a update was made so refresh marker
+                            //RefreshReplacementMarkers(false);
                             isFormDirty = true;//form is now dirty
                         }
                         else
@@ -940,7 +936,7 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// When a row is deleted remove all replcamement symbols around the ID removed
+        /// When a row is deleted remove all replacement symbols around the ID removed
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -982,7 +978,7 @@ namespace Microsoft.SnippetDesigner
 
 
 
-        //These are functions that deal with updated and mofiying the replacments in the code window
+        //These are functions that deal with updated and modifying the replacments in the code window
         // such as removing, make and making a replacement active
         #region Replacement Functions
 
@@ -1003,9 +999,10 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Mark All replacements
         /// </summary>
-        /// <param name="currentLineOnly">Whether or not to update the current lines markers only</param>
-        public void UpdateReplacementMarkers(bool currentLineOnly)
+        /// <param name="lineToMark">The line to mark.</param>
+        public void RefreshReplacementMarkers(int lineToMark)
         {
+            ClearAllMarkers(lineToMark);
             List<string> allReplacements = new List<string>();
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
@@ -1018,41 +1015,36 @@ namespace Microsoft.SnippetDesigner
 
             }
             //search through the code window and update all replcement highlight martkers
-            CodeWindow.MarkReplacements(allReplacements, currentLineOnly);
+            CodeWindow.MarkReplacements(allReplacements, lineToMark);
         }
 
-
+        public void RefreshReplacementMarkers() { RefreshReplacementMarkers(-1); }
 
 
         /// <summary>
         /// Clear every replacement marker
         /// </summary>
-        /// <param name="currentLineOnly">Whether to only clear the current lines markers</param>
-        public void ClearAllMarkers(bool currentLineOnly)
+        /// <param name="lineToClear">The line to clear.</param>
+        public void ClearAllMarkers(int lineToClear)
         {
             //clear all yellow markers
-            ClearMarkersOfType(GuidList.yellowMarker, currentLineOnly);
+            ClearMarkersOfType(GuidList.yellowMarker, lineToClear);
             //clear all yellow markers with borders
-            ClearMarkersOfType(GuidList.yellowMarkerWithBorder, currentLineOnly);
+            ClearMarkersOfType(GuidList.yellowMarkerWithBorder, lineToClear);
         }
 
         /// <summary>
         /// Clear every replacement marker of a given type
         /// </summary>
         /// <param name="markerGuid">The guid of the type of the marker you want to clear</param>
-        /// <param name="currentLineOnly">Whether to only clear the current lines markers</param>
-        public void ClearMarkersOfType(Guid markerGuid, bool currentLineOnly)
+        /// <param name="lineToClear">The line to clear.</param>
+        public void ClearMarkersOfType(Guid markerGuid, int lineToClear)
         {
             if (SnippetDesignerPackage.Instance == null)
             {
                 return;
             }
-            int lineToClear = -1;
-            if (currentLineOnly)
-            {
-                int col;
-                this.CodeWindow.TextView.GetCaretPos(out lineToClear, out col);
-            }
+
             int lastLine = CodeWindow.LineCount - 1;
 
 
@@ -1066,6 +1058,7 @@ namespace Microsoft.SnippetDesigner
             IVsEnumLineMarkers markerEnum;
             //get enum of all yellow markers
             CodeWindow.TextLines.EnumMarkers(0, 0, lastLine, CodeWindow.LineLength(lastLine), markerTypeID, 0, out markerEnum);
+            
             int markerCount = 0;
             markerEnum.GetCount(out markerCount);
             IVsTextLineMarker marker;
@@ -1076,7 +1069,7 @@ namespace Microsoft.SnippetDesigner
                 TextSpan[] span = new TextSpan[1];
                 marker.GetCurrentSpan(span);
                 //if this is the right line to clear or if we are clearing all lines
-                if (span[0].iStartLine == lineToClear || !currentLineOnly)
+                if (span[0].iStartLine == lineToClear || lineToClear < 0)
                 {
                     //clear and tell the code window to stop keeping track of this marker
                     marker.Invalidate();
@@ -1107,8 +1100,7 @@ namespace Microsoft.SnippetDesigner
                         replacementGridView.ClearSelection();
                         row.Selected = true;
                         currentlySelectedId = row.Cells[ConstantStrings.ColumnID].Value as string;
-                        ClearAllMarkers(false);
-                        UpdateReplacementMarkers(false);
+                        RefreshReplacementMarkers();
                         break;
                     }
                 }
@@ -1119,7 +1111,7 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// Take the textToFind at the current cursor position and and turn all insatnces into non replacements
+        /// Take the textToFind at the current cursor position and and turn all instances into non replacements
         /// </summary>
         /// <param name="textToChange">text to stop from being a replcement</param>
         public void ReplacementRemove()
@@ -1163,69 +1155,81 @@ namespace Microsoft.SnippetDesigner
 
         /// <summary>
         /// Take the textToFind at the current cursor position and make into a replacement
-        /// 
-        /// Step one check if the user higlihgted something
-        /// if not
-        /// step two the word ar current cursor position
         /// </summary>
         public void ReplacementMake()
         {
             string selectedText = String.Empty;
-            if (this.CodeWindow.SelectionLength != 0)
+            var selection = this.CodeWindow.Selection;
+            var selectionLength = this.CodeWindow.SelectionLength;
+            if (selectionLength != 0)
             {
                 //trim any replacement symbols or spaces
                 selectedText = this.CodeWindow.SelectedText.Trim(ConstantStrings.SymbolReplacement[0], ' ');
+
             }
             else
             {
                 selectedText = this.CodeWindow.GetWordFromCurrentPosition();
             }
+
+
             //make replacement with the desired text
-            ReplacementMake(selectedText);
+            if (ReplacementMake(selectedText) && selectionLength > 0)
+            {
+                selection.iEndIndex += ConstantStrings.SymbolReplacement.Length * 2;
+                this.CodeWindow.Selection = selection;
+            }
         }
 
         /// <summary>
         /// Take the textToFind at the current cursor position and make into a replacement
         /// </summary>
         /// <param name="textToChange">The text that we want to make into a replacement</param>
-        /// 
-        public void ReplacementMake(string textToChange)
+        /// <returns>true if replacement was made</returns>
+        public bool ReplacementMake(string textToChange)
         {
 
             //if invalid text to make into a replacement return
             if (!validReplacement.IsMatch(textToChange))
             {
                 //not a valid replacement
-                return;
+                return false;
+            }
+
+            //check if replacement exists already
+            foreach (DataGridViewRow row in this.replacementGridView.Rows)
+            {
+                if ((string)row.Cells[ConstantStrings.ColumnID].EditedFormattedValue == textToChange ||
+                    textToChange.Trim() == String.Empty)
+                {
+                    //this replacement already exists or is nothing don't add it to the replacement list
+                    return false;
+                }
+
             }
 
             //build new replacement text
             string newText = TurnTextIntoReplacementSymbol(textToChange);
 
 
+            object[] newRow = { textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true };
+            int rowIndex = this.replacementGridView.Rows.Add(newRow);
+            SetOrDisableTypeField(false, rowIndex);
 
             //replace all occurances of the textToFind with $textToFind$
             int numFoundAndReplaced = this.CodeWindow.ReplaceAll(textToChange, newText, true);
 
             if (numFoundAndReplaced > 0)
             {
-                //check if replacement exists already
-                foreach (DataGridViewRow row in this.replacementGridView.Rows)
-                {
-                    if ((string)row.Cells[ConstantStrings.ColumnID].EditedFormattedValue == textToChange || textToChange.Trim() == String.Empty)
-                    {
-                        //this replacement already exists or is nothing don't add it to the replacement list
-                        return;
-                    }
 
-                }
 
-                object[] newRow = { textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true };
-                int rowIndex = this.replacementGridView.Rows.Add(newRow);
-                SetOrDisableTypeField(false, rowIndex);
+                //RefreshReplacementMarkers(false);//refresh all replacements
+                return true;
             }
-
-            UpdateReplacementMarkers(false);//refresh all replacements
+            else
+            {
+                return false;
+            }
         }
 
 
@@ -1243,12 +1247,12 @@ namespace Microsoft.SnippetDesigner
                     //build new replacement text 
                     string currentText = TurnTextIntoReplacementSymbol(deletedID);
                     this.CodeWindow.ReplaceAll(currentText, deletedID, false);
-                    ClearAllMarkers(false);
-                    UpdateReplacementMarkers(false);
+                    //RefreshReplacementMarkers(false);
                 }
             }
 
         }
+
 
         #endregion
 

@@ -1036,8 +1036,7 @@ namespace Microsoft.SnippetDesigner
                 
 
                 //clear and show all markers
-                ClearAllMarkers(false);
-                UpdateReplacementMarkers(false);
+                RefreshReplacementMarkers();
 
                 isDirty = false;//the file is not dirty since we just loaded it
                 //clear the buffer dirty flag, this stops the * from appearing after we load
@@ -1523,7 +1522,7 @@ namespace Microsoft.SnippetDesigner
             //it doesnt always know it has focus cause the IVTextView will gobble up the info
             CodeWindow.Select();
             activeTextView = focusedView;
-            UpdateReplacementMarkers(false);
+            RefreshReplacementMarkers();
             
             
         }
@@ -1556,9 +1555,8 @@ namespace Microsoft.SnippetDesigner
             }
 
             //clear the items which are marker but no longer are replaceements
-            ClearAllMarkers(true);//clear all replacements on the current line
             //update all markers
-            UpdateReplacementMarkers(true);
+            RefreshReplacementMarkers(textLineChanges[0].iStartLine);
             
         }
 

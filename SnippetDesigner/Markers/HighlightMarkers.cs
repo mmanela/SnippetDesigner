@@ -55,7 +55,7 @@ namespace Microsoft.SnippetDesigner
 
         public int GetVisualStyle(out uint pdwVisualFlags)
         {
-            pdwVisualFlags = (uint)MARKERVISUAL.MV_COLOR_ALWAYS;
+            pdwVisualFlags = (uint)MARKERVISUAL.MV_COLOR_ALWAYS | (uint)MARKERVISUAL.MV_TIP_FOR_BODY;
            
             return 0;
         }
@@ -216,7 +216,7 @@ namespace Microsoft.SnippetDesigner
 
         public int GetVisualStyle(out uint pdwVisualFlags)
         {
-            pdwVisualFlags = (uint)MARKERVISUAL.MV_COLOR_ALWAYS | (uint)MARKERVISUAL.MV_BORDER;
+            pdwVisualFlags = (uint)MARKERVISUAL.MV_COLOR_ALWAYS | (uint)MARKERVISUAL.MV_BORDER | (uint)MARKERVISUAL.MV_TIP_FOR_BODY;
 
             return 0;
         }

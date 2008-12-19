@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio;
 using MsOle = Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.OLE.Interop;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -53,6 +54,10 @@ namespace Microsoft.SnippetDesigner
             return li;
         }
 
+        /// <summary>
+        /// Gets the format filter list.
+        /// </summary>
+        /// <returns></returns>
         public override string GetFormatFilterList()
         {
             return "*";
@@ -89,6 +94,8 @@ namespace Microsoft.SnippetDesigner
                     return cachedColorizer;
                 }
             }
+            Guid clsidVsTextBuffer = typeof(VsTextBufferClass).GUID;
+            Guid iidVsTextLines = typeof(IVsTextLines).GUID;
 
             IVsColorizer colorizer = null;
             languageInfo.GetColorizer(buffer, out colorizer);
@@ -107,10 +114,13 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-        public override IScanner GetScanner(IVsTextLines buffer)
+        public override int GetFileExtensions(out string extensions)
         {
-            throw new NotImplementedException();
+            extensions = "snippet";
+            return base.GetFileExtensions(out extensions);
         }
+ 
+
 
         public override string Name
         {
@@ -121,10 +131,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        public override AuthoringScope ParseSource(ParseRequest req)
-        {
-            throw new NotImplementedException();
-        }
+
 
         #region IDisposable Members
 
@@ -140,8 +147,20 @@ namespace Microsoft.SnippetDesigner
                 colorizers.Clear();
                 colorizers = null;
             }
+
         }
 
         #endregion
+
+
+        public override IScanner GetScanner(IVsTextLines buffer)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override AuthoringScope ParseSource(ParseRequest req)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

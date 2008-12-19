@@ -318,16 +318,15 @@ namespace Microsoft.SnippetDesigner
             if (vsCodeWindow != null)
             {
                 IVsTextLines vsTextLines = this.TextLines;
-                Guid langGuid;
-                //is this language in the hash
-                if (langServ.ContainsKey(lang))
+                Guid langGuid = defaultLanguage;
+
+                if (SnippetDesignerPackage.Instance.Settings.EnableColorization)
                 {
-                    langGuid = langServ[lang];
-                }
-                else
-                {
-                    //if we dont recognize the language then set it to the deafult
-                    langGuid = defaultLanguage;
+                    //is this language in the hash
+                    if (langServ.ContainsKey(lang))
+                    {
+                        langGuid = langServ[lang];
+                    }
                 }
 
                 ErrorHandler.ThrowOnFailure(vsTextLines.SetLanguageServiceID(ref langGuid));
@@ -438,8 +437,6 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-
-
         /// <summary>
         /// Get start of the selection
         /// </summary>
@@ -487,7 +484,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         /// <param name="span">a textspan representing a amount of text</param>
         /// <param name="color">a color</param>
-        internal void MarkSpan(TextSpan span, KindOfMarker markerType)
+        internal void HighlightSpan(TextSpan span, KindOfMarker markerType)
         {
             if (SnippetDesignerPackage.Instance == null)
             {
@@ -505,13 +502,18 @@ namespace Microsoft.SnippetDesigner
 
         }
 
+
+        internal void MarkReplacements(List<string> replaceIDs)
+        {
+            MarkReplacements(replaceIDs,-1);
+        }
         /// <summary>
         /// Mark all replacement items given the id of the replacement
         /// If text surrounded by the replacement symbol is found then turn it into a repalcement
         /// </summary>
-        /// <param name="replaceID">ther id/name of the replacement</param>
-        /// <param name="color">color to mark the replacement</param>
-        internal void MarkReplacements(List<string> replaceIDs, bool currentLineOnly)
+        /// <param name="replaceIDs">The replace ids.</param>
+        /// <param name="line">The line.</param>
+        internal void MarkReplacements(List<string> replaceIDs, int lineToMark)
         {
 
             if (replaceIDs == null || snippetEditor == null)
@@ -523,11 +525,9 @@ namespace Microsoft.SnippetDesigner
             int startLine = 0;
             int endLine = LineCount;
 
-            if (currentLineOnly)//are we just replacing markers on the current line
+            if (lineToMark > -1)//are we just replacing markers on the given line
             {
-                int col;
-                //get the current line
-                this.TextView.GetCaretPos(out startLine, out col);
+                startLine = lineToMark;
                 endLine = startLine + 1;
 
             }
@@ -543,7 +543,7 @@ namespace Microsoft.SnippetDesigner
                 {
                     //find the character at this position
                     string character = GetCharacterAtPosition(new TextPoint(line, index));
-                    //check if this character is the repalcement symbol
+                    //check if this character is the replacement symbol
                     if (character == SnippetDesigner.ConstantStrings.SymbolReplacement)
                     {
                         int nextIndex = index + 1;
@@ -551,7 +551,7 @@ namespace Microsoft.SnippetDesigner
                         {
                             nextIndex++;
                         }
-                        if (nextIndex < lineLength) //we found another SnippetDesigner.ConstantStrings.SymbolReplacement
+                        if (nextIndex < lineLength) //we found another SymbolReplacement
                         {
                             //create text span for the space between the two SnippetDesigner.ConstantStrings.ReplacementSymbols
                             string textBetween;
@@ -566,7 +566,10 @@ namespace Microsoft.SnippetDesigner
                                 replacementMarkerSpan.iStartLine = replacementMarkerSpan.iEndLine = line;
                                 replacementMarkerSpan.iStartIndex = index;
                                 //make the span 2*length of SymbolReplacement longer since we are marker the replacement symbol also
-                                replacementMarkerSpan.iEndIndex = nextIndex + (SnippetDesigner.ConstantStrings.SymbolReplacement.Length + SnippetDesigner.ConstantStrings.SymbolReplacement.Length - 1);
+                                replacementMarkerSpan.iEndIndex = 
+                                    nextIndex + 
+                                    (SnippetDesigner.ConstantStrings.SymbolReplacement.Length + 
+                                     SnippetDesigner.ConstantStrings.SymbolReplacement.Length - 1);
 
                                 KindOfMarker markerType;
                                 //determine if this is the adctive replacement
@@ -579,16 +582,16 @@ namespace Microsoft.SnippetDesigner
                                 {
                                     markerType = KindOfMarker.Yellow;
                                 }
-                                MarkSpan(replacementMarkerSpan, markerType);//mark this span with the desired color marker
+                                HighlightSpan(replacementMarkerSpan, markerType);//mark this span with the desired color marker
                                 index = nextIndex; //skip the ending SnippetDesigner.ConstantStrings.SymbolReplacement, it will be incremented the one extra in the next loop iteration
                             }
                             else
                             {
                                 string trimedText = textBetween.Trim();
                                 //this replacement does not exist yet so create it only if the last character entered was the replacement symbol
-                                if (this.snippetEditor.LastCharacterEntered != null //make sure a single character was just entered
-                                    && this.snippetEditor.LastCharacterEntered == SnippetDesigner.ConstantStrings.SymbolReplacement //make sure the last charcter is a $
-                                    && trimedText == textBetween //make sure this replacement doesnt have whitespace in it
+                                if (//this.snippetEditor.LastCharacterEntered != null //make sure a single character was just entered
+                                   // && this.snippetEditor.LastCharacterEntered == SnippetDesigner.ConstantStrings.SymbolReplacement //make sure the last charcter is a $
+                                    trimedText == textBetween //make sure this replacement doesnt have whitespace in it
                                     && trimedText != String.Empty //and make sure its not empty
                                     && trimedText != ConstantStrings.SymbolEndWord //the word cant be end
                                     && trimedText != ConstantStrings.SymbolSelectedWord // and the word cant be selected they have special meaning
@@ -598,7 +601,7 @@ namespace Microsoft.SnippetDesigner
                                     this.snippetEditor.ReplacementMake(textBetween);
 
                                     //clear last character 
-                                    this.snippetEditor.LastCharacterEntered = null;
+                                    //this.snippetEditor.LastCharacterEntered = null;
                                 }
                                 else
                                 {
@@ -614,8 +617,6 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-
-
         /// <summary>
         /// Replaces all occurances in the code buffer of one textToFind with another
         /// </summary>
@@ -629,7 +630,7 @@ namespace Microsoft.SnippetDesigner
             TextPoint nextPoint = new TextPoint();
             int numberReplaced = 0;
             //search through every string we can replace
-            while (FindReplaceableString(currentWord, nextPoint, out span))
+            while (FindNextReplaceableString(currentWord, nextPoint, out span))
             {
                 //calculate the difference in word length
                 int differenceInWordLength = newWord.Length - currentWord.Length;
@@ -638,16 +639,14 @@ namespace Microsoft.SnippetDesigner
                 //this is very important since as we replace words their indicies change
                 nextPoint.Index = span.iEndIndex + 1 + differenceInWordLength;
                 nextPoint.Line = span.iEndLine;
-                //incremembt number of replacements made
-                numberReplaced++;
-                //replace the span witht eh given text
-                ReplaceSpanWithText(newWord, span, markReplacements);
+
+                //replace the span with the given text
+                if(ReplaceSpanWithText(newWord, span, markReplacements))
+                    numberReplaced++;
 
             }
             return numberReplaced;
         }
-
-
 
         /// <summary>
         /// Replace a span in a line with a string
@@ -670,6 +669,8 @@ namespace Microsoft.SnippetDesigner
                            (replaceSpan.iEndIndex - replaceSpan.iStartIndex),
                            newWord,
                            newWord.Length);
+
+                    return true;
                 }
 
             }
@@ -678,9 +679,8 @@ namespace Microsoft.SnippetDesigner
                 return false;
             }
 
-            return true;
+            return false;
         }
-
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#")]
         internal bool FindEnclosingReplacementQuoteSpan(TextSpan span, out TextSpan quoteSpan)
@@ -716,7 +716,6 @@ namespace Microsoft.SnippetDesigner
             return true;
         }
 
-
         /// <summary>
         /// Based on where the user clicks or selects get the span of the chosen replacement
         /// This doesn't check if this span is in our replacement list just that it meets the criteria for a replacement
@@ -751,8 +750,6 @@ namespace Microsoft.SnippetDesigner
             return true;
 
         }
-
-
 
         /// <summary>
         /// Examines the span and the characters around it to see if it has the repalcement symbols around it arleady
@@ -790,11 +787,11 @@ namespace Microsoft.SnippetDesigner
         /// <param name="textToFind">textToFind to find</param>
         /// <param name="startPositon">the point to start the search at</param>
         /// <returns>The span of the textToFind</returns>
-        internal bool FindReplaceableString(string word, TextPoint startPositon, out TextSpan returnSpan)
+        internal bool FindNextReplaceableString(string word, TextPoint startPositon, out TextSpan returnSpan)
         {
 
             int lastLine = LineCount - 1;
-            return FindReplaceableString(word, startPositon, new TextPoint(lastLine, LineLength(lastLine)), out returnSpan);
+            return FindNextReplaceableString(word, startPositon, new TextPoint(lastLine, LineLength(lastLine)), out returnSpan);
 
         }
 
@@ -804,7 +801,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="textToFind">textToFind</param>
         /// <param name="startPositon">the point to start the search at</param>
         /// <returns>The span of the textToFind</returns>
-        internal bool FindReplaceableString(string textToFind, TextPoint startPositon, TextPoint endPositon, out TextSpan returnSpan)
+        internal bool FindNextReplaceableString(string textToFind, TextPoint startPositon, TextPoint endPositon, out TextSpan returnSpan)
         {
             if (startPositon == null || endPositon == null || textToFind == null)
             {
@@ -896,8 +893,6 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-
-
         /// <summary>
         /// Gets the character found at a specifc cursor poistion
         /// </summary>
@@ -968,7 +963,6 @@ namespace Microsoft.SnippetDesigner
             textView.GetWordExtent(positon.Line, positon.Index, 0, span);
             return span[0];
         }
-
 
         #endregion
 

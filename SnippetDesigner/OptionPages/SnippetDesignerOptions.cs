@@ -24,6 +24,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
         List<string> indexedSnippetDirectories;
 
 
+
         /// <summary>
         /// Initializes a new instance of the <see cref="SnippetDesignerOptions"/> class.
         /// </summary>
@@ -72,7 +73,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
         {
             get
             {
-                return indexedSnippetDirectories!=null ? Join(";", indexedSnippetDirectories) : string.Empty;
+                return indexedSnippetDirectories != null ? Join(";", indexedSnippetDirectories) : string.Empty;
             }
             set
             {
@@ -81,7 +82,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
                     indexedSnippetDirectoriesString = value;
                     indexedSnippetDirectories = new List<string>(indexedSnippetDirectoriesString.Split(';'));
                 }
-                
+
             }
         }
 
@@ -91,7 +92,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<string> IndexedSnippetDirectories
         {
-            get 
+            get
             {
                 return indexedSnippetDirectories;
             }
@@ -102,15 +103,28 @@ namespace Microsoft.SnippetDesigner.OptionPages
         }
 
         [Category("Editor")]
+        [DisplayName("Enable Snippet Language Services (Buggy)")]
+        [Description(@"This will enable the snippet language services.  
+This will provide color coding of snippets and some other language service features such as code collapsing. 
+NOTE: This is current buggy for VB and C# language services.  
+If you have a project open at the same time as the snippet language service, the snippet language service will report 'fake' errors in the error list.  
+These won't stop you from building your project but can be annoying.")]
+        public bool EnableColorization
+        {
+            get;
+            set;
+        }
+
+        [Category("Editor")]
         [Description("The default language the Snippet Editor starts in.")]
         public Language DefaultLanguage
         {
-            get 
-            { 
-                return language; 
+            get
+            {
+                return language;
             }
-            set 
-            { 
+            set
+            {
                 language = value;
             }
         }
@@ -159,6 +173,8 @@ namespace Microsoft.SnippetDesigner.OptionPages
                 hideXML = value;
             }
         }
+
+
 
 
 
