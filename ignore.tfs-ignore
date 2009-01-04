@@ -7,5 +7,6 @@
   <add recursive='true'>*.user</add>
   <add recursive='true'>*.bak</add>
   <add>SnippetDesigner.Settings.targets</add>
+  <add>SnippetDesignerDXCore.Solution</add>
   <add>*.gpState</add>
 </ignore>

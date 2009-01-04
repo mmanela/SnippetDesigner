@@ -92,11 +92,6 @@
     </Compile>
     <Compile Include="SnippetDirectories.cs" />
     <Compile Include="SnippetEditor\CommandFilter.cs" />
-    <Compile Include="ConstantStrings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ConstantStrings.resx</DependentUpon>
-    </Compile>
     <Compile Include="SnippetIndex\SnippetIndex.cs" />
     <Compile Include="SnippetIndex\SnippetIndexItem.cs" />
     <Compile Include="EditorFactory.cs" />
@@ -132,7 +127,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="SnippetEditor\SnippetEditorConfiguration.cs" />
     <Compile Include="SnippetEditor\SnippetEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -156,12 +150,6 @@
     <EmbeddedResource Include="CodeWindow\CodeWindow.resx">
       <DependentUpon>CodeWindow.cs</DependentUpon>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="ConstantStrings.resx">
-      <SubType>Designer</SubType>
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ConstantStrings.Designer.cs</LastGenOutput>
-      <CustomToolNamespace>Microsoft.SnippetDesigner</CustomToolNamespace>
     </EmbeddedResource>
     <EmbeddedResource Include="OptionPages\ResetOptionsControl.resx">
       <DependentUpon>ResetOptionsControl.cs</DependentUpon>
@@ -229,11 +217,6 @@
       <Name>SnippetLibrary</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="SnippetEditor\SnippetEditorConfig.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
   <PropertyGroup>
     <!--
     To specify a different registry root to register your package, uncomment the TargetRegistryRoot
@@ -249,9 +232,7 @@
   <PropertyGroup>
     <PreBuildEvent>copy /Y "$(ProjectDir)VSDIR\SnippetDesigner.vsdir" "$(DevEnvDir)NewFileItems";
 
-copy /Y "$(ProjectDir)VSDIR\SnippetFile.snippet" "$(DevEnvDir)NewFileItems";
-
-copy /Y "$(ProjectDir)SnippetEditor\SnippetEditorConfig.xml" "$(ProjectDir)$(OutDir)"</PreBuildEvent>
+copy /Y "$(ProjectDir)VSDIR\SnippetFile.snippet" "$(DevEnvDir)NewFileItems";</PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>

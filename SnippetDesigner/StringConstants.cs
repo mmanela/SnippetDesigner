@@ -11,25 +11,64 @@ namespace Microsoft.SnippetDesigner
     /// String constants that don't belong in a resource file
     /// These are strings which are passed around internally and should not change
     /// </summary>
-    internal class StringConstants
+    public class StringConstants
     {
-
-        // Most of the string constants are stored in The resource file named ConstantStrings
-        // the strings below are store here since they wont work in a resource file since they need to have the const key word
-        // to be used in attributes
-        // or that they lose their formating in the resource file
-
         //the vs commands to make a new snippet file
-        internal const int TemplateNameResourceID = 106;
-        internal static readonly string MakeSnippetDTEArgs = @"/template:" + "\"General\\" + SnippetDesignerPackage.GetResourceString(TemplateNameResourceID) + "\"";
-        internal static readonly string NewFileDTECommand = "File.NewFile";
+        public const int TemplateNameResourceID = 106;
+        public static readonly string MakeSnippetDTEArgs = @"/template:" + "\"General\\" + SnippetDesignerPackage.GetResourceString(TemplateNameResourceID) + "\"";
+        public static readonly string NewFileDTECommand = "File.NewFile";
 
         //the extension associated with a snippet file
-        internal const string SnippetExtension = ".snippet";
+        public const string SnippetExtension = ".snippet";
 
         //yellow marker name for attribute - this is defined also in a resource but needs to also be here to use in attirbue ProvideCustomMarker
-        internal const string YellowHighlightMarkerName = "Yellow Highlight Marker";
-        internal const string YellowHighlightMarkerWithBorderName = "Yellow Highlight Marker with Border";
-        internal const string MarkerServiceName = "HighlightMarkerService";
+        public const string YellowHighlightMarkerName = "Yellow Highlight Marker";
+        public const string YellowHighlightMarkerWithBorderName = "Yellow Highlight Marker with Border";
+        public const string MarkerServiceName = "HighlightMarkerService";
+
+        public const string ArgumentStartMarker = " ";
+
+        public const string ColumnDefault = "DefaultsTo";
+        public const string ColumnEditable = "Editable";
+        public const string ColumnFunction = "Function";
+        public const string ColumnID = "ID";
+        public const string ColumnReplacementKind = "ReplacementKind";
+        public const string ColumnTooltip = "Tooltip";
+        public const string ColumnType = "Type";
+        public const string ConfigurationFile = "SnippetEditorConfig.xml";
+        public const string DoubleQuoteString = "\"";
+        public const string ExportNameCSharp = "csharp";
+        public const string ExportNameJSharp = "visual jsharp";
+        public const string ExportNameVisualBasic = "basic";
+        public const string ExportNameXML = "xml";
+        public const string MySnippetsDir = "My Code Snippets";
+        public const string MyXmlSnippetsDir = "My Xml Snippets";
+        public const string SchemaNameCSharp = "csharp";
+        public const string SchemaNameCSharp2 = "vcsharp";
+        public const string SchemaNameVisualBasic = "vb";
+        public const string SchemaNameXML = "xml";
+        public const string SnippetDirectoryName = "Code Snippets";
+        public const string SnippetDirNameCSharp = "Visual C#";
+        public const string SnippetDirNameVisualBasic = "Visual Basic";
+        public const string SnippetDirNameXML = "XML";
+        public const string SnippetTypeExpansion = "Expansion";
+        public const string SnippetTypeMethodBody = "method body";
+        public const string SnippetTypeMethodDeclaration = "method decl";
+        public const string SnippetTypeTypeDeclaration = "type decl";
+        public const string SymbolEnd = "$end$";
+        public const string SymbolEndWord = "end";
+        public const string SymbolReplacement = "$";
+        public const string SymbolSelected = "$selected$";
+        public const string SymbolSelectedWord = "selected";
+        public const string ValidReplacementString = @"^(("".*"")|(\w+))$";
+        public const string VSCSharpDirName = "VC#";
+        public const string VSJSharpDirName = "VJ#";
+        public const string VSRegistryLocationEntry = "VisualStudioLocation";
+        public const string VSRegistryPath = @"SOFTWARE\Microsoft\VisualStudio\9.0";
+        public const string VSRegistryRegistrationName = "Registration";
+        public const string VSRegistryRegistrationNameEntry = "UserName";
+        public const string VSSnippetDir = "Snippets";
+        public const string VSVBDirName = "VB";
+        public const string VSXmlDirName = "Xml";
     }
 }

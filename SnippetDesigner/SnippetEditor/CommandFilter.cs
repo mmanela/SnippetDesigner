@@ -85,7 +85,7 @@ namespace Microsoft.SnippetDesigner
                         //our replace command ahs been pressed to act on it
                     case PkgCmdIDList.cmdidSnippetMakeReplacement:
                         {
-                            snippetEditor.ReplacementMake();//make the current cursor position a replacement
+                            snippetEditor.CreateReplacementFromSelection();//make the current cursor position a replacement
                             hr = VSConstants.S_OK;
                             break;
                         }

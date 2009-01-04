@@ -43,17 +43,17 @@ namespace Microsoft.SnippetDesigner
         
         internal ExportToSnippetData(string code, string language)
         {
-            exportNameToSchemaName[SnippetDesigner.ConstantStrings.ExportNameCSharp] = SnippetDesigner.ConstantStrings.SchemaNameCSharp;
-            exportNameToSchemaName[SnippetDesigner.ConstantStrings.SchemaNameCSharp] = SnippetDesigner.ConstantStrings.SchemaNameCSharp;
-            exportNameToSchemaName[SnippetDesigner.Resources.DisplayNameCSharp] = SnippetDesigner.ConstantStrings.SchemaNameCSharp;
+            exportNameToSchemaName[SnippetDesigner.StringConstants.ExportNameCSharp] = SnippetDesigner.StringConstants.SchemaNameCSharp;
+            exportNameToSchemaName[SnippetDesigner.StringConstants.SchemaNameCSharp] = SnippetDesigner.StringConstants.SchemaNameCSharp;
+            exportNameToSchemaName[SnippetDesigner.Resources.DisplayNameCSharp] = SnippetDesigner.StringConstants.SchemaNameCSharp;
 
-            exportNameToSchemaName[SnippetDesigner.ConstantStrings.ExportNameVisualBasic] = SnippetDesigner.ConstantStrings.SchemaNameVisualBasic;
-            exportNameToSchemaName[SnippetDesigner.ConstantStrings.SchemaNameVisualBasic] = SnippetDesigner.ConstantStrings.SchemaNameVisualBasic;
-            exportNameToSchemaName[SnippetDesigner.Resources.DisplayNameVisualBasic] = SnippetDesigner.ConstantStrings.SchemaNameVisualBasic;
+            exportNameToSchemaName[SnippetDesigner.StringConstants.ExportNameVisualBasic] = SnippetDesigner.StringConstants.SchemaNameVisualBasic;
+            exportNameToSchemaName[SnippetDesigner.StringConstants.SchemaNameVisualBasic] = SnippetDesigner.StringConstants.SchemaNameVisualBasic;
+            exportNameToSchemaName[SnippetDesigner.Resources.DisplayNameVisualBasic] = SnippetDesigner.StringConstants.SchemaNameVisualBasic;
 
-            exportNameToSchemaName[SnippetDesigner.ConstantStrings.ExportNameXML] = SnippetDesigner.ConstantStrings.SchemaNameXML;
-            exportNameToSchemaName[SnippetDesigner.ConstantStrings.SchemaNameXML] = SnippetDesigner.ConstantStrings.SchemaNameXML;
-            exportNameToSchemaName[SnippetDesigner.Resources.DisplayNameXML] = SnippetDesigner.ConstantStrings.SchemaNameXML;
+            exportNameToSchemaName[SnippetDesigner.StringConstants.ExportNameXML] = SnippetDesigner.StringConstants.SchemaNameXML;
+            exportNameToSchemaName[SnippetDesigner.StringConstants.SchemaNameXML] = SnippetDesigner.StringConstants.SchemaNameXML;
+            exportNameToSchemaName[SnippetDesigner.Resources.DisplayNameXML] = SnippetDesigner.StringConstants.SchemaNameXML;
 
            snippetCode = code;
            if (exportNameToSchemaName.ContainsKey(language))

@@ -47,8 +47,12 @@ namespace Microsoft.SnippetDesigner
         private int snippetIndex; // index of the snippet in the snippetFile
         private Snippet activeSnippet; //represents the current snippet in memory
 
+        //if the user typed a single character then store it here so we know what it is
+        //otherwise its null
+        protected string lastCharacterEntered = null;
+
         //hash which maps the dispaly names of the languages to the path to their user snippet directory
-        internal Dictionary<string, string> snippetDirectories = new Dictionary<string, string>();
+        internal Dictionary<string, string> snippetDirectories = SnippetDirectories.Instance.UserSnippetDirectories;
 
         //hash of the header field to its data
         private Dictionary<string, DataGridViewCell> headerFields = new Dictionary<string, DataGridViewCell>();
@@ -81,7 +85,7 @@ namespace Microsoft.SnippetDesigner
         private List<string> snippetImports = new List<string>();
         private List<string> snippetReferences = new List<string>();
         private List<SnippetType> snippetTypes = new List<SnippetType>();
-        private Regex validReplacement;
+        private Regex validReplacement = new Regex(StringConstants.ValidReplacementString, RegexOptions.Compiled);
 
 
 
@@ -428,24 +432,24 @@ namespace Microsoft.SnippetDesigner
                 foreach (DataGridViewRow row in this.replacementGridView.Rows)
                 {
                     if (row.IsNewRow) continue;
-                    string currId = (string)row.Cells[ConstantStrings.ColumnID].EditedFormattedValue;
+                    string currId = (string)row.Cells[StringConstants.ColumnID].EditedFormattedValue;
                     currId = currId.Trim();
                     if (String.IsNullOrEmpty(currId)) continue;
 
                     bool isObj = false;
-                    if ((((DataGridViewComboBoxCell)row.Cells[ConstantStrings.ColumnReplacementKind]).EditedFormattedValue as string).ToLower() == Resources.ReplacementObjectName.ToLower())
+                    if ((((DataGridViewComboBoxCell)row.Cells[StringConstants.ColumnReplacementKind]).EditedFormattedValue as string).ToLower() == Resources.ReplacementObjectName.ToLower())
                     {
                         isObj = true;
                     }
 
-                    bool isEditable = (bool)((DataGridViewCheckBoxCell)row.Cells[ConstantStrings.ColumnEditable]).EditedFormattedValue;
-                    replacements.Add(new Literal((string)row.Cells[ConstantStrings.ColumnID].EditedFormattedValue,
-                        (string)row.Cells[ConstantStrings.ColumnTooltip].EditedFormattedValue,
-                        (string)row.Cells[ConstantStrings.ColumnDefault].EditedFormattedValue,
-                        (string)row.Cells[ConstantStrings.ColumnFunction].EditedFormattedValue,
+                    bool isEditable = (bool)((DataGridViewCheckBoxCell)row.Cells[StringConstants.ColumnEditable]).EditedFormattedValue;
+                    replacements.Add(new Literal((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue,
+                        (string)row.Cells[StringConstants.ColumnTooltip].EditedFormattedValue,
+                        (string)row.Cells[StringConstants.ColumnDefault].EditedFormattedValue,
+                        (string)row.Cells[StringConstants.ColumnFunction].EditedFormattedValue,
                         isObj,
                         isEditable,
-                        (string)row.Cells[ConstantStrings.ColumnType].EditedFormattedValue
+                        (string)row.Cells[StringConstants.ColumnType].EditedFormattedValue
                         ));
 
 
@@ -489,15 +493,8 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-
-        /// <summary>
-        /// Initialize the hashes and values in the form
-        /// </summary>
         public SnippetEditorForm()
         {
-            snippetDirectories = SnippetDirectories.Instance.UserSnippetDirectories;
-
-            validReplacement = new Regex(ConstantStrings.ValidReplacementString, RegexOptions.Compiled);
         }
 
 
@@ -589,7 +586,7 @@ namespace Microsoft.SnippetDesigner
 
             if (activeSnippet.SnippetTypes.Count <= 0)
             { //if no type specified then make it expansion by default
-                snippetTypes.Add(new SnippetType(ConstantStrings.SnippetTypeExpansion));
+                snippetTypes.Add(new SnippetType(StringConstants.SnippetTypeExpansion));
             }
             else
             {
@@ -662,12 +659,6 @@ namespace Microsoft.SnippetDesigner
 
         } //end UpdateSnippetInMemory
 
-
-
-        /// <summary>
-        /// Gets the snippet titles.
-        /// </summary>
-        /// <returns></returns>
         private List<String> GetSnippetTitles()
         {
             List<string> snippetTitles = new List<string>();
@@ -678,11 +669,6 @@ namespace Microsoft.SnippetDesigner
             return snippetTitles;
         }
 
-        /// <summary>
-        /// Change language service when change in langauge combo box
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         void languageComboBox_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             ToolStripComboBox langCombo = sender as ToolStripComboBox;
@@ -731,11 +717,6 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        /// <summary>
-        /// New snippet has been chosen so updated form
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void toolStripSnippetsTitles_SelectedIndexChanged(object sender, EventArgs e)
         {
             ToolStripComboBox snippetsBox = sender as ToolStripComboBox;
@@ -773,12 +754,6 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-
-        /// <summary>
-        /// Handles the TextUpdate event of the toolStripSnippetTitles control.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void toolStripSnippetTitles_TextUpdate(object sender, EventArgs e)
         {
             ToolStripComboBox snippetsBox = sender as ToolStripComboBox;
@@ -798,45 +773,32 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        /// <summary>
-        /// Set or disable the type field since its only valid for a replacement that is an object
-        /// </summary>
-        /// <param name="isObject"></param>
-        /// <param name="rowIndex"></param>
         private void SetOrDisableTypeField(bool isObject, int rowIndex)
         {
             if (isObject) //if this is an object than enable the type field
             {
 
-                replacementGridView.Rows[rowIndex].Cells[ConstantStrings.ColumnType].Value = String.Empty;
-                replacementGridView.Rows[rowIndex].Cells[ConstantStrings.ColumnType].ReadOnly = false;
+                replacementGridView.Rows[rowIndex].Cells[StringConstants.ColumnType].Value = String.Empty;
+                replacementGridView.Rows[rowIndex].Cells[StringConstants.ColumnType].ReadOnly = false;
             }
             else //this is not a object so disable type field
             {
 
-                replacementGridView.Rows[rowIndex].Cells[ConstantStrings.ColumnType].Value = Resources.TypeInvalidForLiteralSymbol;
-                replacementGridView.Rows[rowIndex].Cells[ConstantStrings.ColumnType].ReadOnly = true;
+                replacementGridView.Rows[rowIndex].Cells[StringConstants.ColumnType].Value = Resources.TypeInvalidForLiteralSymbol;
+                replacementGridView.Rows[rowIndex].Cells[StringConstants.ColumnType].ReadOnly = true;
             }
 
 
         }
 
-        //these are event handler functions that help synchronize replacement grid view events
-        //with the replacements in the codewindow
         #region Replacement Grid Events
 
-        /// <summary>
-        /// When a cell begins being edited see if it is an id cell and store its value for use later
-        /// when the person commits a change in the cell
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void replacementGridView_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
             DataGridView grid = sender as DataGridView;
             if (grid != null)
             {
-                if (grid.Columns[e.ColumnIndex].Name == ConstantStrings.ColumnID)
+                if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnID)
                 {
                     previousIDValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
                     return;
@@ -845,27 +807,16 @@ namespace Microsoft.SnippetDesigner
             previousIDValue = null;
         }
 
-        /// <summary>
-        /// when the user enter a row give foucs to its id repalcements
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void replacementGridView_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
             DataGridView grid = sender as DataGridView;
             if (grid != null)
             {
-                currentlySelectedId = grid.Rows[e.RowIndex].Cells[ConstantStrings.ColumnID].Value as string;
+                currentlySelectedId = grid.Rows[e.RowIndex].Cells[StringConstants.ColumnID].Value as string;
                 RefreshReplacementMarkers();
             }
         }
 
-
-        /// <summary>
-        /// When the id value in the replacement grid is changed update the highlighting
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void replacementGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
 
@@ -873,7 +824,7 @@ namespace Microsoft.SnippetDesigner
             if (grid != null)
             {
                 isFormDirty = true;
-                if (grid.Columns[e.ColumnIndex].Name == ConstantStrings.ColumnID)
+                if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnID)
                 {
                     string newIdValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
                     if (newIdValue == null)
@@ -885,7 +836,7 @@ namespace Microsoft.SnippetDesigner
                     if (previousIDValue != null && newIdValue != previousIDValue)
                     {
                         //check if the change you made is valid if not tell the user and return to previous value
-                        if (validReplacement.IsMatch(newIdValue))
+                        if (IsValidReplaceableText(newIdValue))
                         {
                             //build new replacement text
                             string newReplacement = TurnTextIntoReplacementSymbol(newIdValue);
@@ -894,8 +845,8 @@ namespace Microsoft.SnippetDesigner
 
                             //replace all occurances of the oldReplacement with newReplacement
                             //set false so it allows us to overdie existing replacements
-                            this.CodeWindow.ReplaceAll(oldReplacement, newReplacement, false);
-                            this.CodeWindow.ReplaceAll(newIdValue, newReplacement, true);
+                            ReplaceAll(oldReplacement, newReplacement, false);
+                            ReplaceAll(newIdValue, newReplacement, true);
 
                             //add any existing instances of this vairable as new replacement
                             //ReplacementMake(newIdValue);
@@ -917,7 +868,7 @@ namespace Microsoft.SnippetDesigner
 
 
                 }
-                else if (grid.Columns[e.ColumnIndex].Name == ConstantStrings.ColumnReplacementKind)
+                else if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnReplacementKind)
                 {
                     if ((string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue == Resources.ReplacementLiteralName)
                     {
@@ -933,23 +884,11 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-
-
-        /// <summary>
-        /// When a row is deleted remove all replacement symbols around the ID removed
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void replacementGridView_RowsRemoved(object sender, DataGridViewRowCancelEventArgs e)
         {
             UpdateMarkersAfterDeletedGridViewRow(e.Row);
         }
 
-        /// <summary>
-        /// Delete the selected row
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void removeReplacementToolStripMenuItem_Click(object sender, EventArgs e)
         {
             DataGridViewRow rowToDelete = null;
@@ -973,40 +912,22 @@ namespace Microsoft.SnippetDesigner
             this.replacementGridView.Rows.Remove(rowToDelete);
         }
 
-
         #endregion
 
-
-
-        //These are functions that deal with updated and modifying the replacments in the code window
-        // such as removing, make and making a replacement active
         #region Replacement Functions
 
-
-
-        /// <summary>
-        /// Given text it returns the text with the replacement symbols surrounding it
-        /// for example if you input MATT into this function it will retur $MATT$ if $ is your replacement symbol
-        /// </summary>
-        /// <param name="text">text to turn into replacement symbol</param>
-        /// <returns></returns>
         private string TurnTextIntoReplacementSymbol(string text)
         {
-            return ConstantStrings.SymbolReplacement + text + ConstantStrings.SymbolReplacement;
+            return StringConstants.SymbolReplacement + text + StringConstants.SymbolReplacement;
         }
 
-
-        /// <summary>
-        /// Mark All replacements
-        /// </summary>
-        /// <param name="lineToMark">The line to mark.</param>
         public void RefreshReplacementMarkers(int lineToMark)
         {
             ClearAllMarkers(lineToMark);
             List<string> allReplacements = new List<string>();
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                string idValue = ((string)row.Cells[ConstantStrings.ColumnID].EditedFormattedValue).Trim();
+                string idValue = ((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue).Trim();
                 if (idValue.Length > 0)
                 {
                     allReplacements.Add(idValue);
@@ -1015,16 +936,11 @@ namespace Microsoft.SnippetDesigner
 
             }
             //search through the code window and update all replcement highlight martkers
-            CodeWindow.MarkReplacements(allReplacements, lineToMark);
+            MarkReplacements(allReplacements, lineToMark);
         }
 
         public void RefreshReplacementMarkers() { RefreshReplacementMarkers(-1); }
 
-
-        /// <summary>
-        /// Clear every replacement marker
-        /// </summary>
-        /// <param name="lineToClear">The line to clear.</param>
         public void ClearAllMarkers(int lineToClear)
         {
             //clear all yellow markers
@@ -1033,11 +949,6 @@ namespace Microsoft.SnippetDesigner
             ClearMarkersOfType(GuidList.yellowMarkerWithBorder, lineToClear);
         }
 
-        /// <summary>
-        /// Clear every replacement marker of a given type
-        /// </summary>
-        /// <param name="markerGuid">The guid of the type of the marker you want to clear</param>
-        /// <param name="lineToClear">The line to clear.</param>
         public void ClearMarkersOfType(Guid markerGuid, int lineToClear)
         {
             if (SnippetDesignerPackage.Instance == null)
@@ -1058,7 +969,7 @@ namespace Microsoft.SnippetDesigner
             IVsEnumLineMarkers markerEnum;
             //get enum of all yellow markers
             CodeWindow.TextLines.EnumMarkers(0, 0, lastLine, CodeWindow.LineLength(lastLine), markerTypeID, 0, out markerEnum);
-            
+
             int markerCount = 0;
             markerEnum.GetCount(out markerCount);
             IVsTextLineMarker marker;
@@ -1078,28 +989,22 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-
-
-        /// <summary>
-        ///  Determine if the location the user clicked it in a replcement and if so
-        /// make that the active replacement and highlight that replcement in the replcementGrid
-        /// </summary>
         public void MakeClickedReplacementActive()
         {
 
             TextSpan currentWordSpan;
             //see if the person clicked inside of a replacement and return its span
-            if (this.CodeWindow.GetClickedOnReplacementSpan(out currentWordSpan))
+            if (GetClickedOnReplacementSpan(out currentWordSpan))
             {
                 string currentWord = this.CodeWindow.GetSpanText(currentWordSpan);
 
                 foreach (DataGridViewRow row in replacementGridView.Rows)
                 {
-                    if ((string)row.Cells[ConstantStrings.ColumnID].Value == currentWord)
+                    if ((string)row.Cells[StringConstants.ColumnID].Value == currentWord)
                     {
                         replacementGridView.ClearSelection();
                         row.Selected = true;
-                        currentlySelectedId = row.Cells[ConstantStrings.ColumnID].Value as string;
+                        currentlySelectedId = row.Cells[StringConstants.ColumnID].Value as string;
                         RefreshReplacementMarkers();
                         break;
                     }
@@ -1110,34 +1015,23 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-        /// <summary>
-        /// Take the textToFind at the current cursor position and and turn all instances into non replacements
-        /// </summary>
-        /// <param name="textToChange">text to stop from being a replcement</param>
         public void ReplacementRemove()
         {
             TextSpan currentWordSpan;
-            if (this.CodeWindow.GetClickedOnReplacementSpan(out currentWordSpan))
+            if (GetClickedOnReplacementSpan(out currentWordSpan))
             {
                 string currentWord = this.CodeWindow.GetSpanText(currentWordSpan);
                 ReplacementRemove(currentWord, currentWordSpan);
             }
         }
 
-
-
-        /// <summary>
-        /// Find all replacements with the given ID and turn them into non replacements
-        /// </summary>
-        /// <param name="textToChange">text to stop from being a replcement</param>
-        /// <param name="replaceSpan">the span this replacement ovccupies</param>
         public void ReplacementRemove(string textToChange, TextSpan replaceSpan)
         {
 
             DataGridViewRow rowToDelete = null;
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                if ((string)row.Cells[ConstantStrings.ColumnID].Value == textToChange)
+                if ((string)row.Cells[StringConstants.ColumnID].Value == textToChange)
                 {
                     rowToDelete = row;
                     break;
@@ -1151,12 +1045,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-
-
-        /// <summary>
-        /// Take the textToFind at the current cursor position and make into a replacement
-        /// </summary>
-        public void ReplacementMake()
+        public void CreateReplacementFromSelection()
         {
             string selectedText = String.Empty;
             var selection = this.CodeWindow.Selection;
@@ -1164,7 +1053,7 @@ namespace Microsoft.SnippetDesigner
             if (selectionLength != 0)
             {
                 //trim any replacement symbols or spaces
-                selectedText = this.CodeWindow.SelectedText.Trim(ConstantStrings.SymbolReplacement[0], ' ');
+                selectedText = this.CodeWindow.SelectedText.Trim();
 
             }
             else
@@ -1174,108 +1063,383 @@ namespace Microsoft.SnippetDesigner
 
 
             //make replacement with the desired text
-            if (ReplacementMake(selectedText) && selectionLength > 0)
+            if (IsValidReplaceableText(selectedText) &&
+                CreateReplacement(selectedText) &&
+                selectionLength > 0)
             {
-                selection.iEndIndex += ConstantStrings.SymbolReplacement.Length * 2;
+                selection.iEndIndex += StringConstants.SymbolReplacement.Length * 2;
                 this.CodeWindow.Selection = selection;
             }
         }
 
-        /// <summary>
-        /// Take the textToFind at the current cursor position and make into a replacement
-        /// </summary>
-        /// <param name="textToChange">The text that we want to make into a replacement</param>
-        /// <returns>true if replacement was made</returns>
-        public bool ReplacementMake(string textToChange)
+        public bool IsValidReplaceableText(string text)
         {
+            return validReplacement.IsMatch(text);
+        }
 
-            //if invalid text to make into a replacement return
-            if (!validReplacement.IsMatch(textToChange))
-            {
-                //not a valid replacement
+        public bool CreateReplacement(string textToChange)
+        {
+            if (!IsValidReplaceableText(textToChange))
                 return false;
-            }
+
 
             //check if replacement exists already
+            bool existsAlready = false;
             foreach (DataGridViewRow row in this.replacementGridView.Rows)
             {
-                if ((string)row.Cells[ConstantStrings.ColumnID].EditedFormattedValue == textToChange ||
+                if ((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue == textToChange ||
                     textToChange.Trim() == String.Empty)
                 {
                     //this replacement already exists or is nothing don't add it to the replacement list
-                    return false;
+                    existsAlready = true;
                 }
 
             }
 
             //build new replacement text
             string newText = TurnTextIntoReplacementSymbol(textToChange);
-
-
-            object[] newRow = { textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true };
-            int rowIndex = this.replacementGridView.Rows.Add(newRow);
-            SetOrDisableTypeField(false, rowIndex);
+            if (!existsAlready)
+            {
+                object[] newRow = { textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true };
+                int rowIndex = this.replacementGridView.Rows.Add(newRow);
+                SetOrDisableTypeField(false, rowIndex);
+            }
 
             //replace all occurances of the textToFind with $textToFind$
-            int numFoundAndReplaced = this.CodeWindow.ReplaceAll(textToChange, newText, true);
+            int numFoundAndReplaced = ReplaceAll(textToChange, newText, true);
 
-            if (numFoundAndReplaced > 0)
-            {
-
-
-                //RefreshReplacementMarkers(false);//refresh all replacements
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return numFoundAndReplaced > 0;
         }
 
-
-        /// <summary>
-        /// Given a row that has been deleted update the code window
-        /// </summary>
-        /// <param name="deletedRow">row that is going ot be delted</param>
         private void UpdateMarkersAfterDeletedGridViewRow(DataGridViewRow deletedRow)
         {
             if (deletedRow != null)
             {
-                string deletedID = deletedRow.Cells[ConstantStrings.ColumnID].EditedFormattedValue as string;
+                string deletedID = deletedRow.Cells[StringConstants.ColumnID].EditedFormattedValue as string;
                 if (deletedID != null)
                 {
                     //build new replacement text 
                     string currentText = TurnTextIntoReplacementSymbol(deletedID);
-                    this.CodeWindow.ReplaceAll(currentText, deletedID, false);
+                    ReplaceAll(currentText, deletedID, false);
                     //RefreshReplacementMarkers(false);
                 }
             }
 
         }
 
+        public void MarkReplacements(List<string> replaceIDs, int lineToMark)
+        {
+
+            if (replaceIDs == null)
+            {
+                return;
+            }
+
+            int lineLength;
+            int startLine = 0;
+            int endLine = CodeWindow.LineCount;
+
+            if (lineToMark > -1)//are we just replacing markers on the given line
+            {
+                startLine = lineToMark;
+                endLine = startLine + 1;
+
+            }
+
+            //loop through all the lines we are searching
+            for (int line = startLine; line < endLine; line++)
+            {
+                //get the length of this line
+                lineLength = CodeWindow.LineLength(line);
+
+                //loop over the line looking for SnippetDesigner.StringConstants.SymbolReplacement and find the next matching one
+                for (int index = 0; index < lineLength; index++)
+                {
+                    //find the character at this position
+                    string character = CodeWindow.GetCharacterAtPosition(new TextPoint(line, index));
+                    //check if this character is the replacement symbol
+                    if (character == SnippetDesigner.StringConstants.SymbolReplacement)
+                    {
+                        int nextIndex = index + 1;
+                        while (nextIndex < lineLength && CodeWindow.GetCharacterAtPosition(new TextPoint(line, nextIndex)) != SnippetDesigner.StringConstants.SymbolReplacement)
+                        {
+                            nextIndex++;
+                        }
+                        if (nextIndex < lineLength) //we found another SymbolReplacement
+                        {
+                            //create text span for the space between the two SnippetDesigner.StringConstants.ReplacementSymbols
+                            string textBetween;
+
+                            //make sure text between SnippetDesigner.StringConstants.SymbolReplacement signs matches replaceID
+                            CodeWindow.TextLines.GetLineText(line, index + 1, line, nextIndex, out textBetween);
+                            if (replaceIDs.Contains(textBetween))
+                            {//this replacement exists already so mark
+
+                                //create span that we will mark
+                                TextSpan replacementMarkerSpan;
+                                replacementMarkerSpan.iStartLine = replacementMarkerSpan.iEndLine = line;
+                                replacementMarkerSpan.iStartIndex = index;
+                                //make the span 2*length of SymbolReplacement longer since we are marker the replacement symbol also
+                                replacementMarkerSpan.iEndIndex =
+                                    nextIndex +
+                                    (SnippetDesigner.StringConstants.SymbolReplacement.Length +
+                                     SnippetDesigner.StringConstants.SymbolReplacement.Length - 1);
+
+                                KindOfMarker markerType;
+                                //determine if this is the adctive replacement
+                                //and chosoe the right highlight marker
+                                if (CurrentlySelectedId != null && CurrentlySelectedId == textBetween)
+                                {
+                                    markerType = KindOfMarker.YellowWithBorder;
+                                }
+                                else
+                                {
+                                    markerType = KindOfMarker.Yellow;
+                                }
+                                CodeWindow.HighlightSpan(replacementMarkerSpan, markerType);//mark this span with the desired color marker
+                                index = nextIndex; //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
+                            }
+                            else
+                            {
+                                string trimedText = textBetween.Trim();
+                                //this replacement does not exist yet so create it only if the last character entered was the replacement symbol
+                                if (lastCharacterEntered != null //make sure a single character was just entered
+                                    && lastCharacterEntered == SnippetDesigner.StringConstants.SymbolReplacement //make sure the last charcter is a $
+                                    && trimedText == textBetween //make sure this replacement doesnt have whitespace in it
+                                    && trimedText != String.Empty //and make sure its not empty
+                                    && trimedText != StringConstants.SymbolEndWord //the word cant be end
+                                    && trimedText != StringConstants.SymbolSelectedWord // and the word cant be selected they have special meaning
+                                    )
+                                {
+                                    //make the text into a replacement but dont add the replacement symbols since the user is doing it
+                                    CreateReplacement(textBetween);
+
+                                    //clear last character 
+                                    lastCharacterEntered = null;
+                                }
+                                else
+                                {
+                                    index = nextIndex - 1;//subtract one since it will be incrememented in the next loop iteration
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+
+            }
+        }
+
+        public int ReplaceAll(string currentWord, string newWord, bool replacementAware)
+        {
+            TextSpan span;
+            TextPoint nextPoint = new TextPoint();
+            int numberReplaced = 0;
+            //search through every string we can replace
+            while (FindNextReplaceableString(currentWord, nextPoint, out span))
+            {
+                //calculate the difference in word length
+                int differenceInWordLength = newWord.Length - currentWord.Length;
+
+                nextPoint.Line = span.iEndLine;
+                nextPoint.Index = span.iEndIndex + differenceInWordLength;
+
+                //replace the span with the given text
+                if (ReplaceSpanWithText(newWord, span, replacementAware))
+                {
+                    numberReplaced++;
+                    nextPoint.Index++;
+                }
+
+            }
+            return numberReplaced;
+        }
+
+        public bool ReplaceSpanWithText(string newWord, TextSpan replaceSpan, bool replacementAware)
+        {
+            IVsTextView textView = CodeWindow.TextView;
+            try
+            {
+                //either we arent marking this as a replacement so just replace the text
+                //or we are marking it as a replacement so we need to make sure its not a reaplcement marker already
+                if ((replacementAware && !IsSpanReplacement(replaceSpan)) || !replacementAware) //are we creating a replacement marker
+                {
+                    textView.ReplaceTextOnLine(replaceSpan.iStartLine,
+                           replaceSpan.iStartIndex,
+                           (replaceSpan.iEndIndex - replaceSpan.iStartIndex),
+                           newWord,
+                           newWord.Length);
+
+                    return true;
+                }
+
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return false;
+        }
+
+        public bool FindEnclosingReplacementQuoteSpan(TextSpan span, out TextSpan quoteSpan)
+        {
+            int line = span.iStartLine;
+            int lineLength = CodeWindow.LineLength(line);
+            int left = span.iStartIndex - 1;
+            int right = span.iEndIndex;
+            quoteSpan = new TextSpan();
+            while (left >= 0 && CodeWindow.GetCharacterAtPosition(new TextPoint(line, left)) != StringConstants.DoubleQuoteString)
+            {
+                left--;
+            }
+            while (right < lineLength && CodeWindow.GetCharacterAtPosition(new TextPoint(line, right)) != StringConstants.DoubleQuoteString)
+            {
+                right++;
+            }
+            if (right >= lineLength || left < 0)
+            {
+                return false;//we didnt find a quoted replacement string
+            }
+            quoteSpan.iStartLine = quoteSpan.iEndLine = line;
+            quoteSpan.iStartIndex = left;
+            quoteSpan.iEndIndex = right + 1;//the end character should be exclusive not inclusive
+
+            //is this span surrounded by the replcement markers
+            if (!IsSpanReplacement(quoteSpan))
+            {
+                return false;
+            }
+
+            //we have a correct quotes string replcement
+            return true;
+        }
+
+        public bool GetClickedOnReplacementSpan(out TextSpan replacementSpan)
+        {
+
+            replacementSpan = CodeWindow.GetWordTextSpanFromCurrentPosition();
+            TextSpan currentWordSpan = replacementSpan;
+
+            string currentWord = CodeWindow.GetSpanText(replacementSpan);
+
+            if (String.IsNullOrEmpty(currentWord) == true)//you might have selected more than a word, so use what you selected
+            {
+                replacementSpan = CodeWindow.Selection;
+            }
+
+            //make sure this is infact a replacement
+            if (!this.IsSpanReplacement(currentWordSpan))
+            {
+                //this span doesnt seem to be a replacement but maybe its a string and the user just
+                //clicked in the middle of it so lets intelligently see if thats true
+                if (!this.FindEnclosingReplacementQuoteSpan(currentWordSpan, out replacementSpan))
+                {
+                    return false;
+                }
+            }
+
+            //we have found a replacement span
+            return true;
+
+        }
+
+        public bool IsSpanReplacement(TextSpan replaceSpan)
+        {
+            int length = CodeWindow.LineLength(replaceSpan.iEndLine);
+            //make sure there is room for this replacement
+            if (replaceSpan.iStartIndex >= 0 && replaceSpan.iEndIndex <= length && (replaceSpan.iEndIndex - replaceSpan.iStartIndex) >= 1)
+            {
+                //see if replacement symbols surround this span
+                if (CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iStartLine, replaceSpan.iStartIndex - 1)) == SnippetDesigner.StringConstants.SymbolReplacement &&
+                    CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iEndLine, replaceSpan.iEndIndex)) == SnippetDesigner.StringConstants.SymbolReplacement
+                    )
+                {
+                    return true;
+                }
+                //check the first and last characters of the span to see if they are the replacement symbols
+                if (CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iStartLine, replaceSpan.iStartIndex)) == SnippetDesigner.StringConstants.SymbolReplacement &&
+                    CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iEndLine, replaceSpan.iEndIndex - 1)) == SnippetDesigner.StringConstants.SymbolReplacement
+                    )
+                {
+                    return true;
+                }
+            }
+            return false;
+
+        }
+
+        public bool FindNextReplaceableString(string textToFind, TextPoint startPositon, out TextSpan returnSpan)
+        {
+            int lastLine = CodeWindow.LineCount - 1;
+            TextPoint endPositon = new TextPoint(lastLine, CodeWindow.LineLength(lastLine));
+
+            if (startPositon == null || textToFind == null)
+            {
+                returnSpan = new TextSpan();
+                return false;
+            }
+
+            IVsTextLines textLines = CodeWindow.TextLines;
+
+            int lineLength;
+            string lineText;
+            returnSpan = new TextSpan();
+            //loop through all the lines we are searching
+            for (int line = startPositon.Line; line <= endPositon.Line; line++)
+            {
+                if (line == endPositon.Line)
+                {//if this is the last line then get the correct end index
+                    lineLength = endPositon.Index;
+                }
+                else
+                { //if this isnt the last line then the line length is the end index
+                    lineLength = CodeWindow.LineLength(line);
+                }
+                //retrieve all the text on this line as a string
+                textLines.GetLineText(line, 0, line, lineLength, out lineText);
+
+                int position = startPositon.Index;//initialize the start position
+                int index = -1;
+                //find the next index where textToFind appears starting from position
+                while (position < lineLength && ((index = lineText.IndexOf(textToFind, position)) > -1))
+                {
+
+                    //only three items are valid replaceable strings
+                    //1. a word which is [A-Za-z0-9_]+
+                    //2. if the string begins and ends with the replacement symbol then we are replacing a replacement
+                    //3. if the string beings and ends with quotes then this is a quote string we are replacing
+                    if (CodeWindow.GetWordFromPosition(new TextPoint(line, index)) == textToFind ||
+                        //or is this the text we are looking for 
+                        textToFind[0] == SnippetDesigner.StringConstants.SymbolReplacement[0] && textToFind[textToFind.Length - 1] == SnippetDesigner.StringConstants.SymbolReplacement[0] ||
+                        textToFind[0] == SnippetDesigner.StringConstants.DoubleQuoteString[0] && textToFind[textToFind.Length - 1] == SnippetDesigner.StringConstants.DoubleQuoteString[0]
+                        )
+                    {
+                        //update the span to reflect what text we found
+                        returnSpan.iStartIndex = index;
+                        returnSpan.iStartLine = line;
+                        returnSpan.iEndIndex = index + textToFind.Length;
+                        returnSpan.iEndLine = line;
+                        return true;
+                    }
+                    position += textToFind.Length + index;//move to the next position and repeat the loop
+                }
+                startPositon.Index = 0;//only offset from first line
+            }
+            return false;
+
+        }
+
 
         #endregion
 
-        /// <summary>
-        /// When any object is repainted make sure that the global snippet language
-        /// and snippet title are set
-        /// 
-        /// This is needed since our custom typedescription provider doesn't get updated otherwise since
-        /// we can only have one of them active
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void mainObjectsRepaiont_Paint(object sender, PaintEventArgs e)
         {
             SnippetDesignerPackage.Instance.ActiveSnippetLanguage = this.SnippetLanguage;
             SnippetDesignerPackage.Instance.ActiveSnippetTitle = this.SnippetTitle;
         }
 
-        /// <summary>
-        /// When the user right clicks update the current selection
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void snippetReplacementGrid_MouseDown(object sender, MouseEventArgs e)
         {
 
@@ -1285,14 +1449,6 @@ namespace Microsoft.SnippetDesigner
                 replacementGridView.Rows[info.RowIndex].Selected = true;
             }
         }
-
-
-
-
-
-
-
-
 
     }
 }

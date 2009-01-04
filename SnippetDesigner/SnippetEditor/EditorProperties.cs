@@ -92,13 +92,13 @@ namespace Microsoft.SnippetDesigner
         {
             
             snippetEditor = snipEditor;
-            kindEnumToString.Add(KindOfSnippet.MethodBody, ConstantStrings.SnippetTypeMethodBody);
-            kindEnumToString.Add(KindOfSnippet.MethodDecl, ConstantStrings.SnippetTypeMethodDeclaration);
-            kindEnumToString.Add(KindOfSnippet.TypeDecl, ConstantStrings.SnippetTypeTypeDeclaration);
+            kindEnumToString.Add(KindOfSnippet.MethodBody, StringConstants.SnippetTypeMethodBody);
+            kindEnumToString.Add(KindOfSnippet.MethodDecl, StringConstants.SnippetTypeMethodDeclaration);
+            kindEnumToString.Add(KindOfSnippet.TypeDecl, StringConstants.SnippetTypeTypeDeclaration);
 
-            stringToKindEnum.Add(ConstantStrings.SnippetTypeMethodBody, KindOfSnippet.MethodBody);
-            stringToKindEnum.Add(ConstantStrings.SnippetTypeMethodDeclaration, KindOfSnippet.MethodDecl);
-            stringToKindEnum.Add(ConstantStrings.SnippetTypeTypeDeclaration, KindOfSnippet.TypeDecl);
+            stringToKindEnum.Add(StringConstants.SnippetTypeMethodBody, KindOfSnippet.MethodBody);
+            stringToKindEnum.Add(StringConstants.SnippetTypeMethodDeclaration, KindOfSnippet.MethodDecl);
+            stringToKindEnum.Add(StringConstants.SnippetTypeTypeDeclaration, KindOfSnippet.TypeDecl);
 
         }
 
@@ -252,7 +252,7 @@ namespace Microsoft.SnippetDesigner
                     }
                 }
                 if (containsSurroundWith && //does it have the surround with tag
-                    snippetEditor.SnippetCode.Contains(ConstantStrings.SymbolSelected)//does it have correct selected symbol
+                    snippetEditor.SnippetCode.Contains(StringConstants.SymbolSelected)//does it have correct selected symbol
                     )
                 {
                     return TypeOfSnippet.SurroundsWith;

@@ -90,10 +90,6 @@ namespace Microsoft.SnippetDesigner
         private  bool loadDone = false;//set to true when whole laoding process is done
         //this is needed so we know when to start moinitroing text changes
 
-        //if the user typed a single character then store it here so we know what it is
-        //otherwise its null
-        private string lastCharacterEntered = null;
-
 
 
 
@@ -133,22 +129,6 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        /// <summary>
-        /// get or set the last character entered by the user
-        /// </summary>
-        public string LastCharacterEntered
-        {
-            get
-            {
-                return lastCharacterEntered;
-
-            }
-            set
-            {
-                lastCharacterEntered = value;
-            }
-
-        }
 
         /// <summary>
         /// Return the object which keeps track of what the currently slected item is
@@ -1542,21 +1522,24 @@ namespace Microsoft.SnippetDesigner
                 return;
             }
 
+
+
             int startIndex = textLineChanges[0].iStartIndex;
             int endIndex = textLineChanges[0].iNewEndIndex;
-            if (endIndex - startIndex == ConstantStrings.SymbolReplacement.Length)
+            if (endIndex - startIndex == StringConstants.SymbolReplacement.Length)
             {
                 lastCharacterEntered = this.CodeWindow.GetCharacterAtPosition(new TextPoint(textLineChanges[0].iStartLine, startIndex));
-
+                
             }
             else
             {
                 lastCharacterEntered = null;
             }
 
-            //clear the items which are marker but no longer are replaceements
-            //update all markers
-            RefreshReplacementMarkers(textLineChanges[0].iStartLine);
+            if(textLineChanges[0].iOldEndLine != textLineChanges[0].iNewEndLine)
+                RefreshReplacementMarkers(-1);
+            else
+                RefreshReplacementMarkers(textLineChanges[0].iStartLine);
             
         }
 

@@ -124,9 +124,6 @@ namespace Microsoft.SnippetDesigner
         private string activeSnippetTitle = String.Empty;
         private string activeSnippetLanguage = String.Empty;
 
-        //config file for snippet designer
-        private SnippetEditorConfiguration configSettings;
-
         //index of snippets
         private SnippetIndex snippetIndex;
 
@@ -213,17 +210,6 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// Retuns the configuration settings class
-        /// </summary>
-        public SnippetEditorConfiguration ConfigurationSettings
-        {
-            get
-            {
-                return configSettings;
-            }
-        }
-
-        /// <summary>
         /// the one instance of the dte object created by this package
         /// </summary>
         public DTE DTE
@@ -298,8 +284,8 @@ namespace Microsoft.SnippetDesigner
                     RegistryKey rk = RegistryLocations.GetVSRegKey(Registry.LocalMachine);
                     if (rk != null)
                     {
-                        rk = rk.OpenSubKey(ConstantStrings.VSRegistryRegistrationName);
-                        registeredName = (String)rk.GetValue(ConstantStrings.VSRegistryRegistrationNameEntry);
+                        rk = rk.OpenSubKey(StringConstants.VSRegistryRegistrationName);
+                        registeredName = (String)rk.GetValue(StringConstants.VSRegistryRegistrationNameEntry);
                     }
                 }
                 catch (System.Security.SecurityException)
@@ -542,16 +528,7 @@ namespace Microsoft.SnippetDesigner
 
                 //Create Editor Factory
                 editorFactory = new EditorFactory(this);
-                base.RegisterEditorFactory(editorFactory);
-
-
-                //load the configuration file
-                configSettings = new SnippetEditorConfiguration();
-                if (!configSettings.LoadConfigFile(ConstantStrings.ConfigurationFile))
-                {
-                    string path = Path.Combine(Environment.CurrentDirectory, ConstantStrings.ConfigurationFile);
-                    Debug.WriteLine("Unable to find configuration file: " + path);
-                }
+                RegisterEditorFactory(editorFactory);
 
 
                 //Set up Selection Events so that I can tell when a new window in VS has become active.
@@ -579,13 +556,13 @@ namespace Microsoft.SnippetDesigner
                 // commandline command for exporting as snippet
                 CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidExportToSnippetCommandLine);
                 OleMenuCommand snippetExportCommandLine = DefineCommandHandler(new EventHandler(ExportToSnippet), exportCmdLineID);
-                snippetExportCommandLine.ParametersDescription = SnippetDesigner.ConstantStrings.ArgumentStartMarker;//a space means arguments are coming
+                snippetExportCommandLine.ParametersDescription = SnippetDesigner.StringConstants.ArgumentStartMarker;//a space means arguments are coming
 
 
                 // Create the command for CreateSnippet
                 CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidCreateSnippet);
                 OleMenuCommand createCommand = DefineCommandHandler(new EventHandler(CreateSnippet), createcmdID);
-                createCommand.ParametersDescription = SnippetDesigner.ConstantStrings.ArgumentStartMarker;//a space means arguments are coming
+                createCommand.ParametersDescription = SnippetDesigner.StringConstants.ArgumentStartMarker;//a space means arguments are coming
 
                 // Create and proffer the marker service
                 markerService = new HighlightMarkerService(this);
@@ -670,9 +647,9 @@ namespace Microsoft.SnippetDesigner
 
             string lang = CurrentWindowLanguage.ToLower();//turn to lower case for comparisons
             //TODO: move these into a config file
-            if (lang == ConstantStrings.ExportNameCSharp
-            || lang == ConstantStrings.ExportNameVisualBasic
-            || lang == ConstantStrings.ExportNameXML
+            if (lang == StringConstants.ExportNameCSharp
+            || lang == StringConstants.ExportNameVisualBasic
+            || lang == StringConstants.ExportNameXML
             )
             {
                 //make the export context menu item visible

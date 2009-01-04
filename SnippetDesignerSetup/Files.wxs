@@ -10,7 +10,6 @@
         <File Id="PackageDll" Name="SnipDes.dll" LongName="SnippetDesigner.dll" Source="$(var.SnippetDesigner.TargetDir)SnippetDesigner.dll" Vital="yes"/>
         <File Id="RegistryTools" Name="RegTool.dll" LongName="RegistryTools.dll" Source="$(var.SnippetDesigner.TargetDir)RegistryTools.dll" Vital="yes"/>
         <File Id="SnippetLibrary" Name="SnipLib.dll" LongName="SnippetLibrary.dll" Source="$(var.SnippetDesigner.TargetDir)SnippetLibrary.dll" Vital="yes"/>
-        <File Id="SnippetEditorConfig" Name="SnipConf.xml" LongName="SnippetEditorConfig.xml" Source="$(var.SnippetDesigner.TargetDir)SnippetEditor\SnippetEditorConfig.xml" Vital="yes"/>
         <!--//TODO: Add other files and references-->
         <File Id="Readme.htm" Name="Readme.htm" Source="Files\Readme.htm" Vital="yes" DiskId="1">
           <Shortcut Id="ReadmeShortcut" Directory="ProgramMenuShortcutDirectory" Name="Readme" Icon="ProductIcon" IconIndex="0" Show="normal" WorkingDirectory="TARGETDIR" />

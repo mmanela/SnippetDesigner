@@ -9,7 +9,7 @@ namespace Microsoft.SnippetDesigner
     /// <summary>
     /// Represents a point in the TextBuffer
     /// </summary>
-    internal class TextPoint
+    public class TextPoint
     {
         private int bufferLine;
         private int lineIndex;
@@ -18,7 +18,7 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         ///  The line in the buffer
         /// </summary>
-        internal int Line
+        public int Line
         {
             get
             {
@@ -33,7 +33,7 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// The index into the line
         /// </summary>
-        internal int Index
+        public int Index
         {
             get
             {
@@ -45,7 +45,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        internal TextPoint(int line, int index)
+        public TextPoint(int line, int index)
         {
             bufferLine = line;
             lineIndex = index;
@@ -53,7 +53,7 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        internal TextPoint()
+        public TextPoint()
         {
             bufferLine = 0;
             lineIndex = 0;

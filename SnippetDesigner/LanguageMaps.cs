@@ -80,11 +80,11 @@ namespace Microsoft.SnippetDesigner
             switch (lang)
             {
                 case Language.CSharp:
-                    return ConstantStrings.SchemaNameCSharp;
+                    return StringConstants.SchemaNameCSharp;
                 case Language.VisualBasic:
-                    return ConstantStrings.SchemaNameVisualBasic;
+                    return StringConstants.SchemaNameVisualBasic;
                 case Language.XML:
-                    return ConstantStrings.SchemaNameXML;
+                    return StringConstants.SchemaNameXML;
                 default:
                     return String.Empty;
             }
@@ -95,16 +95,16 @@ namespace Microsoft.SnippetDesigner
         public LanguageMaps()
         {
             //hash from schema names to display names
-            snippetSchemaLanguageToDisplay[ConstantStrings.SchemaNameVisualBasic] = Resources.DisplayNameVisualBasic;
-            snippetSchemaLanguageToDisplay[ConstantStrings.SchemaNameCSharp] = Resources.DisplayNameCSharp;
-            snippetSchemaLanguageToDisplay[ConstantStrings.SchemaNameCSharp2] = Resources.DisplayNameCSharp;
-            snippetSchemaLanguageToDisplay[ConstantStrings.SchemaNameXML] = Resources.DisplayNameXML;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameVisualBasic] = Resources.DisplayNameVisualBasic;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp] = Resources.DisplayNameCSharp;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp2] = Resources.DisplayNameCSharp;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameXML] = Resources.DisplayNameXML;
             snippetSchemaLanguageToDisplay[String.Empty] = String.Empty;
 
             //has from display names to schema names
-            displayLanguageToXML[Resources.DisplayNameVisualBasic] = ConstantStrings.SchemaNameVisualBasic;
-            displayLanguageToXML[Resources.DisplayNameCSharp] = ConstantStrings.SchemaNameCSharp;
-            displayLanguageToXML[Resources.DisplayNameXML] = ConstantStrings.SchemaNameXML;
+            displayLanguageToXML[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
+            displayLanguageToXML[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
+            displayLanguageToXML[Resources.DisplayNameXML] = StringConstants.SchemaNameXML;
             displayLanguageToXML[String.Empty] = String.Empty;
 
             languageGuids[Language.CSharp] = GuidList.csLangSvc;

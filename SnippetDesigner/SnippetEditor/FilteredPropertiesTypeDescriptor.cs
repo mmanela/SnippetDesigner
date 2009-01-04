@@ -66,13 +66,6 @@ namespace Microsoft.SnippetDesigner
                 string currentLanguage = SnippetDesignerPackage.Instance.ActiveSnippetLanguage;
                 foreach (PropertyDescriptor prop in base.GetProperties(attributes))
                 {
-                    List<string> propsToHide = null;
-                    SnippetDesignerPackage.Instance.ConfigurationSettings.HiddenProperties.TryGetValue(currentLanguage, out propsToHide);
-                    if (propsToHide != null && propsToHide.Contains(prop.DisplayName.ToLower()))
-                    {
-                        continue;//skip this entry
-                    }
-
                     props.Add(prop);
                 }
 

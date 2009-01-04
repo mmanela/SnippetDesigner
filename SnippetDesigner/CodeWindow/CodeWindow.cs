@@ -479,12 +479,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        /// <summary>
-        /// Mark a span of text with a specfic color marker and the $ sign symbols
-        /// </summary>
-        /// <param name="span">a textspan representing a amount of text</param>
-        /// <param name="color">a color</param>
-        internal void HighlightSpan(TextSpan span, KindOfMarker markerType)
+        public void HighlightSpan(TextSpan span, KindOfMarker markerType)
         {
             if (SnippetDesignerPackage.Instance == null)
             {
@@ -502,380 +497,14 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-
-        internal void MarkReplacements(List<string> replaceIDs)
-        {
-            MarkReplacements(replaceIDs,-1);
-        }
-        /// <summary>
-        /// Mark all replacement items given the id of the replacement
-        /// If text surrounded by the replacement symbol is found then turn it into a repalcement
-        /// </summary>
-        /// <param name="replaceIDs">The replace ids.</param>
-        /// <param name="line">The line.</param>
-        internal void MarkReplacements(List<string> replaceIDs, int lineToMark)
-        {
-
-            if (replaceIDs == null || snippetEditor == null)
-            {
-                return;
-            }
-
-            int lineLength;
-            int startLine = 0;
-            int endLine = LineCount;
-
-            if (lineToMark > -1)//are we just replacing markers on the given line
-            {
-                startLine = lineToMark;
-                endLine = startLine + 1;
-
-            }
-
-            //loop through all the lines we are searching
-            for (int line = startLine; line < endLine; line++)
-            {
-                //get the length of this line
-                lineLength = LineLength(line);
-
-                //loop over the line looking for SnippetDesigner.ConstantStrings.SymbolReplacement and find the next matching one
-                for (int index = 0; index < lineLength; index++)
-                {
-                    //find the character at this position
-                    string character = GetCharacterAtPosition(new TextPoint(line, index));
-                    //check if this character is the replacement symbol
-                    if (character == SnippetDesigner.ConstantStrings.SymbolReplacement)
-                    {
-                        int nextIndex = index + 1;
-                        while (nextIndex < lineLength && GetCharacterAtPosition(new TextPoint(line, nextIndex)) != SnippetDesigner.ConstantStrings.SymbolReplacement)
-                        {
-                            nextIndex++;
-                        }
-                        if (nextIndex < lineLength) //we found another SymbolReplacement
-                        {
-                            //create text span for the space between the two SnippetDesigner.ConstantStrings.ReplacementSymbols
-                            string textBetween;
-
-                            //make sure text between SnippetDesigner.ConstantStrings.SymbolReplacement signs matches replaceID
-                            TextLines.GetLineText(line, index + 1, line, nextIndex, out textBetween);
-                            if (replaceIDs.Contains(textBetween))
-                            {//this replacement exists already so mark
-
-                                //create span that we will mark
-                                TextSpan replacementMarkerSpan;
-                                replacementMarkerSpan.iStartLine = replacementMarkerSpan.iEndLine = line;
-                                replacementMarkerSpan.iStartIndex = index;
-                                //make the span 2*length of SymbolReplacement longer since we are marker the replacement symbol also
-                                replacementMarkerSpan.iEndIndex = 
-                                    nextIndex + 
-                                    (SnippetDesigner.ConstantStrings.SymbolReplacement.Length + 
-                                     SnippetDesigner.ConstantStrings.SymbolReplacement.Length - 1);
-
-                                KindOfMarker markerType;
-                                //determine if this is the adctive replacement
-                                //and chosoe the right highlight marker
-                                if (this.snippetEditor.CurrentlySelectedId != null && this.snippetEditor.CurrentlySelectedId == textBetween)
-                                {
-                                    markerType = KindOfMarker.YellowWithBorder;
-                                }
-                                else
-                                {
-                                    markerType = KindOfMarker.Yellow;
-                                }
-                                HighlightSpan(replacementMarkerSpan, markerType);//mark this span with the desired color marker
-                                index = nextIndex; //skip the ending SnippetDesigner.ConstantStrings.SymbolReplacement, it will be incremented the one extra in the next loop iteration
-                            }
-                            else
-                            {
-                                string trimedText = textBetween.Trim();
-                                //this replacement does not exist yet so create it only if the last character entered was the replacement symbol
-                                if (//this.snippetEditor.LastCharacterEntered != null //make sure a single character was just entered
-                                   // && this.snippetEditor.LastCharacterEntered == SnippetDesigner.ConstantStrings.SymbolReplacement //make sure the last charcter is a $
-                                    trimedText == textBetween //make sure this replacement doesnt have whitespace in it
-                                    && trimedText != String.Empty //and make sure its not empty
-                                    && trimedText != ConstantStrings.SymbolEndWord //the word cant be end
-                                    && trimedText != ConstantStrings.SymbolSelectedWord // and the word cant be selected they have special meaning
-                                    )
-                                {
-                                    //make the text into a replacement but dont add the replacement symbols since the user is doing it
-                                    this.snippetEditor.ReplacementMake(textBetween);
-
-                                    //clear last character 
-                                    //this.snippetEditor.LastCharacterEntered = null;
-                                }
-                                else
-                                {
-                                    index = nextIndex - 1;//subtract one since it will be incrememented in the next loop iteration
-                                }
-                            }
-                        }
-                    }
-
-
-                }
-
-            }
-        }
-
-        /// <summary>
-        /// Replaces all occurances in the code buffer of one textToFind with another
-        /// </summary>
-        /// <param name="currentWord">currentWord to be replaced</param>
-        /// <param name="newWord">replace the currentWord with newWord</param>
-        /// <param name="markReplacements">Highlight the words that over been replaced</param>
-        /// <returns>returns the number of replacements</returns>
-        internal int ReplaceAll(string currentWord, string newWord, bool markReplacements)
-        {
-            TextSpan span;
-            TextPoint nextPoint = new TextPoint();
-            int numberReplaced = 0;
-            //search through every string we can replace
-            while (FindNextReplaceableString(currentWord, nextPoint, out span))
-            {
-                //calculate the difference in word length
-                int differenceInWordLength = newWord.Length - currentWord.Length;
-
-                //advance to next point, which depends on the difference in the size of the words
-                //this is very important since as we replace words their indicies change
-                nextPoint.Index = span.iEndIndex + 1 + differenceInWordLength;
-                nextPoint.Line = span.iEndLine;
-
-                //replace the span with the given text
-                if(ReplaceSpanWithText(newWord, span, markReplacements))
-                    numberReplaced++;
-
-            }
-            return numberReplaced;
-        }
-
-        /// <summary>
-        /// Replace a span in a line with a string
-        /// </summary>
-        /// <param name="newWord">textToFind to reaplce span with</param>
-        /// <param name="replaceSpan">span to be replaced</param>
-        /// <param name="markReplacement">we are creating a marked replacement textToFind</param>
-        /// <returns>returns true if succesfull</returns>
-        internal bool ReplaceSpanWithText(string newWord, TextSpan replaceSpan, bool markReplacement)
-        {
-            IVsTextView textView = this.TextView;
-            try
-            {
-                //either we arent marking this as a replacement so just replace the text
-                //or we are marking it as a replacement so we need to make sure its not a reaplcement marker already
-                if ((markReplacement && !IsSpanReplacement(replaceSpan)) || !markReplacement) //are we creating a replacement marker
-                {
-                    textView.ReplaceTextOnLine(replaceSpan.iStartLine,
-                           replaceSpan.iStartIndex,
-                           (replaceSpan.iEndIndex - replaceSpan.iStartIndex),
-                           newWord,
-                           newWord.Length);
-
-                    return true;
-                }
-
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            return false;
-        }
-
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1021:AvoidOutParameters", MessageId = "1#")]
-        internal bool FindEnclosingReplacementQuoteSpan(TextSpan span, out TextSpan quoteSpan)
-        {
-            int line = span.iStartLine;
-            int lineLength = LineLength(line);
-            int left = span.iStartIndex - 1;
-            int right = span.iEndIndex;
-            quoteSpan = new TextSpan();
-            while (left >= 0 && GetCharacterAtPosition(new TextPoint(line, left)) != ConstantStrings.DoubleQuoteString)
-            {
-                left--;
-            }
-            while (right < lineLength && GetCharacterAtPosition(new TextPoint(line, right)) != ConstantStrings.DoubleQuoteString)
-            {
-                right++;
-            }
-            if (right >= lineLength || left < 0)
-            {
-                return false;//we didnt find a quoted replacement string
-            }
-            quoteSpan.iStartLine = quoteSpan.iEndLine = line;
-            quoteSpan.iStartIndex = left;
-            quoteSpan.iEndIndex = right + 1;//the end character should be exclusive not inclusive
-
-            //is this span surrounded by the replcement markers
-            if (!IsSpanReplacement(quoteSpan))
-            {
-                return false;
-            }
-
-            //we have a correct quotes string replcement
-            return true;
-        }
-
-        /// <summary>
-        /// Based on where the user clicks or selects get the span of the chosen replacement
-        /// This doesn't check if this span is in our replacement list just that it meets the criteria for a replacement
-        /// </summary>
-        /// <param name="replacementSpan">The span of the click on replcement</param>
-        /// <returns>True if a replacement is found</returns>
-        internal bool GetClickedOnReplacementSpan(out TextSpan replacementSpan)
-        {
-
-            replacementSpan = this.GetWordTextSpanFromCurrentPosition();
-            TextSpan currentWordSpan = replacementSpan;
-
-            string currentWord = this.GetSpanText(replacementSpan);
-
-            if (String.IsNullOrEmpty(currentWord) == true)//you might have selected more than a word, so use what you selected
-            {
-                replacementSpan = this.Selection;
-            }
-
-            //make sure this is infact a replacement
-            if (!this.IsSpanReplacement(currentWordSpan))
-            {
-                //this span doesnt seem to be a replacement but maybe its a string and the user just
-                //clicked in the middle of it so lets intelligently see if thats true
-                if (!this.FindEnclosingReplacementQuoteSpan(currentWordSpan, out replacementSpan))
-                {
-                    return false;
-                }
-            }
-
-            //we have found a replacement span
-            return true;
-
-        }
-
-        /// <summary>
-        /// Examines the span and the characters around it to see if it has the repalcement symbols around it arleady
-        /// </summary>
-        /// <param name="span">span to test</param>
-        /// <returns>true or false</returns>
-        internal bool IsSpanReplacement(TextSpan replaceSpan)
-        {
-            int length = LineLength(replaceSpan.iEndLine);
-            //make sure there is room for this replacement
-            if (replaceSpan.iStartIndex >= 0 && replaceSpan.iEndIndex <= length && (replaceSpan.iEndIndex - replaceSpan.iStartIndex) >= 1)
-            {
-                //see if replacement symbols surround this span
-                if (GetCharacterAtPosition(new TextPoint(replaceSpan.iStartLine, replaceSpan.iStartIndex - 1)) == SnippetDesigner.ConstantStrings.SymbolReplacement &&
-                    GetCharacterAtPosition(new TextPoint(replaceSpan.iEndLine, replaceSpan.iEndIndex)) == SnippetDesigner.ConstantStrings.SymbolReplacement
-                    )
-                {
-                    return true;
-                }
-                //check the first and last characters of the span to see if they are the replacement symbols
-                if (GetCharacterAtPosition(new TextPoint(replaceSpan.iStartLine, replaceSpan.iStartIndex)) == SnippetDesigner.ConstantStrings.SymbolReplacement &&
-                    GetCharacterAtPosition(new TextPoint(replaceSpan.iEndLine, replaceSpan.iEndIndex - 1)) == SnippetDesigner.ConstantStrings.SymbolReplacement
-                    )
-                {
-                    return true;
-                }
-            }
-            return false;
-
-        }
-
-        /// <summary>
-        ///Find a word starting at a specifc point in the buffer
-        /// </summary>
-        /// <param name="textToFind">textToFind to find</param>
-        /// <param name="startPositon">the point to start the search at</param>
-        /// <returns>The span of the textToFind</returns>
-        internal bool FindNextReplaceableString(string word, TextPoint startPositon, out TextSpan returnSpan)
-        {
-
-            int lastLine = LineCount - 1;
-            return FindNextReplaceableString(word, startPositon, new TextPoint(lastLine, LineLength(lastLine)), out returnSpan);
-
-        }
-
-        /// <summary>
-        /// Find a word starting at a specifc point in the buffer and ending at a specifc point
-        /// </summary>
-        /// <param name="textToFind">textToFind</param>
-        /// <param name="startPositon">the point to start the search at</param>
-        /// <returns>The span of the textToFind</returns>
-        internal bool FindNextReplaceableString(string textToFind, TextPoint startPositon, TextPoint endPositon, out TextSpan returnSpan)
-        {
-            if (startPositon == null || endPositon == null || textToFind == null)
-            {
-                returnSpan = new TextSpan();
-                return false;
-            }
-
-            IVsTextLines textLines = this.TextLines;
-
-            int lineLength;
-            string lineText;
-            returnSpan = new TextSpan();
-            //loop through all the lines we are searching
-            for (int line = startPositon.Line; line <= endPositon.Line; line++)
-            {
-                if (line == endPositon.Line)
-                {//if this is the last line then get the correct end index
-                    lineLength = endPositon.Index;
-                }
-                else
-                { //if this isnt the last line then the line length is the end index
-                    lineLength = this.LineLength(line);
-                }
-                //retrieve all the text on this line as a string
-                textLines.GetLineText(line, 0, line, lineLength, out lineText);
-
-                int position = startPositon.Index;//initialize the start position
-                int index = -1;
-                //find the next index where textToFind appears starting from position
-                while (position < lineLength && ((index = lineText.IndexOf(textToFind, position)) > -1))
-                {
-
-                    //only three items are valid replaceable strings
-                    //1. a word which is [A-Za-z0-9_]+
-                    //2. if the string begins and ends with the replacement symbol then we are replacing a replacement
-                    //3. if the string beings and ends with quotes then this is a quote string we are replacing
-                    if (GetWordFromPosition(new TextPoint(line, index)) == textToFind ||
-                        //or is this the text we are looking for 
-                        textToFind[0] == SnippetDesigner.ConstantStrings.SymbolReplacement[0] && textToFind[textToFind.Length - 1] == SnippetDesigner.ConstantStrings.SymbolReplacement[0] ||
-                        textToFind[0] == SnippetDesigner.ConstantStrings.DoubleQuoteString[0] && textToFind[textToFind.Length - 1] == SnippetDesigner.ConstantStrings.DoubleQuoteString[0]
-                        )
-                    {
-                        //update the span to reflect what text we found
-                        returnSpan.iStartIndex = index;
-                        returnSpan.iStartLine = line;
-                        returnSpan.iEndIndex = index + textToFind.Length;
-                        returnSpan.iEndLine = line;
-                        return true;
-                    }
-                    position += textToFind.Length + index;//move to the next position and repeat the loop
-                }
-                startPositon.Index = 0;//only offset from first line
-            }
-            return false;
-
-        }
-
-        /// <summary>
-        /// Gets the text contained in a span
-        /// </summary>
-        /// <param name="span">the span to get the text from</param>
-        /// <returns>the text in teh span</returns>
-        internal string GetSpanText(TextSpan span)
+        public string GetSpanText(TextSpan span)
         {
             string word;
             this.TextLines.GetLineText(span.iStartLine, span.iStartIndex, span.iEndLine, span.iEndIndex, out word);
             return word;
         }
 
-        /// <summary>
-        /// Given a line number get the text on that line
-        /// </summary>
-        /// <param name="line">The line to get the text from</param>
-        internal string GetLineText(int line)
+        public string GetLineText(int line)
         {
 
             if (line >= 0 && line < LineCount)
@@ -893,12 +522,7 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-        /// <summary>
-        /// Gets the character found at a specifc cursor poistion
-        /// </summary>
-        /// <param name="positon">The position to find the character</param>
-        /// <returns>The character found</returns>
-        internal string GetCharacterAtPosition(TextPoint positon)
+        public string GetCharacterAtPosition(TextPoint positon)
         {
             IVsTextLines textLines = this.TextLines;
             IVsTextView textView = this.TextView;
@@ -907,11 +531,7 @@ namespace Microsoft.SnippetDesigner
             return charAtPos;
         }
 
-        /// <summary>
-        /// Gets the textToFind found at the current cursor poistion
-        /// </summary>
-        /// <returns>The word span found found</returns>
-        internal TextSpan GetWordTextSpanFromCurrentPosition()
+        public TextSpan GetWordTextSpanFromCurrentPosition()
         {
             int line;
             int column;
@@ -919,11 +539,7 @@ namespace Microsoft.SnippetDesigner
             return GetWordTextSpanFromPosition(new TextPoint(line, column));
         }
 
-        /// <summary>
-        /// Gets the textToFind found at the current cursor poistion
-        /// </summary>
-        /// <returns>The word found</returns>
-        internal string GetWordFromCurrentPosition()
+        public string GetWordFromCurrentPosition()
         {
             int line;
             int column;
@@ -931,12 +547,7 @@ namespace Microsoft.SnippetDesigner
             return GetWordFromPosition(new TextPoint(line, column));
         }
 
-        /// <summary>
-        /// Gets the text found at a specifc cursor poistion
-        /// </summary>
-        /// <param name="positon">The position to find the textToFind</param>
-        /// <returns>The word found at the position</returns>
-        internal string GetWordFromPosition(TextPoint positon)
+        public string GetWordFromPosition(TextPoint positon)
         {
             IVsTextLines textLines = this.TextLines;
             IVsTextView textView = this.TextView;
@@ -948,12 +559,8 @@ namespace Microsoft.SnippetDesigner
             return wordAtPos;
         }
 
-        /// <summary>
-        /// Gets the words text span found at a specifc cursor poistion
-        /// </summary>
-        /// <param name="positon">The position to find the textToFind</param>
-        /// <returns>The word span for that position</returns>
-        internal TextSpan GetWordTextSpanFromPosition(TextPoint positon)
+
+        public TextSpan GetWordTextSpanFromPosition(TextPoint positon)
         {
             if (positon == null)
                 return new TextSpan();
