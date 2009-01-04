@@ -78,6 +78,7 @@
     <Compile Include="LanguageService\VBSnippetLanguageService.cs" />
     <Compile Include="LanguageService\CSharpSnippetLanguageService.cs" />
     <Compile Include="LanguageService\SnippetLanguageService.cs" />
+    <Compile Include="OptionPages\CustomFileNameEditor.cs" />
     <Compile Include="OptionPages\ResetOptions.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -24,7 +24,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
     public class SnippetIndex : INotifyPropertyChanged
     {
         private string snippetIndexFilePath;
-        private readonly string snippetIndexFileName = "SnippetIndex.xml";
 
         // Maps SnippetFilePath|SnippetTitle to SnippetIndexItem
         private Dictionary<String, SnippetIndexItem> indexedSnippets;
@@ -78,14 +77,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
         public SnippetIndex()
         {
-            string snippetIndexFileDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnippetDesigner";
-            //make sure this directory exists if now make it
-            if (!Directory.Exists(snippetIndexFileDir))
-            {
-                Directory.CreateDirectory(snippetIndexFileDir);
-            }
-            snippetIndexFilePath = Path.Combine(snippetIndexFileDir, snippetIndexFileName);
-
+            snippetIndexFilePath = SnippetDesignerPackage.Instance.Settings.SnippetIndexLocation;
             indexedSnippets = new Dictionary<string, SnippetIndexItem>();
 
         }
@@ -468,6 +460,8 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             FileStream stream = null;
             try
             {
+                var dirPath = Path.GetDirectoryName(snippetIndexFilePath);
+                Directory.CreateDirectory(dirPath);
                 stream = new FileStream(snippetIndexFilePath, FileMode.Create);
                 return Save(stream);
             }

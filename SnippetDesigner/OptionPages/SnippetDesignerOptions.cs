@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.Windows.Forms.Design;
 
 namespace Microsoft.SnippetDesigner.OptionPages
 {
@@ -21,8 +22,8 @@ namespace Microsoft.SnippetDesigner.OptionPages
         bool hideVisualBasic;
         bool hideXML;
         string indexedSnippetDirectoriesString;
+        string snippetIndexLocation;
         List<string> indexedSnippetDirectories;
-
 
 
         /// <summary>
@@ -37,6 +38,8 @@ namespace Microsoft.SnippetDesigner.OptionPages
             // Initialize indexedSnippetDirectories to all snippet directories
             // if the user already modified this it will be overwritten
             indexedSnippetDirectories = new List<string>(SnippetDirectories.Instance.AllSnippetDirectories);
+            snippetIndexLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnippetDesigner\\SnippetIndex.xml";
+        
         }
 
         /// <summary>
@@ -174,7 +177,21 @@ These won't stop you from building your project but can be annoying.")]
             }
         }
 
-
+        [Category("Index")]
+        [DisplayName("Snippet Index Location")]
+        [Description("Where wold you like to have the snippet index stored?")]
+        [EditorAttribute(typeof(CustomFileNameEditor), typeof(UITypeEditor))]
+        public string SnippetIndexLocation
+        {
+            get
+            {
+                return snippetIndexLocation;
+            }
+            set
+            {
+                snippetIndexLocation = value;
+            }
+        }
 
 
 
