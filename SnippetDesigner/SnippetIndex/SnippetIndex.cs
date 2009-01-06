@@ -336,7 +336,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 {
                     foreach (SnippetIndexItem item in items)
                     {
-                        
+
                         lock (indexedSnippets)
                         {
                             if (File.Exists(item.File))
@@ -350,7 +350,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
 
             }
-            catch (FileNotFoundException)
+            catch (IOException)
             {
                 return false;
             }
@@ -502,19 +502,19 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
                 retval = (List<SnippetIndexItem>)ser.Deserialize(stream);
             }
-            catch (System.IO.FileNotFoundException)
+            catch (IOException)
             {
 
             }
-            catch (System.UnauthorizedAccessException)
+            catch (UnauthorizedAccessException)
             {
 
             }
-            catch (System.Xml.XmlException)
+            catch (XmlException)
             {
 
             }
-            catch (System.InvalidOperationException)
+            catch (InvalidOperationException)
             {
 
             }
