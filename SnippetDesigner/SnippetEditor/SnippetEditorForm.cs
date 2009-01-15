@@ -1213,7 +1213,7 @@ namespace Microsoft.SnippetDesigner
                                 {
                                     //make the text into a replacement but dont add the replacement symbols since the user is doing it
                                     CreateReplacement(textBetween);
-
+                                    RefreshReplacementMarkers(lineToMark);
                                     //clear last character 
                                     lastCharacterEntered = null;
                                 }

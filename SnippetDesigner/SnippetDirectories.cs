@@ -9,6 +9,7 @@ using Microsoft.Win32;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.VisualStudio.Shell.Interop;
+using System.Security;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -67,49 +68,69 @@ namespace Microsoft.SnippetDesigner
 
         private void GetSnippetDirectoriesFromRegistry()
         {
-            using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(Registry.LocalMachine))
-            using (RegistryKey codeExpansionKey = vsKey.OpenSubKey("Languages\\CodeExpansions"))
-                foreach (string lang in codeExpansionKey.GetSubKeyNames())
-                {
-                    if (lang.Equals("CSharp", StringComparison.InvariantCulture) ||
-                        lang.Equals("Basic", StringComparison.InvariantCulture) ||
-                        lang.Equals("XML", StringComparison.InvariantCulture))
+            try
+            {
+
+                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(Registry.LocalMachine))
+                using (RegistryKey codeExpansionKey = vsKey.OpenSubKey("Languages\\CodeExpansions"))
+                    foreach (string lang in codeExpansionKey.GetSubKeyNames())
                     {
-                        try
+                        if (lang.Equals("CSharp", StringComparison.InvariantCulture) ||
+                            lang.Equals("Basic", StringComparison.InvariantCulture) ||
+                            lang.Equals("XML", StringComparison.InvariantCulture))
                         {
-                            using (RegistryKey forceCreate = codeExpansionKey.OpenSubKey(lang + "\\ForceCreateDirs"))
+                            try
                             {
-                                foreach (string value in forceCreate.GetValueNames())
+                                using (RegistryKey forceCreate = codeExpansionKey.OpenSubKey(lang + "\\ForceCreateDirs"))
                                 {
-                                    string possiblePathString = forceCreate.GetValue(value) as string;
-                                    ProcessPathString(possiblePathString);
+                                    foreach (string value in forceCreate.GetValueNames())
+                                    {
+                                        string possiblePathString = forceCreate.GetValue(value) as string;
+                                        ProcessPathString(possiblePathString);
 
+                                    }
                                 }
                             }
-                        }
-                        catch (ArgumentNullException)
-                        {
-                            Debug.WriteLine("Cannot find ForceCreateDirs for " + lang);
-                        }
-
-                        try
-                        {
-                            using (RegistryKey paths = codeExpansionKey.OpenSubKey(lang + "\\Paths"))
+                            catch (NullReferenceException)
                             {
-                                foreach (string value in paths.GetValueNames())
-                                {
-                                    string possiblePathString = paths.GetValue(value) as string;
-                                    ProcessPathString(possiblePathString);
+                                Debug.WriteLine("Cannot find ForceCreateDirs for " + lang);
+                            }
+                            catch (ArgumentException)
+                            {
+                                Debug.WriteLine("Cannot find ForceCreateDirs for " + lang);
+                            }
 
+                            try
+                            {
+                                using (RegistryKey paths = codeExpansionKey.OpenSubKey(lang + "\\Paths"))
+                                {
+                                    foreach (string value in paths.GetValueNames())
+                                    {
+                                        string possiblePathString = paths.GetValue(value) as string;
+                                        ProcessPathString(possiblePathString);
+
+                                    }
                                 }
                             }
-                        }
-                        catch (ArgumentNullException)
-                        {
-                            Debug.WriteLine("Cannot find Paths for " + lang);
+                            catch (NullReferenceException)
+                            {
+                                Debug.WriteLine("Cannot find Paths for " + lang);
+                            }
+                            catch (ArgumentException)
+                            {
+                                Debug.WriteLine("Cannot find ForceCreateDirs for " + lang);
+                            }
                         }
                     }
-                }
+            }
+            catch (ArgumentException)
+            {
+                Debug.WriteLine("Cannot acces registry");
+            }
+            catch (SecurityException)
+            {
+                Debug.WriteLine("Cannot acces registry");
+            }
 
         }
 
