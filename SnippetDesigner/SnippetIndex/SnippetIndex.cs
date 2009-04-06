@@ -341,7 +341,9 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                         {
                             if (File.Exists(item.File))
                             {
-                                indexedSnippets.Add(GetDictionaryKey(item.File, item.Title), item);
+                                var key = GetDictionaryKey(item.File, item.Title);
+                                if (!indexedSnippets.ContainsKey(key))
+                                    indexedSnippets.Add(key, item);
                             }
                         }
                     }
@@ -562,9 +564,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
 
-
-        #region INotifyPropertyChanged Members
-
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
@@ -594,7 +593,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 Debug.Fail(String.Format("The property {0} could not be found in {1}", propertyName, GetType().FullName));
             }
         }
-        #endregion
 
     }
 }
