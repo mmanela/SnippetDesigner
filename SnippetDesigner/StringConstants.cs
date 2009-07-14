@@ -1,8 +1,5 @@
 // Copyright (C) Microsoft Corporation. All rights reserved.
 
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -13,9 +10,7 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     public class StringConstants
     {
-        //the vs commands to make a new snippet file
-        public const int TemplateNameResourceID = 106;
-        public static readonly string MakeSnippetDTEArgs = @"/template:" + "\"General\\" + SnippetDesignerPackage.GetResourceString(TemplateNameResourceID) + "\"";
+        public static readonly string MakeSnippetDTEFormat = "/template:\"{0}\\{1}\"";
         public static readonly string NewFileDTECommand = "File.NewFile";
 
         //the extension associated with a snippet file

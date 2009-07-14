@@ -40,6 +40,8 @@ namespace Microsoft.SnippetDesigner
          internal const string vbSnippetLanguageServiceString = "D98C5203-FF7B-4690-9253-8EA75DFA1878";
          internal const string xmlSnippetLanguageServiceString = "005A3641-D402-40af-8782-1BA0FFB83D73";
 
+         public static  Guid VsEnvironmentPackage = new Guid("DA9FB551-C724-11d0-AE1F-00A0C90FFFC3");
+
         //guid for sacPackage
          public static readonly Guid SnippetDesignerPkg = new Guid(SnippetDesignerPkgString);
 

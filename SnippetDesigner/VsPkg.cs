@@ -457,7 +457,13 @@ namespace Microsoft.SnippetDesigner
         {
             if (dte != null)
             {
-                dte.ExecuteCommand(StringConstants.NewFileDTECommand, StringConstants.MakeSnippetDTEArgs);
+                int TemplateNameResourceID = 106;
+                uint EnvironmentTemplateCategoryResourceID = 13565;
+                var commandArgs = string.Format(
+                                    StringConstants.MakeSnippetDTEFormat, 
+                                    GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID), 
+                                    SnippetDesignerPackage.GetResourceString(TemplateNameResourceID));
+                dte.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
             }
         }
 
@@ -477,9 +483,6 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        /////////////////////////////////////////////////////////////////////////////
-        // Overriden Package Implementation
-        #region Package Members
 
         public new Object GetService(System.Type serviceType)
         {
@@ -621,9 +624,6 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        #endregion
-
-
 
         /// <summary>
         /// Called when the UI Context changes.  This will be called when the user opens a new item (window) is active.
@@ -687,7 +687,15 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
+        public string GetVisualStudioResourceString(uint resourceId)
+        {
+            IVsShell shell = (IVsShell)GetService(typeof(SVsShell));
+            string localizedResource = null;
+            if (shell != null)
+                shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
 
+            return localizedResource;
+        }
 
         #region IVsInstalledProduct Members
 
