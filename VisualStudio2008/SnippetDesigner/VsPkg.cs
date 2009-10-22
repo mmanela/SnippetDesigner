@@ -78,9 +78,6 @@ namespace Microsoft.SnippetDesigner
     {
         internal static SnippetDesignerPackage Instance;
         private EditorFactory editorFactory;
-        private ExportToSnippetData exportData;
-        private DTE dte; //static automation model object
-        private HighlightMarkerService markerService; //the marker service
         private OleMenuCommand snippetExportCommand;
         // Cache the Menu Command Service since we will use it multiple times
         private OleMenuCommandService menuCommandService;
@@ -95,18 +92,12 @@ namespace Microsoft.SnippetDesigner
         //needed for the custom type descriptor provider
         private string activeSnippetTitle = String.Empty;
         private string activeSnippetLanguage = String.Empty;
-        private ILogger logger;
 
-        internal ILogger Logger
-        {
-            get { return logger; }
-        }
+        internal ILogger Logger { get; private set; }
 
         //index of snippets
-        private SnippetIndex snippetIndex;
 
         // options pages
-        private SnippetDesignerOptions snippetDesignerOptions;
 
         /// <summary>
         /// Default constructor of the package.
@@ -125,27 +116,18 @@ namespace Microsoft.SnippetDesigner
         /// Gets the settings.
         /// </summary>
         /// <value>The settings.</value>
-        public SnippetDesignerOptions Settings
-        {
-            get { return snippetDesignerOptions; }
-        }
+        public SnippetDesignerOptions Settings { get; private set; }
 
         /// <summary>
         /// Return the snippet index for this package
         /// </summary>
-        public SnippetIndex SnippetIndex
-        {
-            get { return snippetIndex; }
-        }
+        public SnippetIndex SnippetIndex { get; private set; }
 
 
         /// <summary>
         /// Get the service which you can aquire highlight markers from
         /// </summary>
-        public HighlightMarkerService MarkerService
-        {
-            get { return markerService; }
-        }
+        public HighlightMarkerService MarkerService { get; private set; }
 
         /// <summary>
         /// Return the active snippet title so that the type desccriptor can  display it
@@ -168,24 +150,17 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// the one instance of the dte object created by this package
         /// </summary>
-        public DTE DTE
-        {
-            get { return dte; }
-        }
+        public DTE DTE { get; private set; }
 
         /// <summary>
         /// Get the export snippet data
         /// contains language and code of the snippet
         /// </summary>
-        public ExportToSnippetData ExportSnippetData
-        {
-            get { return exportData; }
-            set { exportData = value; }
-        }
+        public ExportToSnippetData ExportSnippetData { get; private set; }
 
         public void ClearSnippetExportData()
         {
-            exportData = null;
+            ExportSnippetData = null;
         }
 
         internal static string GetResourceString(string resourceName)
@@ -207,6 +182,16 @@ namespace Microsoft.SnippetDesigner
             return GetResourceString(string.Format("@{0}", resourceID));
         }
 
+
+        public string GetVisualStudioResourceString(uint resourceId)
+        {
+            IVsShell shell = (IVsShell)GetService(typeof(SVsShell));
+            string localizedResource = null;
+            if (shell != null)
+                shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
+
+            return localizedResource;
+        }
 
         /// <summary>
         /// Get the name Visual Studio is registered to
@@ -297,7 +282,7 @@ namespace Microsoft.SnippetDesigner
                 try
                 {
                     //build export object
-                    exportData = new ExportToSnippetData(codeDoc.Selection.Text.Normalize(), codeDoc.Language.ToLower());
+                    ExportSnippetData = new ExportToSnippetData(codeDoc.Selection.Text.Normalize(), codeDoc.Language.ToLower());
                     //launch new file
                     CreateNewSnippetFile();
                 }
@@ -334,13 +319,13 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal TextDocument CurrentTextDocument
         {
-            get { return GetTextDocumentFromWindow(dte.ActiveWindow); }
+            get { return GetTextDocumentFromWindow(DTE.ActiveWindow); }
         }
 
         internal TextDocument GetTextDocumentFromWindow(Window window)
         {
             TextDocument codeDoc = null;
-            if (dte != null)
+            if (DTE != null)
             {
                 Document doc = null;
                 try
@@ -369,12 +354,12 @@ namespace Microsoft.SnippetDesigner
         private void CreateSnippet(object sender, EventArgs e)
         {
             OleMenuCmdEventArgs eventArgs = e as OleMenuCmdEventArgs;
-            if (eventArgs != null && dte != null)
+            if (eventArgs != null && DTE != null)
             {
                 NewSnippetCommand newSnippet = new NewSnippetCommand(eventArgs.InValue.ToString().Split(' '));
 
                 //build export object
-                exportData = new ExportToSnippetData(newSnippet.Code, newSnippet.Language.ToLower());
+                ExportSnippetData = new ExportToSnippetData(newSnippet.Code, newSnippet.Language.ToLower());
                 CreateNewSnippetFile();
             }
         }
@@ -384,7 +369,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal void CreateNewSnippetFile()
         {
-            if (dte != null)
+            if (DTE != null)
             {
                 int TemplateNameResourceID = 106;
                 uint EnvironmentTemplateCategoryResourceID = 13565;
@@ -392,7 +377,7 @@ namespace Microsoft.SnippetDesigner
                     StringConstants.MakeSnippetDTEFormat,
                     GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID),
                     GetResourceString(TemplateNameResourceID));
-                dte.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
+                DTE.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
             }
         }
 
@@ -410,8 +395,8 @@ namespace Microsoft.SnippetDesigner
 
 
                 //create the dte automation object so rest of package can access the automation model
-                dte = (DTE) GetService(typeof (DTE));
-                if (dte == null)
+                DTE = (DTE) GetService(typeof (DTE));
+                if (DTE == null)
                 {
                     //if dte is null then we throw a excpetion
                     //this is a fatal error
@@ -419,9 +404,9 @@ namespace Microsoft.SnippetDesigner
                 }
 
 
-                logger = new Logger(this);
+                Logger = new Logger(this);
 
-                snippetDesignerOptions = GetDialogPage(typeof (SnippetDesignerOptions)) as SnippetDesignerOptions;
+                Settings = GetDialogPage(typeof (SnippetDesignerOptions)) as SnippetDesignerOptions;
 
 
                 // Create instance of RegularExpressionLanguageService type
@@ -477,16 +462,16 @@ namespace Microsoft.SnippetDesigner
                 createCommand.ParametersDescription = StringConstants.ArgumentStartMarker; //a space means arguments are coming
 
                 // Create and proffer the marker service
-                markerService = new HighlightMarkerService(this);
-                ((IServiceContainer) this).AddService(markerService.GetType(), markerService, true);
+                MarkerService = new HighlightMarkerService(this);
+                ((IServiceContainer) this).AddService(MarkerService.GetType(), MarkerService, true);
 
                 //initialize the snippet index
-                snippetIndex = new SnippetIndex();
+                SnippetIndex = new SnippetIndex();
                 ThreadPool.QueueUserWorkItem(
                     delegate
                         {
-                            snippetIndex.ReadIndexFile();
-                            snippetIndex.CreateOrUpdateIndexFile();
+                            SnippetIndex.ReadIndexFile();
+                            SnippetIndex.CreateOrUpdateIndexFile();
                         }
                     );
             }
@@ -542,12 +527,12 @@ namespace Microsoft.SnippetDesigner
             TextDocument textDoc = CurrentTextDocument;
             if (currentWindow == null)
             {
-                currentWindow = dte.ActiveWindow;
+                currentWindow = DTE.ActiveWindow;
             }
-            else if (currentWindow != dte.ActiveWindow)
+            else if (currentWindow != DTE.ActiveWindow)
             {
                 previousWindow = currentWindow;
-                currentWindow = dte.ActiveWindow;
+                currentWindow = DTE.ActiveWindow;
             }
 
             string lang = CurrentWindowLanguage.ToLower(); //turn to lower case for comparisons
@@ -594,16 +579,6 @@ namespace Microsoft.SnippetDesigner
             {
                 editorFactory.Dispose();
             }
-        }
-
-        public string GetVisualStudioResourceString(uint resourceId)
-        {
-            IVsShell shell = (IVsShell) GetService(typeof (SVsShell));
-            string localizedResource = null;
-            if (shell != null)
-                shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
-
-            return localizedResource;
         }
 
         #region IVsInstalledProduct Members
