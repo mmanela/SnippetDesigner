@@ -1,15 +1,9 @@
-﻿// Copyright (C) Microsoft Corporation. All rights reserved.
-
-// Guids.cs
-// MUST match guids.h
-using System;
+﻿using System;
 
 namespace Microsoft.SnippetDesigner
 {
-
     public static class GuidList
     {
-
         //string representation of the guids described below
         //needed for use in attributes since you can only use const strings in attributes
         internal const string SnippetDesignerPkgString = "5a3ff802-5398-465e-8cc6-882fd3cbae55";
@@ -22,9 +16,9 @@ namespace Microsoft.SnippetDesigner
 
         internal const string bitmapStripGuid = "{8410C7B1-EA41-4466-B68E-FDB2E9A41237}";
 
-        internal const string yellowMarkerString = "2F9008C7-282F-4fa7-ADB9-31219A86BBD4";
+        internal const string snippetReplacementString = "2F9008C7-282F-4fa7-ADB9-31219A86BBD4";
 
-        internal const string yellowMarkerWithBorderString = "35F885CA-0D3F-4bfa-8A05-69C810690FDA";
+        internal const string activeSnippetReplacementMarker = "35F885CA-0D3F-4bfa-8A05-69C810690FDA";
 
         internal const string markerServiceString = "BD9FE285-9066-4553-9C6A-C2F49A24777E";
 
@@ -34,34 +28,34 @@ namespace Microsoft.SnippetDesigner
 
         internal const string provideEditorExtensionProject = "{A2FE74E1-B743-11d0-AE1A-00A0C90FFFC3}";
 
-         internal const string snippetExplorerString = "8332D89B-E52F-46d7-8D9E-6D201943C631";
+        internal const string snippetExplorerString = "8332D89B-E52F-46d7-8D9E-6D201943C631";
 
-         internal const string csharpSnippetLanguageServiceString = "6F34A178-46D5-485a-A636-18DEDEFA0299";
-         internal const string vbSnippetLanguageServiceString = "D98C5203-FF7B-4690-9253-8EA75DFA1878";
-         internal const string xmlSnippetLanguageServiceString = "005A3641-D402-40af-8782-1BA0FFB83D73";
+        internal const string csharpSnippetLanguageServiceString = "6F34A178-46D5-485a-A636-18DEDEFA0299";
+        internal const string vbSnippetLanguageServiceString = "D98C5203-FF7B-4690-9253-8EA75DFA1878";
+        internal const string xmlSnippetLanguageServiceString = "005A3641-D402-40af-8782-1BA0FFB83D73";
 
-         public static  Guid VsEnvironmentPackage = new Guid("DA9FB551-C724-11d0-AE1F-00A0C90FFFC3");
+        public static Guid VsEnvironmentPackage = new Guid("DA9FB551-C724-11d0-AE1F-00A0C90FFFC3");
 
         //guid for sacPackage
-         public static readonly Guid SnippetDesignerPkg = new Guid(SnippetDesignerPkgString);
+        public static readonly Guid SnippetDesignerPkg = new Guid(SnippetDesignerPkgString);
 
         //guid for commmand set that all SnippetDesigner commands belong to
-         public static readonly Guid SnippetDesignerCmdSet = new Guid(SnippetDesignerCmdSetString);
+        public static readonly Guid SnippetDesignerCmdSet = new Guid(SnippetDesignerCmdSetString);
 
         //guid for tool window object
-         public static readonly Guid toolWindowPersistance = new Guid(toolWindowPersistanceString);
+        public static readonly Guid toolWindowPersistance = new Guid(toolWindowPersistanceString);
 
         //guid for codeWindowHost factory
-         public static readonly Guid snippetEditorFactory = new Guid(editorFactoryString);
+        public static readonly Guid snippetEditorFactory = new Guid(editorFactoryString);
 
-         //Guids for the Snippet Language services
-         public static readonly Guid csharpSnippetLanguageService = new Guid(csharpSnippetLanguageServiceString);
-         public static readonly Guid vbSnippetLanguageService = new Guid(vbSnippetLanguageServiceString);
-         public static readonly Guid xmlSnippetLanguageService = new Guid(xmlSnippetLanguageServiceString);
+        //Guids for the Snippet Language services
+        public static readonly Guid csharpSnippetLanguageService = new Guid(csharpSnippetLanguageServiceString);
+        public static readonly Guid vbSnippetLanguageService = new Guid(vbSnippetLanguageServiceString);
+        public static readonly Guid xmlSnippetLanguageService = new Guid(xmlSnippetLanguageServiceString);
 
         //Guid defined by enviorment for a text codeWindowHost factory, we use this for those keybinding 
         //in setsite 
-         public static readonly Guid textEditorFactory = new Guid("{8B382828-6202-11d1-8870-0000F87579D2}");
+        public static readonly Guid textEditorFactory = new Guid("{8B382828-6202-11d1-8870-0000F87579D2}");
 
 
         //Language service guids - these are used to tell a text buffer which language service to attach to
@@ -77,8 +71,7 @@ namespace Microsoft.SnippetDesigner
         //markers
 
         internal static readonly Guid markerSvc = new Guid(markerServiceString);
-        internal static readonly Guid yellowMarker = new Guid(yellowMarkerString);
-        internal static readonly Guid yellowMarkerWithBorder = new Guid(yellowMarkerWithBorderString);
-
-    };
+        internal static readonly Guid yellowMarker = new Guid(snippetReplacementString);
+        internal static readonly Guid yellowMarkerWithBorder = new Guid(activeSnippetReplacementMarker);
+    } ;
 }

@@ -1,15 +1,6 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Windows.Forms;
-
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.SnippetDesigner
@@ -17,13 +8,12 @@ namespace Microsoft.SnippetDesigner
     /// <summary>
     /// The yellow highlight marker
     /// </summary>
-    [Guid(GuidList.yellowMarkerString)]
-    public class YellowHighlightMarker : 
-        IVsPackageDefinedTextMarkerType, 
+    [Guid(GuidList.snippetReplacementString)]
+    public class SnippetReplacementMarker :
+        IVsPackageDefinedTextMarkerType,
         IVsMergeableUIItem,
         IVsTextMarkerClient
     {
-        
         #region IVsPackageDefinedTextMarkerType Members
 
         /// <summary>
@@ -36,7 +26,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="dwGlyphDrawFlags"></param>
         /// <param name="iLineHeight"></param>
         /// <returns></returns>
-        public int DrawGlyphWithColors(System.IntPtr hdc, Microsoft.VisualStudio.OLE.Interop.RECT[] pRect, int iMarkerType, IVsTextMarkerColorSet pMarkerColors, uint dwGlyphDrawFlags, int iLineHeight)
+        public int DrawGlyphWithColors(IntPtr hdc, RECT[] pRect, int iMarkerType, IVsTextMarkerColorSet pMarkerColors, uint dwGlyphDrawFlags, int iLineHeight)
         {
             return 0;
         }
@@ -46,7 +36,7 @@ namespace Microsoft.SnippetDesigner
             pdwFontFlags = 0;
             return 0;
         }
-        
+
         public int GetPriorityIndex(out int piPriorityIndex)
         {
             piPriorityIndex = 10000;
@@ -55,8 +45,8 @@ namespace Microsoft.SnippetDesigner
 
         public int GetVisualStyle(out uint pdwVisualFlags)
         {
-            pdwVisualFlags = (uint)MARKERVISUAL.MV_COLOR_ALWAYS | (uint)MARKERVISUAL.MV_TIP_FOR_BODY;
-           
+            pdwVisualFlags = (uint) MARKERVISUAL.MV_COLOR_ALWAYS | (uint) MARKERVISUAL.MV_TIP_FOR_BODY;
+
             return 0;
         }
 
@@ -70,7 +60,7 @@ namespace Microsoft.SnippetDesigner
         public int GetBehaviorFlags(out uint pdwFlags)
         {
             // snap to current line
-            pdwFlags = (uint)MARKERBEHAVIORFLAGS.MB_DEFAULT;
+            pdwFlags = (uint) MARKERBEHAVIORFLAGS.MB_DEFAULT;
             return 0;
         }
 
@@ -87,7 +77,7 @@ namespace Microsoft.SnippetDesigner
 
         public int GetDisplayName(out string pbstrDisplayName)
         {
-            pbstrDisplayName = Resources.YellowHighlightMarkerName;
+            pbstrDisplayName = Resources.SnippetReplacementMarker;
             return 0;
         }
 
@@ -99,13 +89,13 @@ namespace Microsoft.SnippetDesigner
 
         public int GetCanonicalName(out string pbstrNonLocalizeName)
         {
-            pbstrNonLocalizeName = Resources.YellowHighlightMarkerName;
+            pbstrNonLocalizeName = Resources.SnippetReplacementMarker;
             return 0;
         }
 
         public int GetDescription(out string pbstrDesc)
         {
-            pbstrDesc = Resources.YellowHighlightMarkerDescription;
+            pbstrDesc = Resources.SnippetReplacementMarkerDescription;
             return 0;
         }
 
@@ -120,6 +110,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="pbstrText"></param>
         /// <param name="pcmdf"></param>
         /// <returns></returns>
+
         #region IVsTextMarkerClient Members
 
         public int GetMarkerCommandInfo(IVsTextMarker pMarker, int iItem, string[] pbstrText, uint[] pcmdf)
@@ -151,7 +142,6 @@ namespace Microsoft.SnippetDesigner
 
         public int ExecMarkerCommand(IVsTextMarker pMarker, int iItem)
         {
-           
             // TODO:  Add ExecMarkerCommand implementation
             return 0;
         }
@@ -164,27 +154,22 @@ namespace Microsoft.SnippetDesigner
 
         public int GetTipText(IVsTextMarker pMarker, string[] pbstrText)
         {
-            pbstrText[0] = Resources.YellowHighlightMarkerText;
+            pbstrText[0] = Resources.SnippetReplacementMarkerText;
             return 0;
         }
 
         #endregion
-
     }
-
 
 
     /// <summary>
     /// The yellow highlight marker that has a black border
     /// </summary>
-    [Guid(GuidList.yellowMarkerWithBorderString)]
-    public class YellowHighlightMarkerWithBorder : IVsPackageDefinedTextMarkerType,
-        IVsMergeableUIItem,
-        IVsTextMarkerClient
+    [Guid(GuidList.activeSnippetReplacementMarker)]
+    public class ActiveSnippetReplacementMarker : IVsPackageDefinedTextMarkerType,
+                                                  IVsMergeableUIItem,
+                                                  IVsTextMarkerClient
     {
-
-
-
         #region IVsPackageDefinedTextMarkerType Members
 
         /// <summary>
@@ -197,7 +182,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="dwGlyphDrawFlags"></param>
         /// <param name="iLineHeight"></param>
         /// <returns></returns>
-        public int DrawGlyphWithColors(System.IntPtr hdc, Microsoft.VisualStudio.OLE.Interop.RECT[] pRect, int iMarkerType, IVsTextMarkerColorSet pMarkerColors, uint dwGlyphDrawFlags, int iLineHeight)
+        public int DrawGlyphWithColors(IntPtr hdc, RECT[] pRect, int iMarkerType, IVsTextMarkerColorSet pMarkerColors, uint dwGlyphDrawFlags, int iLineHeight)
         {
             return 0;
         }
@@ -216,7 +201,7 @@ namespace Microsoft.SnippetDesigner
 
         public int GetVisualStyle(out uint pdwVisualFlags)
         {
-            pdwVisualFlags = (uint)MARKERVISUAL.MV_COLOR_ALWAYS | (uint)MARKERVISUAL.MV_BORDER | (uint)MARKERVISUAL.MV_TIP_FOR_BODY;
+            pdwVisualFlags = (uint) MARKERVISUAL.MV_COLOR_ALWAYS | (uint) MARKERVISUAL.MV_BORDER | (uint) MARKERVISUAL.MV_TIP_FOR_BODY;
 
             return 0;
         }
@@ -231,7 +216,7 @@ namespace Microsoft.SnippetDesigner
         public int GetBehaviorFlags(out uint pdwFlags)
         {
             // snap to current line
-            pdwFlags = (uint)MARKERBEHAVIORFLAGS.MB_DEFAULT;
+            pdwFlags = (uint) MARKERBEHAVIORFLAGS.MB_DEFAULT;
             return 0;
         }
 
@@ -248,7 +233,7 @@ namespace Microsoft.SnippetDesigner
 
         public int GetDisplayName(out string pbstrDisplayName)
         {
-            pbstrDisplayName = Resources.YellowHighlightMarkerName;
+            pbstrDisplayName = Resources.SnippetReplacementMarker;
             return 0;
         }
 
@@ -260,13 +245,13 @@ namespace Microsoft.SnippetDesigner
 
         public int GetCanonicalName(out string pbstrNonLocalizeName)
         {
-            pbstrNonLocalizeName = Resources.YellowHighlightMarkerName;
+            pbstrNonLocalizeName = Resources.SnippetReplacementMarker;
             return 0;
         }
 
         public int GetDescription(out string pbstrDesc)
         {
-            pbstrDesc = Resources.YellowHighlightMarkerDescription;
+            pbstrDesc = Resources.SnippetReplacementMarkerDescription;
             return 0;
         }
 
@@ -281,6 +266,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="pbstrText"></param>
         /// <param name="pcmdf"></param>
         /// <returns></returns>
+
         #region IVsTextMarkerClient Members
 
         public int GetMarkerCommandInfo(IVsTextMarker pMarker, int iItem, string[] pbstrText, uint[] pcmdf)
@@ -292,7 +278,6 @@ namespace Microsoft.SnippetDesigner
 
         public void MarkerInvalidated()
         {
-
             // TODO:  Add MarkerInvalidated implementation
         }
 
@@ -313,7 +298,6 @@ namespace Microsoft.SnippetDesigner
 
         public int ExecMarkerCommand(IVsTextMarker pMarker, int iItem)
         {
-
             // TODO:  Add ExecMarkerCommand implementation
             return 0;
         }
@@ -326,11 +310,10 @@ namespace Microsoft.SnippetDesigner
 
         public int GetTipText(IVsTextMarker pMarker, string[] pbstrText)
         {
-            pbstrText[0] = Resources.YellowHighlightMarkerText;
+            pbstrText[0] = Resources.SnippetReplacementMarkerText;
             return 0;
         }
 
         #endregion
-
     }
 }

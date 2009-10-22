@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.RegistryTools;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using Microsoft.SnippetDesigner.SnippetExplorer;
-using Microsoft.Win32;
-using System.Diagnostics;
-using System.Text.RegularExpressions;
-using Microsoft.VisualStudio.Shell.Interop;
 using System.Security;
+using System.Text.RegularExpressions;
+using Microsoft.RegistryTools;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Win32;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -21,12 +19,12 @@ namespace Microsoft.SnippetDesigner
         public static SnippetDirectories Instance = new SnippetDirectories();
 
 
-        private Dictionary<string, string> registryPathReplacements = new Dictionary<string, string>();
-        private Regex replaceRegex;
+        private readonly Dictionary<string, string> registryPathReplacements = new Dictionary<string, string>();
+        private readonly Regex replaceRegex;
 
         //snippet directories
-        private Dictionary<string, string> userSnippetDirectories = new Dictionary<string, string>();
-        private List<string> allSnippetDirectories = new List<string>();
+        private readonly Dictionary<string, string> userSnippetDirectories = new Dictionary<string, string>();
+        private readonly List<string> allSnippetDirectories = new List<string>();
 
         /// <summary>
         /// Getsthe user snippet directories. This is used to know where to save to
@@ -52,9 +50,8 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private SnippetDirectories()
         {
-
-            IUIHostLocale localeHost = (IUIHostLocale)SnippetDesignerPackage.Instance.GetService(typeof(IUIHostLocale));
-            uint lcid = (uint)CultureInfo.CurrentCulture.LCID;
+            IUIHostLocale localeHost = (IUIHostLocale) SnippetDesignerPackage.Instance.GetService(typeof (IUIHostLocale));
+            uint lcid = (uint) CultureInfo.CurrentCulture.LCID;
             localeHost.GetUILocale(out lcid);
 
             registryPathReplacements.Add("%InstallRoot%", GetInstallRoot());
@@ -70,7 +67,6 @@ namespace Microsoft.SnippetDesigner
         {
             try
             {
-
                 using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(Registry.LocalMachine))
                 using (RegistryKey codeExpansionKey = vsKey.OpenSubKey("Languages\\CodeExpansions"))
                     foreach (string lang in codeExpansionKey.GetSubKeyNames())
@@ -87,7 +83,6 @@ namespace Microsoft.SnippetDesigner
                                     {
                                         string possiblePathString = forceCreate.GetValue(value) as string;
                                         ProcessPathString(possiblePathString);
-
                                     }
                                 }
                             }
@@ -108,7 +103,6 @@ namespace Microsoft.SnippetDesigner
                                     {
                                         string possiblePathString = paths.GetValue(value) as string;
                                         ProcessPathString(possiblePathString);
-
                                     }
                                 }
                             }
@@ -131,7 +125,6 @@ namespace Microsoft.SnippetDesigner
             {
                 Debug.WriteLine("Cannot acces registry");
             }
-
         }
 
         /// <summary>
@@ -157,7 +150,7 @@ namespace Microsoft.SnippetDesigner
                         // if so we use that since when we get snippets we do it recursivly from a root
                         foreach (string existingPath in allSnippetDirectories)
                         {
-                            if (pathToAdd.Contains(existingPath) && !pathToAdd.Equals(existingPath,StringComparison.InvariantCultureIgnoreCase))
+                            if (pathToAdd.Contains(existingPath) && !pathToAdd.Equals(existingPath, StringComparison.InvariantCultureIgnoreCase))
                             {
                                 pathsToRemove.Add(existingPath);
                             }
@@ -184,9 +177,7 @@ namespace Microsoft.SnippetDesigner
                             allSnippetDirectories.Add(pathToAdd);
                         }
                     }
-
                 }
-
             }
         }
 
@@ -198,20 +189,18 @@ namespace Microsoft.SnippetDesigner
         private string ReplacePathVariables(string pathString)
         {
             string newPath = replaceRegex.Replace(
-                    pathString,
-                    new MatchEvaluator(match =>
-                    {
-                        if (registryPathReplacements.ContainsKey(match.Value))
-                        {
-                            return registryPathReplacements[match.Value];
-                        }
-                        else
-                        {
-                            return match.Value;
-                        }
-
-                    })
-
+                pathString,
+                new MatchEvaluator(match =>
+                                       {
+                                           if (registryPathReplacements.ContainsKey(match.Value))
+                                           {
+                                               return registryPathReplacements[match.Value];
+                                           }
+                                           else
+                                           {
+                                               return match.Value;
+                                           }
+                                       })
                 );
             return newPath;
         }
@@ -247,7 +236,8 @@ namespace Microsoft.SnippetDesigner
             string snippetDir = Path.Combine(vsDocDir, StringConstants.SnippetDirectoryName);
             userSnippetDirectories[Resources.DisplayNameCSharp] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameCSharp, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameVisualBasic] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameVisualBasic, StringConstants.MySnippetsDir));
-            userSnippetDirectories[Resources.DisplayNameXML] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameXML, StringConstants.MyXmlSnippetsDir)); ;
+            userSnippetDirectories[Resources.DisplayNameXML] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameXML, StringConstants.MyXmlSnippetsDir));
+            ;
             userSnippetDirectories[String.Empty] = snippetDir;
         }
     }

@@ -1,34 +1,20 @@
-﻿// Copyright (C) Microsoft Corporation. All rights reserved.
-
-// VsPkg.cs : Implementation of SnippetDesigner
-//
-
-using System;
+﻿using System;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using System.ComponentModel.Design;
-using System.Collections.Generic;
-using System.Collections;
-using Microsoft.Win32;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Shell;
+using System.Security;
+using System.Threading;
 using EnvDTE;
-using EnvDTE80;
-using System.Windows.Forms;
-using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.CommandBars;
-using Microsoft.VisualStudio.VSHelp;
-using System.Security.Permissions;
-using Microsoft.SnippetDesigner.ContentTypes;
-using MsOle = Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.RegistryTools;
-using System.IO;
-using System.ComponentModel;
+using Microsoft.SnippetDesigner.ContentTypes;
 using Microsoft.SnippetDesigner.OptionPages;
+using Microsoft.SnippetDesigner.SnippetExplorer;
+using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.Win32;
+using MsOle = Microsoft.VisualStudio.OLE.Interop;
 
 
 namespace Microsoft.SnippetDesigner
@@ -43,63 +29,49 @@ namespace Microsoft.SnippetDesigner
     /// IVsPackage interface and uses the registration attributes defined in the framework to 
     /// register itself and its components with the shell.
     /// </summary>
-
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-
     // A Visual Studio component can be registered under different regitry roots; for instance
     // when you debug your package you want to register it in the experimental hive. This
     // attribute specifies the registry root to use if no one is provided to regpkg.exe with
     // the /root switch.
     [DefaultRegistryRoot(@"Microsoft\VisualStudio\9.0")]
-
     // This attribute is used to register the informations needed to show the this package
     // in the Help/About dialog of Visual Studio.
     //[InstalledProductRegistration(false, "#100", "#102", "1.0",IconResourceID=400)]
     [InstalledProductRegistration(true, null, null, null)]
-
     // In order be loaded inside Visual Studio in a machine that has not the VS SDK installed, 
     // package needs to have a valid load key (it can be requested at 
     // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
     // package has a load key embedded in its resources.
     [ProvideLoadKey("Standard", "1.1", "Snippet Designer", "Microsoft", 1)]
-
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource(1000, 1)]
-
     // This attribute registers a tool window exposed by this package.
-    [ProvideToolWindow(typeof(SnippetExplorerToolWindow))]
-
+    [ProvideToolWindow(typeof (SnippetExplorerToolWindow))]
     // Options pages
-    [ProvideOptionPageAttribute(typeof(SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
-    [ProvideOptionPageAttribute(typeof(ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
-
+    [ProvideOptionPage(typeof (SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
+    [ProvideOptionPage(typeof (ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
     // Language Service
     // This attribute is needed to indicate that the we offer this language service
-    [ProvideService(typeof(CSharpSnippetLanguageService))]
-    [ProvideLanguageService(typeof(CSharpSnippetLanguageService), "CSharp Snippets", 202)]
-
-    [ProvideService(typeof(VBSnippetLanguageService))]
-    [ProvideLanguageService(typeof(VBSnippetLanguageService), "VB Snippets", 203)]
-
-    [ProvideService(typeof(XMLSnippetLanguageService))]
-    [ProvideLanguageService(typeof(XMLSnippetLanguageService), "XML Snippets", 204)]
-
+    [ProvideService(typeof (CSharpSnippetLanguageService))]
+    [ProvideLanguageService(typeof (CSharpSnippetLanguageService), "CSharp Snippets", 202)]
+    [ProvideService(typeof (VBSnippetLanguageService))]
+    [ProvideLanguageService(typeof (VBSnippetLanguageService), "VB Snippets", 203)]
+    [ProvideService(typeof (XMLSnippetLanguageService))]
+    [ProvideLanguageService(typeof (XMLSnippetLanguageService), "XML Snippets", 204)]
     // These attributes registers the HighLightMarker service and two custom markers 
-    [ProvideService(typeof(HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
-    [ProvideCustomMarker(StringConstants.YellowHighlightMarkerName, 200, typeof(YellowHighlightMarker), typeof(SnippetDesignerPackage), typeof(HighlightMarkerService))]
-    [ProvideCustomMarker(StringConstants.YellowHighlightMarkerWithBorderName, 201, typeof(YellowHighlightMarkerWithBorder), typeof(SnippetDesignerPackage), typeof(HighlightMarkerService))]
-
+    [ProvideService(typeof (HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
+    [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
+    [ProvideCustomMarker(StringConstants.ActiveSnippetReplacementMarker, 201, typeof (ActiveSnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
     //cause the package to autoload - Only when a solution exists
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
-
-    [ProvideEditorExtension(typeof(EditorFactory), StringConstants.SnippetExtension, 32,
-             ProjectGuid = GuidList.provideEditorExtensionProject,
-             DefaultName = "Snippet Designer"
-             )]
-
-    [ProvideEditorLogicalView(typeof(EditorFactory), GuidList.editorFactoryLogicalView)]
+    [ProvideEditorExtension(typeof (EditorFactory), StringConstants.SnippetExtension, 32,
+        ProjectGuid = GuidList.provideEditorExtensionProject,
+        DefaultName = "Snippet Designer"
+        )]
+    [ProvideEditorLogicalView(typeof (EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
     [ComVisible(true)]
     public sealed class SnippetDesignerPackage : Package, IVsSelectionEvents, IDisposable, IVsInstalledProduct
@@ -107,14 +79,14 @@ namespace Microsoft.SnippetDesigner
         internal static SnippetDesignerPackage Instance;
         private EditorFactory editorFactory;
         private ExportToSnippetData exportData;
-        private DTE dte;//static automation model object
-        private HighlightMarkerService markerService;//the marker service
+        private DTE dte; //static automation model object
+        private HighlightMarkerService markerService; //the marker service
         private OleMenuCommand snippetExportCommand;
         // Cache the Menu Command Service since we will use it multiple times
         private OleMenuCommandService menuCommandService;
         //keep track of the last window which was active
-        private Window previousWindow = null;
-        private Window currentWindow = null;
+        private Window previousWindow;
+        private Window currentWindow;
 
         private CSharpSnippetLanguageService csharpSnippetLangService;
         private VBSnippetLanguageService vbSnippetLangService;
@@ -123,13 +95,18 @@ namespace Microsoft.SnippetDesigner
         //needed for the custom type descriptor provider
         private string activeSnippetTitle = String.Empty;
         private string activeSnippetLanguage = String.Empty;
+        private ILogger logger;
+
+        internal ILogger Logger
+        {
+            get { return logger; }
+        }
 
         //index of snippets
         private SnippetIndex snippetIndex;
 
-
         // options pages
-        SnippetDesignerOptions snippetDesignerOptions;
+        private SnippetDesignerOptions snippetDesignerOptions;
 
         /// <summary>
         /// Default constructor of the package.
@@ -141,20 +118,16 @@ namespace Microsoft.SnippetDesigner
         public SnippetDesignerPackage()
         {
             Instance = this;
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", this.ToString()));
+            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
         }
 
-        #region Public Properties
         /// <summary>
         /// Gets the settings.
         /// </summary>
         /// <value>The settings.</value>
         public SnippetDesignerOptions Settings
         {
-            get
-            {
-                return snippetDesignerOptions;
-            }
+            get { return snippetDesignerOptions; }
         }
 
         /// <summary>
@@ -162,10 +135,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public SnippetIndex SnippetIndex
         {
-            get
-            {
-                return snippetIndex;
-            }
+            get { return snippetIndex; }
         }
 
 
@@ -174,10 +144,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public HighlightMarkerService MarkerService
         {
-            get
-            {
-                return markerService;
-            }
+            get { return markerService; }
         }
 
         /// <summary>
@@ -185,28 +152,17 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public string ActiveSnippetTitle
         {
-            get
-            {
-                return activeSnippetTitle;
-            }
-            set
-            {
-                activeSnippetTitle = value;
-            }
+            get { return activeSnippetTitle; }
+            set { activeSnippetTitle = value; }
         }
+
         /// <summary>
         /// Return the active snippet title so that the type desccriptor can 
         /// </summary>
         public string ActiveSnippetLanguage
         {
-            get
-            {
-                return activeSnippetLanguage;
-            }
-            set
-            {
-                activeSnippetLanguage = value;
-            }
+            get { return activeSnippetLanguage; }
+            set { activeSnippetLanguage = value; }
         }
 
         /// <summary>
@@ -214,12 +170,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public DTE DTE
         {
-
-            get
-            {
-                return dte;
-            }
-
+            get { return dte; }
         }
 
         /// <summary>
@@ -228,38 +179,25 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public ExportToSnippetData ExportSnippetData
         {
-
-            get
-            {
-                return exportData;
-            }
-            set
-            {
-                exportData = value;
-            }
+            get { return exportData; }
+            set { exportData = value; }
         }
-
 
         public void ClearSnippetExportData()
         {
             exportData = null;
         }
 
-        #endregion
-
-
-        #region Static Methods
-
         internal static string GetResourceString(string resourceName)
         {
             string resourceValue;
-            IVsResourceManager resourceManager = (IVsResourceManager)GetGlobalService(typeof(SVsResourceManager));
+            IVsResourceManager resourceManager = (IVsResourceManager) GetGlobalService(typeof (SVsResourceManager));
             if (resourceManager == null)
                 throw new InvalidOperationException("Could not get SVsResourceManager service. Make sure the package is Sited before calling this method.");
 
-            Guid packageGuid = typeof(SnippetDesignerPackage).GUID;
+            Guid packageGuid = typeof (SnippetDesignerPackage).GUID;
             int hr = resourceManager.LoadResourceString(ref packageGuid, -1, resourceName, out resourceValue);
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(hr);
+            ErrorHandler.ThrowOnFailure(hr);
 
             return resourceValue;
         }
@@ -285,18 +223,18 @@ namespace Microsoft.SnippetDesigner
                     if (rk != null)
                     {
                         rk = rk.OpenSubKey(StringConstants.VSRegistryRegistrationName);
-                        registeredName = (String)rk.GetValue(StringConstants.VSRegistryRegistrationNameEntry);
+                        registeredName = (String) rk.GetValue(StringConstants.VSRegistryRegistrationNameEntry);
                     }
                 }
-                catch (System.Security.SecurityException)
+                catch (SecurityException)
                 {
                     //The user does not have the permissions required to read the registry key.
                 }
-                catch (System.ArgumentException)
+                catch (ArgumentException)
                 {
                     //name is longer than the maximum length allowed (255 characters).
                 }
-                catch (System.ObjectDisposedException)
+                catch (ObjectDisposedException)
                 {
                     //The Microsoft.Win32.RegistryKey is closed (closed keys cannot be accessed).
                 }
@@ -304,14 +242,13 @@ namespace Microsoft.SnippetDesigner
 
                 return registeredName;
             }
-
-
         }
 
-        #endregion
 
-
-
+        public new Object GetService(Type serviceType)
+        {
+            return base.GetService(serviceType);
+        }
 
         /// <summary>
         /// This function is called when the user clicks the menu item that shows the 
@@ -325,14 +262,14 @@ namespace Microsoft.SnippetDesigner
             // The last flag is set to true so that if the tool window does not exists it will be created.
 
 
-            ToolWindowPane window = this.FindToolWindow(typeof(SnippetExplorerToolWindow), 0, true);
+            ToolWindowPane window = FindToolWindow(typeof (SnippetExplorerToolWindow), 0, true);
             if ((null == window) || (null == window.Frame))
             {
                 throw new COMException(Resources.CanNotCreateWindow);
             }
             Guid textEditor = GuidList.textEditorFactory;
-            IVsWindowFrame windowFrame = (IVsWindowFrame)window.Frame;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(windowFrame.Show());
+            IVsWindowFrame windowFrame = (IVsWindowFrame) window.Frame;
+            ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
 
@@ -370,7 +307,6 @@ namespace Microsoft.SnippetDesigner
                 }
                 return;
             }
-
         }
 
         /// <summary>
@@ -398,12 +334,8 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal TextDocument CurrentTextDocument
         {
-            get
-            {
-                return GetTextDocumentFromWindow(dte.ActiveWindow);
-            }
+            get { return GetTextDocumentFromWindow(dte.ActiveWindow); }
         }
-
 
         internal TextDocument GetTextDocumentFromWindow(Window window)
         {
@@ -428,7 +360,6 @@ namespace Microsoft.SnippetDesigner
             return codeDoc;
         }
 
-
         /// <summary>
         /// The vs command line argument parser.  When you do File.NewSnippet and then args of
         /// /lang langyage and/or /code myCode it will create new snippet with those options
@@ -437,7 +368,6 @@ namespace Microsoft.SnippetDesigner
         /// <param name="e"></param>
         private void CreateSnippet(object sender, EventArgs e)
         {
-
             OleMenuCmdEventArgs eventArgs = e as OleMenuCmdEventArgs;
             if (eventArgs != null && dte != null)
             {
@@ -447,7 +377,6 @@ namespace Microsoft.SnippetDesigner
                 exportData = new ExportToSnippetData(newSnippet.Code, newSnippet.Language.ToLower());
                 CreateNewSnippetFile();
             }
-
         }
 
         /// <summary>
@@ -460,34 +389,14 @@ namespace Microsoft.SnippetDesigner
                 int TemplateNameResourceID = 106;
                 uint EnvironmentTemplateCategoryResourceID = 13565;
                 var commandArgs = string.Format(
-                                    StringConstants.MakeSnippetDTEFormat, 
-                                    GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID), 
-                                    SnippetDesignerPackage.GetResourceString(TemplateNameResourceID));
+                    StringConstants.MakeSnippetDTEFormat,
+                    GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID),
+                    GetResourceString(TemplateNameResourceID));
                 dte.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
             }
         }
 
-        /// <summary>
-        /// Dispaly a visual studio message box
-        /// </summary>
-        /// <param name="strCaption"></param>
-        /// <param name="strMessage"></param>
-        internal void DisplayOKMessageBox(string strCaption, string strMessage, OLEMSGICON icon)
-        {
-            IVsUIShell uiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
-            Guid clsid = Guid.Empty;
-            int result;
-            uiShell.ShowMessageBox(0, ref clsid, strCaption, strMessage, string.Empty,
-                0, OLEMSGBUTTON.OLEMSGBUTTON_OK, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                icon, 0, out result);
-        }
 
-
-
-        public new Object GetService(System.Type serviceType)
-        {
-            return base.GetService(serviceType);
-        }
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initilaization code that rely on services provided by VisualStudio.
@@ -497,21 +406,22 @@ namespace Microsoft.SnippetDesigner
             try
             {
                 base.Initialize();
-                Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", this.ToString()));
+                Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", ToString()));
 
 
                 //create the dte automation object so rest of package can access the automation model
-                dte = (DTE)GetService(typeof(DTE));
+                dte = (DTE) GetService(typeof (DTE));
                 if (dte == null)
                 {
                     //if dte is null then we throw a excpetion
                     //this is a fatal error
-                    throw new ArgumentNullException(SnippetDesigner.Resources.ErrorDTENull);
+                    throw new ArgumentNullException(Resources.ErrorDTENull);
                 }
 
 
+                logger = new Logger(this);
 
-                snippetDesignerOptions = this.GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
+                snippetDesignerOptions = GetDialogPage(typeof (SnippetDesignerOptions)) as SnippetDesignerOptions;
 
 
                 // Create instance of RegularExpressionLanguageService type
@@ -525,9 +435,9 @@ namespace Microsoft.SnippetDesigner
                 xmlSnippetLangService.SetSite(this);
 
                 // Add our language service objects to packages services container
-                ((IServiceContainer)this).AddService(typeof(CSharpSnippetLanguageService), csharpSnippetLangService, true);
-                ((IServiceContainer)this).AddService(typeof(VBSnippetLanguageService), vbSnippetLangService, true);
-                ((IServiceContainer)this).AddService(typeof(XMLSnippetLanguageService), xmlSnippetLangService, true);
+                ((IServiceContainer) this).AddService(typeof (CSharpSnippetLanguageService), csharpSnippetLangService, true);
+                ((IServiceContainer) this).AddService(typeof (VBSnippetLanguageService), vbSnippetLangService, true);
+                ((IServiceContainer) this).AddService(typeof (XMLSnippetLanguageService), xmlSnippetLangService, true);
 
                 //Create Editor Factory
                 editorFactory = new EditorFactory(this);
@@ -536,60 +446,56 @@ namespace Microsoft.SnippetDesigner
 
                 //Set up Selection Events so that I can tell when a new window in VS has become active.
                 uint cookieForSelection = 0;
-                IVsMonitorSelection selMonitor = GetService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
+                IVsMonitorSelection selMonitor = GetService(typeof (SVsShellMonitorSelection)) as IVsMonitorSelection;
 
                 if (selMonitor != null)
-                {
-                    selMonitor.AdviseSelectionEvents((IVsSelectionEvents)this, out cookieForSelection);
-                }
+                    selMonitor.AdviseSelectionEvents(this, out cookieForSelection);
+
 
                 // Add our command handlers for menu (commands must exist in the .vstc file)
 
                 // Create the command for the tool window
-                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidSnippetExplorer);
-                DefineCommandHandler(new EventHandler(ShowSnippetExplorer), snippetExplorerCommandID);
+                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidSnippetExplorer);
+                DefineCommandHandler(ShowSnippetExplorer, snippetExplorerCommandID);
 
 
                 //DefineCommandHandler not used for these since extra properties need to be set
                 // Create the command for the context menu export snippet
-                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidExportToSnippet);
-                snippetExportCommand = DefineCommandHandler(new EventHandler(ExportToSnippet), contextcmdID);
+                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidExportToSnippet);
+                snippetExportCommand = DefineCommandHandler(ExportToSnippet, contextcmdID);
                 snippetExportCommand.Visible = false;
 
                 // commandline command for exporting as snippet
-                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidExportToSnippetCommandLine);
-                OleMenuCommand snippetExportCommandLine = DefineCommandHandler(new EventHandler(ExportToSnippet), exportCmdLineID);
-                snippetExportCommandLine.ParametersDescription = SnippetDesigner.StringConstants.ArgumentStartMarker;//a space means arguments are coming
+                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
+                OleMenuCommand snippetExportCommandLine = DefineCommandHandler(ExportToSnippet, exportCmdLineID);
+                snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker; //a space means arguments are coming
 
 
                 // Create the command for CreateSnippet
-                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int)PkgCmdIDList.cmdidCreateSnippet);
-                OleMenuCommand createCommand = DefineCommandHandler(new EventHandler(CreateSnippet), createcmdID);
-                createCommand.ParametersDescription = SnippetDesigner.StringConstants.ArgumentStartMarker;//a space means arguments are coming
+                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidCreateSnippet);
+                OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
+                createCommand.ParametersDescription = StringConstants.ArgumentStartMarker; //a space means arguments are coming
 
                 // Create and proffer the marker service
                 markerService = new HighlightMarkerService(this);
-                ((IServiceContainer)this).AddService(markerService.GetType(), markerService, true);
+                ((IServiceContainer) this).AddService(markerService.GetType(), markerService, true);
 
                 //initialize the snippet index
                 snippetIndex = new SnippetIndex();
-                System.Threading.ThreadPool.QueueUserWorkItem(
+                ThreadPool.QueueUserWorkItem(
                     delegate
-                    {
-                        snippetIndex.ReadIndexFile();
-                        snippetIndex.CreateOrUpdateIndexFile();
-                    }
-                );
+                        {
+                            snippetIndex.ReadIndexFile();
+                            snippetIndex.CreateOrUpdateIndexFile();
+                        }
+                    );
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
                 throw;
             }
-
         }
-
-
 
 
         /// <summary>
@@ -603,7 +509,7 @@ namespace Microsoft.SnippetDesigner
         internal OleMenuCommand DefineCommandHandler(EventHandler handler, CommandID id)
         {
             // if the package is zombied, we don't want to add commands
-            if (this.Zombied)
+            if (Zombied)
                 return null;
 
             // Make sure we have the service
@@ -611,7 +517,7 @@ namespace Microsoft.SnippetDesigner
             {
                 // Get the OleCommandService object provided by the MPF; this object is the one
                 // responsible for handling the collection of commands implemented by the package.
-                menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+                menuCommandService = GetService(typeof (IMenuCommandService)) as OleMenuCommandService;
             }
             OleMenuCommand command = null;
             if (null != menuCommandService)
@@ -622,7 +528,6 @@ namespace Microsoft.SnippetDesigner
             }
             return command;
         }
-
 
 
         /// <summary>
@@ -645,12 +550,12 @@ namespace Microsoft.SnippetDesigner
                 currentWindow = dte.ActiveWindow;
             }
 
-            string lang = CurrentWindowLanguage.ToLower();//turn to lower case for comparisons
+            string lang = CurrentWindowLanguage.ToLower(); //turn to lower case for comparisons
             //TODO: move these into a config file
             if (lang == StringConstants.ExportNameCSharp
-            || lang == StringConstants.ExportNameVisualBasic
-            || lang == StringConstants.ExportNameXML
-            )
+                || lang == StringConstants.ExportNameVisualBasic
+                || lang == StringConstants.ExportNameXML
+                )
             {
                 //make the export context menu item visible
                 snippetExportCommand.Visible = true;
@@ -670,15 +575,19 @@ namespace Microsoft.SnippetDesigner
         }
 
         //not used - needed to satify IVsSelectionEvents interface.  Only OnCmdUIContextChanged used
-        public int OnSelectionChanged(IVsHierarchy pHierOld, uint itemidOld, IVsMultiItemSelect pMISOld, ISelectionContainer pSCOld, IVsHierarchy pHierNew, uint itemidNew, IVsMultiItemSelect pMISNew, ISelectionContainer pSCNew)
+        public int OnSelectionChanged(IVsHierarchy pHierOld,
+                                      uint itemidOld,
+                                      IVsMultiItemSelect pMISOld,
+                                      ISelectionContainer pSCOld,
+                                      IVsHierarchy pHierNew,
+                                      uint itemidNew,
+                                      IVsMultiItemSelect pMISNew,
+                                      ISelectionContainer pSCNew)
         {
-
             return VSConstants.S_OK;
         }
 
-        // Implement IDisposable.
-        // Do not make this method virtual.
-        // A derived class should not be able to override this method.
+
         public void Dispose()
         {
             if (editorFactory != null)
@@ -689,7 +598,7 @@ namespace Microsoft.SnippetDesigner
 
         public string GetVisualStudioResourceString(uint resourceId)
         {
-            IVsShell shell = (IVsShell)GetService(typeof(SVsShell));
+            IVsShell shell = (IVsShell) GetService(typeof (SVsShell));
             string localizedResource = null;
             if (shell != null)
                 shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
@@ -702,31 +611,33 @@ namespace Microsoft.SnippetDesigner
         public int IdBmpSplash(out uint pIdBmp)
         {
             pIdBmp = 500;
-            return Microsoft.VisualStudio.VSConstants.S_OK;
+            return VSConstants.S_OK;
         }
+
         public int IdIcoLogoForAboutbox(out uint pIdIco)
         {
             pIdIco = 600;
-            return Microsoft.VisualStudio.VSConstants.S_OK;
+            return VSConstants.S_OK;
         }
+
         public int OfficialName(out string pbstrName)
         {
             pbstrName = GetResourceString(100);
-            return Microsoft.VisualStudio.VSConstants.S_OK;
+            return VSConstants.S_OK;
         }
+
         public int ProductDetails(out string pbstrProductDetails)
         {
             pbstrProductDetails = GetResourceString(102);
-            return Microsoft.VisualStudio.VSConstants.S_OK;
+            return VSConstants.S_OK;
         }
+
         public int ProductID(out string pbstrPID)
         {
             pbstrPID = GuidList.SnippetDesignerPkgString;
-            return Microsoft.VisualStudio.VSConstants.S_OK;
+            return VSConstants.S_OK;
         }
 
         #endregion
-
-
     }
 }

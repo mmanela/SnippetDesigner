@@ -156,8 +156,8 @@
   <data name="DisplayNameXML" xml:space="preserve">
     <value>XML</value>
   </data>
-  <data name="YellowHighlightMarkerName" xml:space="preserve">
-    <value>Yellow Highlight Marker</value>
+  <data name="SnippetReplacementMarker" xml:space="preserve">
+    <value>Snippet Replacement Marker</value>
   </data>
   <data name="PropCategoryFileInfo" xml:space="preserve">
     <value>File Info</value>
@@ -246,10 +246,10 @@
   <data name="TypeInvalidForLiteralSymbol" xml:space="preserve">
     <value>N/A</value>
   </data>
-  <data name="YellowHighlightMarkerDescription" xml:space="preserve">
-    <value>A yellow marker to highlight replacements</value>
+  <data name="SnippetReplacementMarkerDescription" xml:space="preserve">
+    <value>A marker to highlight replacements</value>
   </data>
-  <data name="YellowHighlightMarkerText" xml:space="preserve">
+  <data name="SnippetReplacementMarkerText" xml:space="preserve">
     <value>A replacement</value>
   </data>
   <data name="ErrorFileIO" xml:space="preserve">

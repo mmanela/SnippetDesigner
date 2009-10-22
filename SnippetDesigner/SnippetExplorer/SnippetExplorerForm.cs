@@ -56,7 +56,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
-        void Instance_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        void SnippetIndexChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != null)
             {
@@ -109,8 +109,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             }
         }
 
-        #region public properties
-
+ 
         /// <summary>
         /// Gets the preview code window.
         /// </summary>
@@ -158,8 +157,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             return;
         }
 
-        #endregion
-
 
 
         /// <summary> 
@@ -189,7 +186,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
             UpdateStatusLabel();
 
-            snippetIndex.PropertyChanged += new PropertyChangedEventHandler(Instance_PropertyChanged);
+            snippetIndex.PropertyChanged += new PropertyChangedEventHandler(SnippetIndexChanged);
 
             SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
             CSharpFilterBox.Checked = !options.HideCSharp;
@@ -452,13 +449,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
         }
 
-        private void FilterBox_CheckedChanged(object sender, EventArgs e)
-        {
-
-
-
-        }
-
         private void searchResultView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -472,10 +462,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             }
         }
 
-        private void searchResultView_RowEnter(object sender, DataGridViewCellEventArgs e)
-        {
 
-        }
 
         /// <summary>
         /// delete the snippet from the list

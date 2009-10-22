@@ -73,11 +73,13 @@
     <Compile Include="CodeWindow\CodeWindow.designer.cs">
       <DependentUpon>CodeWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="ILogger.cs" />
     <Compile Include="LanguageService\SnippetColorizer.cs" />
     <Compile Include="LanguageService\XMLSnippetLanguageService.cs" />
     <Compile Include="LanguageService\VBSnippetLanguageService.cs" />
     <Compile Include="LanguageService\CSharpSnippetLanguageService.cs" />
     <Compile Include="LanguageService\SnippetLanguageService.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="OptionPages\CustomFileNameEditor.cs" />
     <Compile Include="OptionPages\ResetOptions.cs">
       <SubType>Component</SubType>

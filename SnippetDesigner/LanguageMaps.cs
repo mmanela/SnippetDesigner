@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -16,38 +15,28 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     public class LanguageMaps
     {
-
         public static LanguageMaps LanguageMap = new LanguageMaps();
 
         //hash that maps what the scnippet schema names of the programming languages are to the dispaly names we use
-        private Dictionary<string, string> snippetSchemaLanguageToDisplay = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> snippetSchemaLanguageToDisplay = new Dictionary<string, string>();
         //hash that maps what the display names of the programming languages are to the xml names the snippet schema specifies
-        private Dictionary<string, string> displayLanguageToXML = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> displayLanguageToXML = new Dictionary<string, string>();
 
-        private Dictionary<Language, Guid> languageGuids = new Dictionary<Language, Guid>();
+        private readonly Dictionary<Language, Guid> languageGuids = new Dictionary<Language, Guid>();
 
         public Dictionary<Language, Guid> LanguageGuids
         {
-            get
-            {
-                return languageGuids;
-            }
+            get { return languageGuids; }
         }
 
         public Dictionary<string, string> SnippetSchemaLanguageToDisplay
         {
-            get
-            {
-                return snippetSchemaLanguageToDisplay;
-            }
+            get { return snippetSchemaLanguageToDisplay; }
         }
 
         public Dictionary<string, string> DisplayLanguageToXML
         {
-            get
-            {
-                return displayLanguageToXML;
-            }
+            get { return displayLanguageToXML; }
         }
 
         /// <summary>
@@ -89,6 +78,7 @@ namespace Microsoft.SnippetDesigner
                     return String.Empty;
             }
         }
+
         /// <summary>
         /// maps form one lang form to another
         /// </summary>
@@ -110,7 +100,6 @@ namespace Microsoft.SnippetDesigner
             languageGuids[Language.CSharp] = GuidList.csLangSvc;
             languageGuids[Language.VisualBasic] = GuidList.vbLangSvc;
             languageGuids[Language.XML] = GuidList.xmlLangSvc;
-
         }
     }
 }

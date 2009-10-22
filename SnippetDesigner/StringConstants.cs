@@ -1,14 +1,10 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
-
 namespace Microsoft.SnippetDesigner
 {
-
     /// <summary>
     /// String constants that don't belong in a resource file
     /// These are strings which are passed around internally and should not change
     /// </summary>
-    public class StringConstants
+    public static class StringConstants
     {
         public static readonly string MakeSnippetDTEFormat = "/template:\"{0}\\{1}\"";
         public static readonly string NewFileDTECommand = "File.NewFile";
@@ -17,8 +13,8 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetExtension = ".snippet";
 
         //yellow marker name for attribute - this is defined also in a resource but needs to also be here to use in attirbue ProvideCustomMarker
-        public const string YellowHighlightMarkerName = "Yellow Highlight Marker";
-        public const string YellowHighlightMarkerWithBorderName = "Yellow Highlight Marker with Border";
+        public const string SnippetReplacementMarker = "Snippet Replacement Marker";
+        public const string ActiveSnippetReplacementMarker = "Active Snippet Replacement Marker";
         public const string MarkerServiceName = "HighlightMarkerService";
 
         public const string ArgumentStartMarker = " ";
@@ -30,10 +26,8 @@ namespace Microsoft.SnippetDesigner
         public const string ColumnReplacementKind = "ReplacementKind";
         public const string ColumnTooltip = "Tooltip";
         public const string ColumnType = "Type";
-        public const string ConfigurationFile = "SnippetEditorConfig.xml";
         public const string DoubleQuoteString = "\"";
         public const string ExportNameCSharp = "csharp";
-        public const string ExportNameJSharp = "visual jsharp";
         public const string ExportNameVisualBasic = "basic";
         public const string ExportNameXML = "xml";
         public const string MySnippetsDir = "My Code Snippets";
@@ -50,20 +44,12 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetTypeMethodBody = "method body";
         public const string SnippetTypeMethodDeclaration = "method decl";
         public const string SnippetTypeTypeDeclaration = "type decl";
-        public const string SymbolEnd = "$end$";
         public const string SymbolEndWord = "end";
         public const string SymbolReplacement = "$";
         public const string SymbolSelected = "$selected$";
         public const string SymbolSelectedWord = "selected";
         public const string ValidReplacementString = @"^(("".*"")|(\w+))$";
-        public const string VSCSharpDirName = "VC#";
-        public const string VSJSharpDirName = "VJ#";
-        public const string VSRegistryLocationEntry = "VisualStudioLocation";
-        public const string VSRegistryPath = @"SOFTWARE\Microsoft\VisualStudio\9.0";
         public const string VSRegistryRegistrationName = "Registration";
         public const string VSRegistryRegistrationNameEntry = "UserName";
-        public const string VSSnippetDir = "Snippets";
-        public const string VSVBDirName = "VB";
-        public const string VSXmlDirName = "Xml";
     }
 }

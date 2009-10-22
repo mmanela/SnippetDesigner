@@ -117,7 +117,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.xmlFilterBox.Name = "xmlFilterBox";
             this.xmlFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameXML;
             this.xmlFilterBox.UseVisualStyleBackColor = true;
-            this.xmlFilterBox.CheckedChanged += new System.EventHandler(this.FilterBox_CheckedChanged);
             // 
             // vbFilterBox
             // 
@@ -127,7 +126,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.vbFilterBox.Name = "vbFilterBox";
             this.vbFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameVisualBasic;
             this.vbFilterBox.UseVisualStyleBackColor = true;
-            this.vbFilterBox.CheckedChanged += new System.EventHandler(this.FilterBox_CheckedChanged);
             // 
             // CSharpFilterBox
             // 
@@ -137,7 +135,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.CSharpFilterBox.Name = "CSharpFilterBox";
             this.CSharpFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameCSharp;
             this.CSharpFilterBox.UseVisualStyleBackColor = true;
-            this.CSharpFilterBox.CheckedChanged += new System.EventHandler(this.FilterBox_CheckedChanged);
             // 
             // searchOptionBar
             // 
@@ -198,7 +195,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchResultView.ShowEditingIcon = false;
             this.searchResultView.ShowRowErrors = false;
             this.searchResultView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.searchResultView_MouseDown);
-            this.searchResultView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.searchResultView_RowEnter);
             this.searchResultView.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.searchResultView_CellMouseEnter);
             this.searchResultView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.searchResultView_KeyDown);
             this.searchResultView.SelectionChanged += new System.EventHandler(this.searchResultView_SelectionChanged);

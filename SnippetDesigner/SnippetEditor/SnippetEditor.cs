@@ -1,72 +1,57 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
-using System.Data;
-using System.IO;
-using EnvDTE;
-using EnvDTE80;
 using System.Globalization;
-using System.Windows.Forms;
+using System.IO;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.TextManager.Interop;
+using System.Windows.Forms;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.CommandBars;
-using System.ComponentModel.Design;
-using Microsoft.SnippetLibrary;
-using Microsoft.Win32;
-
-
-using IServiceProvider = System.IServiceProvider;
+using Microsoft.VisualStudio.Shell.Interop;
+using Microsoft.VisualStudio.TextManager.Interop;
+using Constants=EnvDTE.Constants;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using VSStd97CmdID = Microsoft.VisualStudio.VSConstants.VSStd97CmdID;
 using MsOle = Microsoft.VisualStudio.OLE.Interop;
 using MsVsShell = Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.SnippetDesigner
 {
-
-
     /// <summary>
     /// The snippet codeWindowHost class.  This inherits the SnippetEditorForm which controls all the aestectics of how it looks
     /// and the rest of the interface are needed by VSIP to allow this to be both the DocData and DocView
     /// </summary>
     [ComVisible(true)]
-    sealed public class SnippetEditor :
+    public sealed class SnippetEditor :
         SnippetEditorForm, // SnippetEditor GUI form
         ICodeWindowHost,
         IVsWindowPane, // To make this a doc window
         IOleCommandTarget, // To handle any commands that are passed by VS
-        IOleServiceProvider, 
+        IOleServiceProvider,
         IVsPersistDocData,
         IVsTextViewEvents,
         IVsTextLinesEvents,
         IPersistFileFormat,
         IVsFileChangeEvents,
         IVsDocDataFileChangeControl,
-        IVsFileBackup    //to support backup of files. Visual Studio File Recovery 
+        IVsFileBackup //to support backup of files. Visual Studio File Recovery 
     {
-
         private SnippetDesignerPackage snippetDesignerPackage;
         private IOleServiceProvider vsServiceProvider;
 
         private IVsTextView activeTextView;
-        
-        private MsVsShell.SelectionContainer selContainer;
+
+        private SelectionContainer selContainer;
         private ITrackSelection trackSel;
 
 
         // this is the snippet format - a codeWindowHost can support multiple formats which would have
         // different values however we only supports one
         private const uint snippetFormat = 0;
-        
+
         //the current file name
         private string fileName = string.Empty;
 
@@ -75,7 +60,7 @@ namespace Microsoft.SnippetDesigner
 
         private bool isDirty;
         private IVsFileChangeEx vsFileChangeEx;
-        private bool backupObsolete = true; 
+        private bool backupObsolete = true;
         private bool fileChangedTimerSet;
         private Timer reloadTimer = new Timer();
 
@@ -87,11 +72,8 @@ namespace Microsoft.SnippetDesigner
 
         private bool isFileNew; //this flag is used to see if this file is new or a previously saved file
 
-        private  bool loadDone = false;//set to true when whole laoding process is done
+        private bool loadDone; //set to true when whole laoding process is done
         //this is needed so we know when to start moinitroing text changes
-
-
-
 
         #region Public properties
 
@@ -100,10 +82,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public IOleServiceProvider ServiceProvider
         {
-            get
-            {
-                return vsServiceProvider;
-            }
+            get { return vsServiceProvider; }
         }
 
         /// <summary>
@@ -112,10 +91,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public bool ReadOnlyCodeWindow
         {
-            get
-            {
-                return false;
-            }
+            get { return false; }
         }
 
         /// <summary>
@@ -123,10 +99,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public IOleServiceProvider VSServiceProvider
         {
-            get
-            {
-                return vsServiceProvider;
-            }
+            get { return vsServiceProvider; }
         }
 
 
@@ -140,7 +113,7 @@ namespace Microsoft.SnippetDesigner
                 if (trackSel == null)
                 {
                     //get the trackselection service and return its interface
-                    trackSel = (ITrackSelection)GetVsService(typeof(ITrackSelection));
+                    trackSel = (ITrackSelection) GetVsService(typeof (ITrackSelection));
                 }
                 return trackSel;
             }
@@ -157,13 +130,13 @@ namespace Microsoft.SnippetDesigner
                 if (vsServiceProvider != null)
                 {
                     //get service on the window frame for this codeWindowHost
-                    windowFrame = GetVsService(typeof(SVsWindowFrame)) as IVsWindowFrame;
+                    windowFrame = GetVsService(typeof (SVsWindowFrame)) as IVsWindowFrame;
                 }
                 return windowFrame;
             }
         }
-        #endregion
 
+        #endregion
 
         /// <summary>
         /// Initialize the snippet codeWindowHost
@@ -174,19 +147,16 @@ namespace Microsoft.SnippetDesigner
         public SnippetEditor(SnippetDesignerPackage package)
         {
             snippetDesignerPackage = package;
-            vsFileChangeCookie = VSConstants.VSCOOKIE_NIL;//initialize the file change cookie to null
+            vsFileChangeCookie = VSConstants.VSCOOKIE_NIL; //initialize the file change cookie to null
 
-            changesToIgnore = 0;//start with no changes to ignore
+            changesToIgnore = 0; //start with no changes to ignore
 
-            InitializePropertiesWindow();//set up the properties window
-            InitializeComponent();//initialize gui components
-            this.snippetCodeWindow.CodeWindowHost = this;//tell the code window this is its parent codeWindowHost
+            InitializePropertiesWindow(); //set up the properties window
+            InitializeComponent(); //initialize gui components
+            snippetCodeWindow.CodeWindowHost = this; //tell the code window this is its parent codeWindowHost
 
-
+            logger = package.Logger;
         }
-
-
-
 
 
         /// <summary>
@@ -204,7 +174,7 @@ namespace Microsoft.SnippetDesigner
             ServiceProvider sp = new ServiceProvider(vsServiceProvider, false);
             if (sp != null)
             {
-                return sp.GetService(serviceType);//get the requested service
+                return sp.GetService(serviceType); //get the requested service
             }
             else
             {
@@ -222,15 +192,14 @@ namespace Microsoft.SnippetDesigner
             {
                 if (disposing)
                 {
-                    if (this.snippetCodeWindow != null)
+                    if (snippetCodeWindow != null)
                     {
                         //dispose of code window
-                        this.snippetCodeWindow.Dispose();
-                        this.snippetCodeWindow = null;
+                        snippetCodeWindow.Dispose();
+                        snippetCodeWindow = null;
                     }
                     if (reloadTimer != null)
                     {
-
                         reloadTimer.Dispose();
                         reloadTimer = null;
                     }
@@ -241,11 +210,7 @@ namespace Microsoft.SnippetDesigner
             {
                 base.Dispose(disposing);
             }
-
         }
-
-
-
 
         #region Properties Window Control Methods
 
@@ -260,7 +225,7 @@ namespace Microsoft.SnippetDesigner
 
 
             //Add a custom type provider to filter the properties
-            TypeDescriptor.AddProvider(new FilteredPropertiesTypeDescriptorProvider(typeof(EditorProperties)), typeof(EditorProperties));
+            TypeDescriptor.AddProvider(new FilteredPropertiesTypeDescriptorProvider(typeof (EditorProperties)), typeof (EditorProperties));
 
             // Create the object that will show the document's properties
             // on the properties window.
@@ -268,10 +233,9 @@ namespace Microsoft.SnippetDesigner
             listObjects.Add(prop);
 
             // Create the SelectionContainer object.
-            selContainer = new Microsoft.VisualStudio.Shell.SelectionContainer(true, false);
+            selContainer = new SelectionContainer(true, false);
             selContainer.SelectableObjects = listObjects;
             selContainer.SelectedObjects = listObjects;
-
         }
 
         /// <summary>
@@ -280,10 +244,10 @@ namespace Microsoft.SnippetDesigner
         private void ShowPropertiesWindow()
         {
             //show the properties window
-            IVsUIShell vsShell = GetVsService(typeof(SVsUIShell)) as IVsUIShell;
-            Guid propWinGuid = new Guid(EnvDTE.Constants.vsWindowKindProperties);
+            IVsUIShell vsShell = GetVsService(typeof (SVsUIShell)) as IVsUIShell;
+            Guid propWinGuid = new Guid(Constants.vsWindowKindProperties);
             IVsWindowFrame propFrame = null;
-            vsShell.FindToolWindow((uint)__VSFINDTOOLWIN.FTW_fForceCreate, ref propWinGuid, out propFrame);
+            vsShell.FindToolWindow((uint) __VSFINDTOOLWIN.FTW_fForceCreate, ref propWinGuid, out propFrame);
             if (propFrame != null)
             {
                 propFrame.Show();
@@ -301,10 +265,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-
         #endregion
-
-
 
         /// <summary>
         /// Sets the codeWindowHost up for a new blank snippet file and then
@@ -312,7 +273,6 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void InitializeNewSnippet()
         {
-            
             // until someone change the file, we can consider it not dirty as
             // the user would be annoyed if we prompt him to save an empty file
             isDirty = false;
@@ -322,14 +282,14 @@ namespace Microsoft.SnippetDesigner
 
             object captionValue;
             //get caption and make it title without its extension
-            EditorFrame.GetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, out captionValue);
-            this.ActiveSnippet.Title = this.SnippetTitle = Path.GetFileNameWithoutExtension(captionValue.ToString());
+            EditorFrame.GetProperty((int) __VSFPROPID.VSFPROPID_OwnerCaption, out captionValue);
+            ActiveSnippet.Title = SnippetTitle = Path.GetFileNameWithoutExtension(captionValue.ToString());
 
             //add titles to snippet titles property
             List<string> titles = new List<string>();
-            titles.Add(this.SnippetTitle);
-            this.SnippetTitles = titles;
-            this.SnippetAuthor = SnippetDesignerPackage.VSRegisteredName;
+            titles.Add(SnippetTitle);
+            SnippetTitles = titles;
+            SnippetAuthor = SnippetDesignerPackage.VSRegisteredName;
 
             //make sure title is in snippets data memory
             PushFieldsIntoActiveSnippet();
@@ -342,17 +302,14 @@ namespace Microsoft.SnippetDesigner
         {
             //get the current export data object
             ExportToSnippetData exportData = snippetDesignerPackage.ExportSnippetData;
-            if (exportData != null)//if this object isnt null
+            if (exportData != null) //if this object isnt null
             {
-
-                this.SnippetCode = exportData.Code;//read the code
-                this.SnippetLanguage = exportData.Language;//read the language
-                snippetDesignerPackage.ClearSnippetExportData();//clear the export data
+                SnippetCode = exportData.Code; //read the code
+                SnippetLanguage = exportData.Language; //read the language
+                snippetDesignerPackage.ClearSnippetExportData(); //clear the export data
             }
         }
 
-      
-       
 
         /// <summary>
         /// Initialize the command filter needed for the context menus.
@@ -361,8 +318,8 @@ namespace Microsoft.SnippetDesigner
         {
             CommandFilter filter = new CommandFilter(this);
             IOleCommandTarget originalFilter;
-            Microsoft.VisualStudio.ErrorHandler.ThrowOnFailure(this.CodeWindow.TextView.AddCommandFilter(filter, out originalFilter));
-            filter.Init((IOleCommandTarget)originalFilter);
+            ErrorHandler.ThrowOnFailure(CodeWindow.TextView.AddCommandFilter(filter, out originalFilter));
+            filter.Init(originalFilter);
         }
 
 
@@ -372,22 +329,22 @@ namespace Microsoft.SnippetDesigner
         public void ShowContextMenu()
         {
             // Get a reference to the UIShell.
-            IVsUIShell uiShell = SnippetDesignerPackage.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
+            IVsUIShell uiShell = SnippetDesignerPackage.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
             if (null == uiShell)
             {
                 return;
             }
 
             // Get the position of the cursor.
-            System.Drawing.Point currentCursorPosition = System.Windows.Forms.Cursor.Position;
+            Point currentCursorPosition = Cursor.Position;
             POINTS[] pnts = new POINTS[1];
-            pnts[0].x = (short)currentCursorPosition.X;
-            pnts[0].y = (short)currentCursorPosition.Y;
+            pnts[0].x = (short) currentCursorPosition.X;
+            pnts[0].y = (short) currentCursorPosition.Y;
 
             // Show the menu.
             Guid menuGuid = GuidList.SnippetDesignerCmdSet;
             //tell the ui shell to show the context menu
-            uiShell.ShowContextMenu(0, ref menuGuid, (int)PkgCmdIDList.SnippetContextMenu, pnts, this.snippetCodeWindow.TextView as IOleCommandTarget);
+            uiShell.ShowContextMenu(0, ref menuGuid, (int) PkgCmdIDList.SnippetContextMenu, pnts, snippetCodeWindow.TextView as IOleCommandTarget);
         }
 
         /// <summary>
@@ -395,11 +352,10 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void CreateSaveAsDialog()
         {
-
             string currLang = String.Empty;
-            if (this.toolStripLanguageBox.SelectedIndex > -1)
+            if (toolStripLanguageBox.SelectedIndex > -1)
             {
-                currLang = this.toolStripLanguageBox.SelectedItem.ToString();
+                currLang = toolStripLanguageBox.SelectedItem.ToString();
             }
 
             currLang = currLang.Trim();
@@ -415,18 +371,18 @@ namespace Microsoft.SnippetDesigner
 
             if (isFileNew)
             {
-                initialFileName = Path.Combine(initialFileName, this.SnippetTitle);
+                initialFileName = Path.Combine(initialFileName, SnippetTitle);
             }
             else
             {
-                initialFileName += Path.Combine(initialFileName,Path.GetFileName(fileName));
+                initialFileName += Path.Combine(initialFileName, Path.GetFileName(fileName));
             }
 
 
             int can;
             string fileaNameNew;
-            IVsUIShell uiShell = SnippetDesignerPackage.GetGlobalService(typeof(SVsUIShell)) as IVsUIShell;
-            int hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, (IPersistFileFormat)this, initialFileName, out fileaNameNew, out can);
+            IVsUIShell uiShell = SnippetDesignerPackage.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
+            int hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, (IPersistFileFormat) this, initialFileName, out fileaNameNew, out can);
         }
 
         /// <summary>
@@ -434,8 +390,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void Save()
         {
-            GeneralSave(fileName, true, (uint)0);
-
+            GeneralSave(fileName, true, (uint) 0);
         }
 
         /// <summary>
@@ -482,7 +437,6 @@ namespace Microsoft.SnippetDesigner
                 else
                 {
                     SaveSnippetAs(fileNameToSave);
-
                 }
             }
             catch (ArgumentException)
@@ -517,12 +471,12 @@ namespace Microsoft.SnippetDesigner
                     SetFileChangeNotification(fileName, false); //remove notification from old file
                     SetFileChangeNotification(fileNameToSave, true); //add notification for new file
                     previousFileName = fileName; //save previous filename
-                    fileName = fileNameToSave;     //store the new file name
+                    fileName = fileNameToSave; //store the new file name
                 }
                 isDirty = false;
                 IsFormDirty = false;
-                IVsTextBuffer buffer = (IVsTextBuffer)snippetCodeWindow.TextLines;
-                buffer.SetStateFlags(0);                                               
+                IVsTextBuffer buffer = (IVsTextBuffer) snippetCodeWindow.TextLines;
+                buffer.SetStateFlags(0);
             }
 
             // Since all changes are now saved properly to disk, there's no need for a backup.
@@ -572,12 +526,12 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         /// <param name="psp"></param>
         /// <returns></returns>
-        public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider psp)
+        public int SetSite(IOleServiceProvider psp)
         {
             vsServiceProvider = psp;
             //Guid to be used in SetGuidProperty as a ref parameter to tell frame that we want texteditor key bindings
             Guid cmdUI_TextEditor = GuidList.textEditorFactory;
-            int hr = EditorFrame.SetGuidProperty((int)__VSFPROPID.VSFPROPID_InheritKeyBindings, ref cmdUI_TextEditor);
+            int hr = EditorFrame.SetGuidProperty((int) __VSFPROPID.VSFPROPID_InheritKeyBindings, ref cmdUI_TextEditor);
 
             return hr;
         }
@@ -594,17 +548,15 @@ namespace Microsoft.SnippetDesigner
             {
                 return hr;
             }
- 
+
             // defer to active code window
             if (activeTextView != null)
             {
-                IVsWindowPane vsWindowPane = (IVsWindowPane)activeTextView;
+                IVsWindowPane vsWindowPane = (IVsWindowPane) activeTextView;
                 hr = vsWindowPane.TranslateAccelerator(messagesToTranslate);
-
             }
             else
             {
-
                 switch (messagesToTranslate[0].message)
                 {
                     case NativeMethods.WM_KEYDOWN:
@@ -612,16 +564,15 @@ namespace Microsoft.SnippetDesigner
                     case NativeMethods.WM_CHAR:
                     case NativeMethods.WM_SYSCHAR:
                         {
-
                             Message msg = new Message();
                             msg.HWnd = messagesToTranslate[0].hwnd;
-                            msg.Msg = (int)messagesToTranslate[0].message;
+                            msg.Msg = (int) messagesToTranslate[0].message;
                             msg.LParam = messagesToTranslate[0].lParam;
                             msg.WParam = messagesToTranslate[0].wParam;
 
-                            Control ctrl = Control.FromChildHandle(msg.HWnd);
+                            Control ctrl = FromChildHandle(msg.HWnd);
                             if (ctrl != null && ctrl.PreProcessMessage(ref msg))
-                                hr =  VSConstants.S_OK;
+                                hr = VSConstants.S_OK;
                         }
                         break;
 
@@ -635,7 +586,9 @@ namespace Microsoft.SnippetDesigner
         }
 
         #endregion
+
         #region File Change Notification Helpers
+
         /// <summary>
         /// In this function we inform the shell when we wish to receive 
         /// events when our file is changed or we inform the shell when 
@@ -652,7 +605,7 @@ namespace Microsoft.SnippetDesigner
 
             //Get the File Change service
             if (null == vsFileChangeEx)
-                vsFileChangeEx = (IVsFileChangeEx)GetVsService(typeof(SVsFileChangeEx));
+                vsFileChangeEx = (IVsFileChangeEx) GetVsService(typeof (SVsFileChangeEx));
             if (null == vsFileChangeEx)
                 return VSConstants.E_UNEXPECTED;
 
@@ -664,21 +617,21 @@ namespace Microsoft.SnippetDesigner
                     //Receive notifications if either the attributes of the file change or 
                     //if the size of the file changes or if the last modified time of the file changes
                     result = vsFileChangeEx.AdviseFileChange(fileNameToNotify,
-                        (uint)(_VSFILECHANGEFLAGS.VSFILECHG_Attr | _VSFILECHANGEFLAGS.VSFILECHG_Size | _VSFILECHANGEFLAGS.VSFILECHG_Time),
-                        (IVsFileChangeEvents)this,
-                        out vsFileChangeCookie);
+                                                             (uint) (_VSFILECHANGEFLAGS.VSFILECHG_Attr | _VSFILECHANGEFLAGS.VSFILECHG_Size | _VSFILECHANGEFLAGS.VSFILECHG_Time),
+                                                             (IVsFileChangeEvents) this,
+                                                             out vsFileChangeCookie);
                     if (vsFileChangeCookie == VSConstants.VSCOOKIE_NIL)
                     {
                         return VSConstants.E_FAIL;
                     }
-
                 }
                 result = VSConstants.S_OK;
             }
             else
             {
                 if (vsFileChangeCookie != VSConstants.VSCOOKIE_NIL)
-                { //if we want to unadvise and the cookieTextViewEvents isnt null then unadvise changes
+                {
+                    //if we want to unadvise and the cookieTextViewEvents isnt null then unadvise changes
                     result = vsFileChangeEx.UnadviseFileChange(vsFileChangeCookie);
                     vsFileChangeCookie = VSConstants.VSCOOKIE_NIL;
                     result = VSConstants.S_OK;
@@ -686,6 +639,7 @@ namespace Microsoft.SnippetDesigner
             }
             return result;
         }
+
         /// <summary>
         /// Notify the codeWindowHost of the changes made to a directory
         /// </summary>
@@ -697,8 +651,8 @@ namespace Microsoft.SnippetDesigner
             return VSConstants.S_OK;
         }
 
-
         #endregion
+
         #region IOleCommandTarget Members
 
         /// <summary>
@@ -714,16 +668,14 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int Exec(ref Guid commandGroup, uint commandID, uint commandOption, IntPtr pvaIn, IntPtr pvaOut)
         {
-
-            int hr = (int)MsOle.Constants.OLECMDERR_E_NOTSUPPORTED;
-            if (commandGroup == VSConstants.GUID_VSStandardCommandSet97 )
+            int hr = (int) VisualStudio.OLE.Interop.Constants.OLECMDERR_E_NOTSUPPORTED;
+            if (commandGroup == VSConstants.GUID_VSStandardCommandSet97)
             {
-
                 switch (commandID)
                 {
-                    case (uint)VSConstants.VSStd97CmdID.Cut:
-                    case (uint)VSConstants.VSStd97CmdID.Copy:
-                    case (uint)VSConstants.VSStd97CmdID.Paste:
+                    case (uint) VSConstants.VSStd97CmdID.Cut:
+                    case (uint) VSConstants.VSStd97CmdID.Copy:
+                    case (uint) VSConstants.VSStd97CmdID.Paste:
                         {
                             if (activeTextView == null)
                             {
@@ -733,10 +685,9 @@ namespace Microsoft.SnippetDesigner
                             break;
                         }
 
-                    case (uint)VSConstants.VSStd97CmdID.SaveProjectItem:
-                    case (uint)VSConstants.VSStd97CmdID.Save:
+                    case (uint) VSConstants.VSStd97CmdID.SaveProjectItem:
+                    case (uint) VSConstants.VSStd97CmdID.Save:
                         {
-                            
                             //is this a new file
                             if (isFileNew)
                             {
@@ -751,8 +702,8 @@ namespace Microsoft.SnippetDesigner
 
                             return VSConstants.S_OK;
                         }
-                    case (uint)VSConstants.VSStd97CmdID.SaveProjectItemAs:
-                    case (uint)VSConstants.VSStd97CmdID.SaveAs:
+                    case (uint) VSConstants.VSStd97CmdID.SaveProjectItemAs:
+                    case (uint) VSConstants.VSStd97CmdID.SaveAs:
                         {
                             //show a save dialog
                             CreateSaveAsDialog();
@@ -768,10 +719,9 @@ namespace Microsoft.SnippetDesigner
             //this lets the codewindow get keystrokes
             if (activeTextView != null)
             {
-                IOleCommandTarget cmdTarget = (IOleCommandTarget)activeTextView;
+                IOleCommandTarget cmdTarget = (IOleCommandTarget) activeTextView;
                 hr = cmdTarget.Exec(ref commandGroup, commandID, commandOption, pvaIn, pvaOut);
             }
-       
 
 
             return hr;
@@ -787,25 +737,24 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int QueryStatus(ref Guid commandGroup, uint commandCount, OLECMD[] prgCmds, IntPtr cmdText)
         {
-
-            int hr = (int)MsOle.Constants.OLECMDERR_E_NOTSUPPORTED;
+            int hr = (int) VisualStudio.OLE.Interop.Constants.OLECMDERR_E_NOTSUPPORTED;
 
 
             //Check if the activeTextView is not null, if it isnt then the codewindow has focus
             //when the code window has focus we want to query its status of the current command
             if (activeTextView != null)
             {
-
-                IOleCommandTarget cmdTarget = (IOleCommandTarget)activeTextView;
+                IOleCommandTarget cmdTarget = (IOleCommandTarget) activeTextView;
                 hr = cmdTarget.QueryStatus(ref commandGroup, commandCount, prgCmds, cmdText);
-                
             }
 
             return hr;
         }
 
         #endregion
+
         #region IOleServiceProvider Members
+
         /// <summary>
         /// If we are asked for a service just pass the request onto our service provider vsServiceProvider
         /// </summary>
@@ -826,6 +775,7 @@ namespace Microsoft.SnippetDesigner
         }
 
         #endregion
+
         #region IPersistFileFormat Members
 
         /// <summary>
@@ -833,7 +783,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         /// <param name="classID"></param>
         /// <returns></returns>
-        int Microsoft.VisualStudio.OLE.Interop.IPersist.GetClassID(out Guid classID)
+        int IPersist.GetClassID(out Guid classID)
         {
             classID = GuidList.snippetEditorFactory;
             return VSConstants.S_OK;
@@ -852,7 +802,7 @@ namespace Microsoft.SnippetDesigner
             if (previousFileName.Length > 0 && fileSaved.Length > 0 && previousFileName != fileSaved)
             {
                 // Get a reference to the Running Document Table
-                IVsRunningDocumentTable runningDocTable = (IVsRunningDocumentTable)GetVsService(typeof(SVsRunningDocumentTable));
+                IVsRunningDocumentTable runningDocTable = (IVsRunningDocumentTable) GetVsService(typeof (SVsRunningDocumentTable));
                 int hr = VSConstants.S_OK;
 
                 // Lock the document and get the documents information
@@ -861,15 +811,15 @@ namespace Microsoft.SnippetDesigner
                 uint itemID;
                 IntPtr docData;
                 hr = runningDocTable.FindAndLockDocument(
-                    (uint)_VSRDTFLAGS.RDT_ReadLock,
+                    (uint) _VSRDTFLAGS.RDT_ReadLock,
                     previousFileName,
                     out hierarchy,
                     out itemID,
                     out docData,
                     out docCookie
-                );
-                
-                IntPtr hier = Marshal.GetComInterfaceForObject(hierarchy, typeof(IVsHierarchy));
+                    );
+
+                IntPtr hier = Marshal.GetComInterfaceForObject(hierarchy, typeof (IVsHierarchy));
 
                 //Because we are handling the save ourselves we break some of the things auotmatically handled by the RDT
                 //for example when we save as the file name in the RDT wont be updated to the new file
@@ -881,22 +831,21 @@ namespace Microsoft.SnippetDesigner
                     //since we are handling the save manually some thing in the rdts so get propagated correctly
                     //so we need to tell the RDT that this file is not a temp file otherwise it will think
                     // the recently renamed file is still a temporay file that is bad
-                    hierarchy.SetProperty(itemID, (int)__VSHPROPID.VSHPROPID_IsNewUnsavedItem, false);
-                    isFileNew = false;//this is no longer the files first save
+                    hierarchy.SetProperty(itemID, (int) __VSHPROPID.VSHPROPID_IsNewUnsavedItem, false);
+                    isFileNew = false; //this is no longer the files first save
                 }
 
                 //the reason we need this is not clear right now but when we have a new file in its tab caption
                 //isnt updated so make sure it is updated
-                EditorFrame.SetProperty((int)__VSFPROPID.VSFPROPID_OwnerCaption, Path.GetFileName(fileName));
+                EditorFrame.SetProperty((int) __VSFPROPID.VSFPROPID_OwnerCaption, Path.GetFileName(fileName));
 
                 // Unlock the document.
                 // Note that we have to unlock the document even if the previous call failed.
-                runningDocTable.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, docCookie);
+                runningDocTable.UnlockDocument((uint) _VSRDTFLAGS.RDT_ReadLock, docCookie);
                 //release reference to IVsHierarchy intptr
                 Marshal.Release(hier);
                 // Check ff the call to NotifyDocChanged failed.
                 ErrorHandler.ThrowOnFailure(hr);
-
             }
             return VSConstants.S_OK;
         }
@@ -939,8 +888,6 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-
-
         /// <summary>
         /// Returns the class identifier of the codeWindowHost type
         /// </summary>
@@ -948,10 +895,9 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.GetClassID(out Guid classID)
         {
-            ((Microsoft.VisualStudio.OLE.Interop.IPersist)this).GetClassID(out classID);
+            ((IPersist) this).GetClassID(out classID);
             return VSConstants.S_OK;
         }
-
 
 
         /// <summary>
@@ -970,7 +916,6 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.GetFormatList(out string formatList)
         {
-
             formatList = Resources.EditorFormatString;
             return VSConstants.S_OK;
         }
@@ -994,7 +939,7 @@ namespace Microsoft.SnippetDesigner
             try
             {
                 // Show the wait cursor while loading the file
-                IVsUIShell VsUiShell = (IVsUIShell)GetService(typeof(SVsUIShell));
+                IVsUIShell VsUiShell = (IVsUIShell) GetService(typeof (SVsUIShell));
                 if (VsUiShell != null)
                 {
                     // Note: we don't want to throw or exit if this call fails, so
@@ -1006,26 +951,24 @@ namespace Microsoft.SnippetDesigner
                 try
                 {
                     LoadSnippet(fileToLoad);
-
                 }
                 catch (IOException)
                 {
                     Trace.WriteLine(Resources.ErrorFileIO);
-                    throw;//throw the excpetion so vs handles it
-                } 
-                
+                    throw; //throw the excpetion so vs handles it
+                }
+
 
                 //clear and show all markers
                 RefreshReplacementMarkers();
 
-                isDirty = false;//the file is not dirty since we just loaded it
+                isDirty = false; //the file is not dirty since we just loaded it
                 //clear the buffer dirty flag, this stops the * from appearing after we load
                 //it doesnt make sense to call a file dirty when you first load it 
-                IVsTextBuffer buffer = (IVsTextBuffer)this.snippetCodeWindow.TextLines;
+                IVsTextBuffer buffer = (IVsTextBuffer) snippetCodeWindow.TextLines;
                 buffer.SetStateFlags(0);
 
 
-            
                 // Hook up to file change notifications
                 if (String.IsNullOrEmpty(fileName) || 0 != String.Compare(fileName, fileToLoad, true, CultureInfo.CurrentCulture))
                 {
@@ -1034,7 +977,6 @@ namespace Microsoft.SnippetDesigner
 
                     // Notify the load or reload
                     NotifyDocChanged();
- 
                 }
             }
             finally
@@ -1049,9 +991,6 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-
-
-
         /// <summary>
         /// Determines whether an object has changed since being saved to its current file
         /// </summary>
@@ -1059,7 +998,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.IsDirty(out int dirty)
         {
-            IVsPersistDocData bufferDoc = (IVsPersistDocData)this.snippetCodeWindow.TextLines;
+            IVsPersistDocData bufferDoc = (IVsPersistDocData) snippetCodeWindow.TextLines;
             int codeWindowDirty = 0;
             bufferDoc.IsDocDataDirty(out codeWindowDirty);
 
@@ -1103,9 +1042,8 @@ namespace Microsoft.SnippetDesigner
             return GeneralSave(fileNameToSave, doSaveAs, formatIndex);
         }
 
-
-
         #endregion
+
         #region IVsPersistDocData Members
 
         /// <summary>
@@ -1115,7 +1053,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the function succeeds</returns>
         int IVsPersistDocData.IsDocDataDirty(out int dirty)
         {
-            return ((IPersistFileFormat)this).IsDirty(out dirty);
+            return ((IPersistFileFormat) this).IsDirty(out dirty);
         }
 
 
@@ -1139,7 +1077,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="newFilePath">The path to the new document</param>
         /// <param name="saveCanceled">value 1 if the document could not be saved</param>
         /// <returns></returns>
-        int IVsPersistDocData.SaveDocData(Microsoft.VisualStudio.Shell.Interop.VSSAVEFLAGS saveFlag, out string newFilePath, out int saveCanceled)
+        int IVsPersistDocData.SaveDocData(VSSAVEFLAGS saveFlag, out string newFilePath, out int saveCanceled)
         {
             newFilePath = null;
             saveCanceled = 0;
@@ -1147,24 +1085,26 @@ namespace Microsoft.SnippetDesigner
 
             switch (saveFlag)
             {
-
                 case VSSAVEFLAGS.VSSAVE_Save:
                 case VSSAVEFLAGS.VSSAVE_SilentSave:
                     {
-                        IVsQueryEditQuerySave2 queryEditQuerySave = (IVsQueryEditQuerySave2)GetVsService(typeof(SVsQueryEditQuerySave));
+                        IVsQueryEditQuerySave2 queryEditQuerySave = (IVsQueryEditQuerySave2) GetVsService(typeof (SVsQueryEditQuerySave));
 
                         // Call QueryEditQuerySave
                         uint result = 0;
                         hr = queryEditQuerySave.QuerySaveFile(
-                                            fileName,        // filename
-                                            0,    // flags
-                                            null,            // file attributes
-                                            out result);    // result
+                            fileName,
+                            // filename
+                            0,
+                            // flags
+                            null,
+                            // file attributes
+                            out result); // result
                         if (ErrorHandler.Failed(hr))
                             return hr;
 
                         // Process according to result from QuerySave
-                        switch ((tagVSQuerySaveResult)result)
+                        switch ((tagVSQuerySaveResult) result)
                         {
                             case tagVSQuerySaveResult.QSR_NoSave_Cancel:
                                 // Note that this is also case tagVSQuerySaveResult.QSR_NoSave_UserCanceled because these
@@ -1174,10 +1114,9 @@ namespace Microsoft.SnippetDesigner
 
                             case tagVSQuerySaveResult.QSR_SaveOK:
                                 {
-
                                     // Call the shell to do the save for us
-                                    IVsUIShell uiShell = (IVsUIShell)GetVsService(typeof(SVsUIShell));
-                                    hr = uiShell.SaveDocDataToFile(saveFlag, (IPersistFileFormat)this, fileName, out newFilePath, out saveCanceled);
+                                    IVsUIShell uiShell = (IVsUIShell) GetVsService(typeof (SVsUIShell));
+                                    hr = uiShell.SaveDocDataToFile(saveFlag, (IPersistFileFormat) this, fileName, out newFilePath, out saveCanceled);
                                     if (ErrorHandler.Failed(hr))
                                         return hr;
                                 }
@@ -1185,10 +1124,9 @@ namespace Microsoft.SnippetDesigner
 
                             case tagVSQuerySaveResult.QSR_ForceSaveAs:
                                 {
-
                                     // Call the shell to do the SaveAS for us
-                                    IVsUIShell uiShell = (IVsUIShell)GetVsService(typeof(SVsUIShell));
-                                    hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, (IPersistFileFormat)this, fileName, out newFilePath, out saveCanceled);
+                                    IVsUIShell uiShell = (IVsUIShell) GetVsService(typeof (SVsUIShell));
+                                    hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, (IPersistFileFormat) this, fileName, out newFilePath, out saveCanceled);
                                     if (ErrorHandler.Failed(hr))
                                         return hr;
                                 }
@@ -1206,22 +1144,22 @@ namespace Microsoft.SnippetDesigner
                 case VSSAVEFLAGS.VSSAVE_SaveAs:
                 case VSSAVEFLAGS.VSSAVE_SaveCopyAs:
                     {
-
                         // Make sure the file name as the right extension
-                        if (string.Compare(StringConstants.SnippetExtension, System.IO.Path.GetExtension(fileName), true, CultureInfo.InvariantCulture) != 0)
+                        if (string.Compare(StringConstants.SnippetExtension, Path.GetExtension(fileName), true, CultureInfo.InvariantCulture) != 0)
                         {
                             fileName += StringConstants.SnippetExtension;
                         }
                         // Call the shell to do the save for us
-                        IVsUIShell uiShell = (IVsUIShell)GetVsService(typeof(SVsUIShell));
-                        hr = uiShell.SaveDocDataToFile(saveFlag, (IPersistFileFormat)this, fileName, out newFilePath, out saveCanceled);
+                        IVsUIShell uiShell = (IVsUIShell) GetVsService(typeof (SVsUIShell));
+                        hr = uiShell.SaveDocDataToFile(saveFlag, (IPersistFileFormat) this, fileName, out newFilePath, out saveCanceled);
                         if (ErrorHandler.Failed(hr))
                             return hr;
                         break;
                     }
                 default:
                     throw new ArgumentException(Resources.BadSaveFlags);
-            };
+            }
+            ;
 
             return VSConstants.S_OK;
         }
@@ -1238,16 +1176,16 @@ namespace Microsoft.SnippetDesigner
         int IVsPersistDocData.LoadDocData(string fileToLoad)
         {
             //set the buffer moniker
-            IVsUserData udata = (IVsUserData)CodeWindow.TextLines;
+            IVsUserData udata = (IVsUserData) CodeWindow.TextLines;
             //generate random gui
             string uniqueMoniker = Guid.NewGuid().ToString();
             //guid for buffer moniker property
-            Guid bufferMonikerGuid = typeof(IVsUserData).GUID;
+            Guid bufferMonikerGuid = typeof (IVsUserData).GUID;
             //set the moniker
             udata.SetData(ref bufferMonikerGuid, uniqueMoniker);
 
             //continue with load of the document
-            return ((IPersistFileFormat)this).Load(fileToLoad, 0, 0);
+            return ((IPersistFileFormat) this).Load(fileToLoad, 0, 0);
         }
 
         /// <summary>
@@ -1258,7 +1196,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the mthod succeeds</returns>
         int IVsPersistDocData.SetUntitledDocPath(string pszDocDataPath)
         {
-            return ((IPersistFileFormat)this).InitNew(snippetFormat);
+            return ((IPersistFileFormat) this).InitNew(snippetFormat);
         }
 
 
@@ -1269,7 +1207,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IVsPersistDocData.GetGuidEditorType(out Guid classID)
         {
-            return ((IPersistFileFormat)this).GetClassID(out classID);
+            return ((IPersistFileFormat) this).GetClassID(out classID);
         }
 
 
@@ -1312,7 +1250,6 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         int IVsPersistDocData.RenameDocData(uint attributes, IVsHierarchy hierNew, uint itemidNew, string newFileName)
         {
-
             // TODO:  Add EditorPane.RenameDocData implementation
             return VSConstants.S_OK;
         }
@@ -1327,8 +1264,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the mthod succeeds</returns>
         int IVsPersistDocData.ReloadDocData(uint ignoreNextChange)
         {
-
-            return ((IPersistFileFormat)this).Load(fileName, ignoreNextChange, 0);
+            return ((IPersistFileFormat) this).Load(fileName, ignoreNextChange, 0);
         }
 
         /// <summary>
@@ -1340,12 +1276,13 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         int IVsPersistDocData.OnRegisterDocData(uint docCookie, IVsHierarchy hierNew, uint itemidNew)
         {
-
             return VSConstants.S_OK;
         }
 
         #endregion
+
         #region IVsFileChangeEvents
+
         /// <summary>
         /// Gets an instance of the RunningDocumentTable (RDT) service which manages the set of currently open 
         /// documents in the environment and then notifies the client that an open document has changed
@@ -1357,29 +1294,29 @@ namespace Microsoft.SnippetDesigner
                 return;
 
             // Get a reference to the Running Document Table
-            IVsRunningDocumentTable runningDocTable = (IVsRunningDocumentTable)GetVsService(typeof(SVsRunningDocumentTable));
+            IVsRunningDocumentTable runningDocTable = (IVsRunningDocumentTable) GetVsService(typeof (SVsRunningDocumentTable));
             // Lock the document
             uint docCookie;
             IVsHierarchy hierarchy;
             uint itemID;
             IntPtr docData;
             int hr = runningDocTable.FindAndLockDocument(
-                (uint)_VSRDTFLAGS.RDT_ReadLock,
+                (uint) _VSRDTFLAGS.RDT_ReadLock,
                 fileName,
                 out hierarchy,
                 out itemID,
                 out docData,
                 out docCookie
-            );
+                );
 
             ErrorHandler.ThrowOnFailure(hr);
 
             // Send the notification
-            hr = runningDocTable.NotifyDocumentChanged(docCookie, (uint)__VSRDTATTRIB.RDTA_DocDataReloaded);
+            hr = runningDocTable.NotifyDocumentChanged(docCookie, (uint) __VSRDTATTRIB.RDTA_DocDataReloaded);
 
             // Unlock the document.
             // Note that we have to unlock the document even if the previous call failed.
-            runningDocTable.UnlockDocument((uint)_VSRDTFLAGS.RDT_ReadLock, docCookie);
+            runningDocTable.UnlockDocument((uint) _VSRDTFLAGS.RDT_ReadLock, docCookie);
 
             // Check ff the call to NotifyDocChanged failed.
             ErrorHandler.ThrowOnFailure(hr);
@@ -1392,7 +1329,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="filesChanged">array of the files names that have changed</param>
         /// <param name="typesOfChanges">Array of the flags indicating the type of changes</param>
         /// <returns></returns>
-		int IVsFileChangeEvents.FilesChanged(uint numberOfChanges, string[] filesChanged, uint[] typesOfChanges)
+        int IVsFileChangeEvents.FilesChanged(uint numberOfChanges, string[] filesChanged, uint[] typesOfChanges)
         {
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "\t**** Inside FilesChanged ****"));
 
@@ -1408,7 +1345,6 @@ namespace Microsoft.SnippetDesigner
             {
                 if (!String.IsNullOrEmpty(filesChanged[i]) && String.Compare(filesChanged[i], fileName, true, CultureInfo.CurrentCulture) == 0)
                 {
-
                     // if it looks like the file contents have changed (either the size or the modified
                     // time has changed) then we need to prompt the user to see if we should reload the
                     // file. it is important to not syncronisly reload the file inside of this FilesChanged
@@ -1417,14 +1353,14 @@ namespace Microsoft.SnippetDesigner
                     // changing and file size/time changing). also it is the preferred UI style to not
                     // prompt the user until the user re-activates the environment application window.
                     // this is why we use a timer to delay prompting the user.
-                    if (0 != (typesOfChanges[i] & (int)(_VSFILECHANGEFLAGS.VSFILECHG_Time | _VSFILECHANGEFLAGS.VSFILECHG_Size)))
+                    if (0 != (typesOfChanges[i] & (int) (_VSFILECHANGEFLAGS.VSFILECHG_Time | _VSFILECHANGEFLAGS.VSFILECHG_Size)))
                     {
                         if (!fileChangedTimerSet)
                         {
                             reloadTimer = new Timer();
                             fileChangedTimerSet = true;
                             reloadTimer.Interval = 1000;
-                            reloadTimer.Tick += new EventHandler(this.OnFileChangeEvent);
+                            reloadTimer.Tick += new EventHandler(OnFileChangeEvent);
                             reloadTimer.Enabled = true;
                         }
                     }
@@ -1440,55 +1376,60 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnFileChangeEvent(object sender, System.EventArgs e)
+        private void OnFileChangeEvent(object sender, EventArgs e)
         {
             //Disable the timer
             reloadTimer.Enabled = false;
-           // string message = this.GetResourceString("@101");    //get the message string from the resource
+            // string message = this.GetResourceString("@101");    //get the message string from the resource
             string message = fileName + Environment.NewLine + Environment.NewLine + Resources.OutsideEditorFileChange;
 
             string title = String.Empty;
-            IVsUIShell VsUiShell = (IVsUIShell)GetVsService(typeof(SVsUIShell));
+            IVsUIShell VsUiShell = (IVsUIShell) GetVsService(typeof (SVsUIShell));
             int result = 0;
             Guid tempGuid = Guid.Empty;
             if (VsUiShell != null)
             {
                 //Show up a message box indicating that the file has changed outside of VS environment
-                VsUiShell.ShowMessageBox(0, ref tempGuid, title, message, null, 0,
-                    OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL, OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
-                    OLEMSGICON.OLEMSGICON_QUERY, 0, out result);
-                 
-                
+                VsUiShell.ShowMessageBox(0,
+                                         ref tempGuid,
+                                         title,
+                                         message,
+                                         null,
+                                         0,
+                                         OLEMSGBUTTON.OLEMSGBUTTON_YESNOCANCEL,
+                                         OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST,
+                                         OLEMSGICON.OLEMSGICON_QUERY,
+                                         0,
+                                         out result);
             }
             //if the user selects "Yes", reload the current file
-            if (result == (int)DialogResult.Yes)
+            if (result == (int) DialogResult.Yes)
             {
-                ((IVsPersistDocData)this).ReloadDocData(0);
+                ((IVsPersistDocData) this).ReloadDocData(0);
             }
 
             fileChangedTimerSet = false;
         }
 
         #endregion
+
         #region IVsTextViewEvents Members
+
         public void OnChangeCaretLine(IVsTextView view, int newLine, int oldLine)
         {
         }
 
         public void OnChangeScrollInfo(IVsTextView view, int bar, int minUnit, int maxUnits, int visibleUnits, int firstVisibleUnit)
         {
-            
         }
 
         public void OnKillFocus(IVsTextView viewFocusLost)
         {
-            
             activeTextView = null;
         }
 
         public void OnSetBuffer(IVsTextView setView, IVsTextLines setBuffer)
         {
-
         }
 
         /// <summary>
@@ -1497,22 +1438,19 @@ namespace Microsoft.SnippetDesigner
         /// <param name="focusedView"></param>
         public void OnSetFocus(IVsTextView focusedView)
         {
-
             //make sure codewindow is told it has focus
             //it doesnt always know it has focus cause the IVTextView will gobble up the info
             CodeWindow.Select();
             activeTextView = focusedView;
             RefreshReplacementMarkers();
-            
-            
         }
 
         #endregion
+
         #region IVsTextLinesEvents
 
         void IVsTextLinesEvents.OnChangeLineAttributes(int firstLine, int lastLine)
         {
-          
         }
 
         void IVsTextLinesEvents.OnChangeLineText(TextLineChange[] textLineChanges, int last)
@@ -1523,27 +1461,25 @@ namespace Microsoft.SnippetDesigner
             }
 
 
-
             int startIndex = textLineChanges[0].iStartIndex;
             int endIndex = textLineChanges[0].iNewEndIndex;
             if (endIndex - startIndex == StringConstants.SymbolReplacement.Length)
             {
-                lastCharacterEntered = this.CodeWindow.GetCharacterAtPosition(new TextPoint(textLineChanges[0].iStartLine, startIndex));
-                
+                lastCharacterEntered = CodeWindow.GetCharacterAtPosition(new TextPoint(textLineChanges[0].iStartLine, startIndex));
             }
             else
             {
                 lastCharacterEntered = null;
             }
 
-            if(textLineChanges[0].iOldEndLine != textLineChanges[0].iNewEndLine)
+            if (textLineChanges[0].iOldEndLine != textLineChanges[0].iNewEndLine)
                 RefreshReplacementMarkers(-1);
             else
                 RefreshReplacementMarkers(textLineChanges[0].iStartLine);
-            
         }
 
         #endregion
+
         #region IVsDocDataFileChangeControl
 
         /// <summary>
@@ -1569,6 +1505,7 @@ namespace Microsoft.SnippetDesigner
         }
 
         #endregion
+
         #region IVsFileBackup Members
 
         /// <summary>
@@ -1614,8 +1551,5 @@ namespace Microsoft.SnippetDesigner
         }
 
         #endregion
-
-
-
     }
 }

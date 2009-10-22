@@ -29,6 +29,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         private Dictionary<String, SnippetIndexItem> indexedSnippets;
         private bool isIndexLoading;
         private bool isIndexUpdating;
+        private ILogger logger;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is index updating.
@@ -79,7 +80,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         {
             snippetIndexFilePath = SnippetDesignerPackage.Instance.Settings.SnippetIndexLocation;
             indexedSnippets = new Dictionary<string, SnippetIndexItem>();
-
+            logger = SnippetDesignerPackage.Instance.Logger;
         }
 
         /// <summary>
@@ -102,8 +103,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// <returns>collection of found snippets</returns>
         public List<SnippetIndexItem> PerformSnippetSearch(string searchString, List<string> languagesToGet, int maxResultCount)
         {
-
-
+      
             List<SnippetIndexItem> foundSnippets = new List<SnippetIndexItem>();
             foreach (KeyValuePair<string, SnippetIndexItem> pair in indexedSnippets)
             {
@@ -197,9 +197,9 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
 
             }
-            catch (IOException)
+            catch (IOException e)
             {
-                throw;
+                logger.Log("Unable to delete snippet file", "SnippetIndex", e);
             }
         }
 
@@ -259,8 +259,9 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     }
                 }
             }
-            catch (IOException)
+            catch (IOException e)
             {
+                logger.Log("Unable to open snippet file at path: " + filePath, "SnippetIndex", e);
                 return false;
             }
 
@@ -272,18 +273,13 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// </summary>
         public void RebuildSnippetIndex()
         {
-            try
-            {
-                lock (indexedSnippets)
-                {
-                    indexedSnippets.Clear();
-                }
-                CreateOrUpdateIndexFile();
-            }
-            catch (System.IO.IOException)
-            {
 
+            lock (indexedSnippets)
+            {
+                indexedSnippets.Clear();
             }
+            CreateOrUpdateIndexFile();
+
         }
 
         /// <summary>
@@ -293,24 +289,34 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// <returns></returns>
         public bool CreateOrUpdateIndexFile()
         {
-            IsIndexUpdating = true;
-            foreach (string path in SnippetDesignerPackage.Instance.Settings.IndexedSnippetDirectories)
+            try
             {
-                if (!Directory.Exists(path))
+                IsIndexUpdating = true;
+                foreach (string path in SnippetDesignerPackage.Instance.Settings.IndexedSnippetDirectories)
                 {
-                    continue;
-                }
+                    if (!Directory.Exists(path))
+                    {
+                        continue;
+                    }
 
-                string[] snippetFilePaths = Directory.GetFiles(path, SnippetSearch.AllSnippets, SearchOption.AllDirectories);
-                foreach (string snippetPath in snippetFilePaths)
-                {
-                    AddOrUpdateSnippetsToIndexFromSnippetFile(snippetPath);
+                    string[] snippetFilePaths = Directory.GetFiles(path, SnippetSearch.AllSnippets, SearchOption.AllDirectories);
+                    foreach (string snippetPath in snippetFilePaths)
+                    {
+                        AddOrUpdateSnippetsToIndexFromSnippetFile(snippetPath);
+                    }
                 }
+                IsIndexUpdating = false;
+
+                //write the snippetitemcolllection to disk
+                return SaveIndexFile();
+
             }
-            IsIndexUpdating = false;
+            catch (Exception e)
+            {
+                logger.Log("Unable to read snippet index directories", "SnippetIndex",e);
+            }
 
-            //write the snippetitemcolllection to disk
-            return SaveIndexFile();
+            return false;
 
         }
 
@@ -325,6 +331,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             FileStream stream = null;
             try
             {
+                
                 //load the index file into memory
                 stream = new FileStream(snippetIndexFilePath, FileMode.Open);
                 List<SnippetIndexItem> items = Load(stream);
@@ -352,8 +359,9 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
 
             }
-            catch (IOException)
+            catch (Exception e)
             {
+                logger.Log("Unable to open snippet index file at path: " + snippetIndexFilePath, "SnippetIndex", e);
                 return false;
             }
             finally
@@ -467,9 +475,9 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 stream = new FileStream(snippetIndexFilePath, FileMode.Create);
                 return Save(stream);
             }
-            catch (System.IO.IOException)
+            catch (Exception e)
             {
-
+                logger.Log("Unable to write to snippet index file at path: " + snippetIndexFilePath, "SnippetIndex", e);
             }
             finally
             {
@@ -498,28 +506,11 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 return null;
             }
             List<SnippetIndexItem> retval = null;
-            try
-            {
-                XmlSerializer ser = null;
-                ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
-                retval = (List<SnippetIndexItem>)ser.Deserialize(stream);
-            }
-            catch (IOException)
-            {
 
-            }
-            catch (UnauthorizedAccessException)
-            {
+            XmlSerializer ser = null;
+            ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
+            retval = (List<SnippetIndexItem>)ser.Deserialize(stream);
 
-            }
-            catch (XmlException)
-            {
-
-            }
-            catch (InvalidOperationException)
-            {
-
-            }
 
             return retval;
         }
@@ -536,29 +527,11 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             {
                 return false;
             }
-            try
-            {
-                XmlSerializer ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
-                List<SnippetIndexItem> items = new List<SnippetIndexItem>(indexedSnippets.Values);
-                ser.Serialize(stream, items);
 
-            }
-            catch (System.IO.PathTooLongException)
-            {
-                return false;
-            }
-            catch (System.ArgumentNullException)
-            {
-                return false;
-            }
-            catch (System.UnauthorizedAccessException)
-            {
-                return false;
-            }
-            catch (NullReferenceException)
-            {
-                return false;
-            }
+            XmlSerializer ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
+            List<SnippetIndexItem> items = new List<SnippetIndexItem>(indexedSnippets.Values);
+            ser.Serialize(stream, items);
+
             return true;
 
         }

@@ -22,7 +22,7 @@ namespace Microsoft.SnippetDesigner
         public const uint cmdidCreateSnippet = 0x104;
         public const uint cmdidExportToSnippetCommandLine = 0x105;
         public const uint cmdidSnippetRemoveReplacement = 0x106;
-        public const uint cmdidYellowHighlightMarker = 0x1100;
-        public const uint cmdidYellowHighlightMarkerWithBorder = 0x1200;
+        public const uint cmdidSnippetReplacementMarker = 0x1100;
+        public const uint cmdidActiveSnippetReplacementMarker = 0x1200;
     };
 }

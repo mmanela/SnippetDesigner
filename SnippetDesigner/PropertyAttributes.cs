@@ -1,14 +1,9 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
-using System.Reflection;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Globalization;
 using System.Resources;
-using System.Text;
 using System.Threading;
-using System.ComponentModel;
-using System.Security.Permissions;
-using System.Diagnostics;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -38,12 +33,12 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                string result = SR.GetString(this.name);
+                string result = SR.GetString(name);
 
                 if (result == null)
                 {
-                    Debug.Assert(false, "String resource '" + this.name + "' is missing");
-                    result = this.name;
+                    Debug.Assert(false, "String resource '" + name + "' is missing");
+                    result = name;
                 }
 
                 return result;
@@ -57,7 +52,6 @@ namespace Microsoft.SnippetDesigner
     [AttributeUsage(AttributeTargets.All)]
     internal sealed class LocalizableDescriptionAttribute : DescriptionAttribute
     {
-
         private bool replaced;
 
         /// <summary>
@@ -93,7 +87,6 @@ namespace Microsoft.SnippetDesigner
     [AttributeUsage(AttributeTargets.All)]
     internal sealed class LocalizableCategoryAttribute : CategoryAttribute
     {
-
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizableCategoryAttribute"/> class.
         /// </summary>
@@ -121,9 +114,7 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     internal sealed class SR
     {
-        internal const string PropNameSnippetTitle = "PropNameSnippetTitle";
         internal const string PropNameSnippetShortcut = "PropNameSnippetShortcut";
-        internal const string PropNameSnippetReplacements = "PropNameSnippetReplacements";
         internal const string PropNameSnippetReferences = "PropNameSnippetReferences";
         internal const string PropNameSnippetKeywords = "PropNameSnippetKeywords";
         internal const string PropNameSnippetImports = "PropNameSnippetImports";
@@ -134,9 +125,7 @@ namespace Microsoft.SnippetDesigner
         internal const string PropNameSnippetKind = "PropNameSnippetKind";
         internal const string PropNameSnippetType = "PropNameSnippetType";
 
-        internal const string PropDescriptionSnippetTitle = "PropDescriptionSnippetTitle";
         internal const string PropDescriptionSnippetShortcut = "PropDescriptionSnippetShortcut";
-        internal const string PropDescriptionSnippetReplacements = "PropDescriptionSnippetReplacements";
         internal const string PropDescriptionSnippetReferences = "PropDescriptionSnippetReferences";
         internal const string PropDescriptionSnippetPath = "PropDescriptionSnippetPath";
         internal const string PropDescriptionSnippetKeywords = "PropDescriptionSnippetKeywords";
@@ -150,10 +139,11 @@ namespace Microsoft.SnippetDesigner
         internal const string PropCategorySnippData = "PropCategorySnippData";
         internal const string PropCategoryFileInfo = "PropCategoryFileInfo";
 
-        static SR loader;
-        ResourceManager resources;
+        private static SR loader;
+        private ResourceManager resources;
 
         private static Object s_InternalSyncObject;
+
         private static Object InternalSyncObject
         {
             get
@@ -195,15 +185,12 @@ namespace Microsoft.SnippetDesigner
 
         private static CultureInfo Culture
         {
-            get { return null/*use ResourceManager default, CultureInfo.CurrentUICulture*/; }
+            get { return null /*use ResourceManager default, CultureInfo.CurrentUICulture*/; }
         }
 
         public static ResourceManager Resources
         {
-            get
-            {
-                return GetLoader().resources;
-            }
+            get { return GetLoader().resources; }
         }
 
         /// <summary>
@@ -217,7 +204,7 @@ namespace Microsoft.SnippetDesigner
             SR sys = GetLoader();
             if (sys == null)
                 return null;
-            string res = sys.resources.GetString(name, SR.Culture);
+            string res = sys.resources.GetString(name, Culture);
 
             if (args != null && args.Length > 0)
             {
@@ -239,7 +226,7 @@ namespace Microsoft.SnippetDesigner
             SR sys = GetLoader();
             if (sys == null)
                 return null;
-            return sys.resources.GetString(name, SR.Culture);
+            return sys.resources.GetString(name, Culture);
         }
 
         /// <summary>
@@ -252,7 +239,7 @@ namespace Microsoft.SnippetDesigner
             SR sys = GetLoader();
             if (sys == null)
                 return null;
-            return sys.resources.GetObject(name, SR.Culture);
+            return sys.resources.GetObject(name, Culture);
         }
     }
 }

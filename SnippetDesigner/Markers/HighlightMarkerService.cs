@@ -1,17 +1,8 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.TextManager.Interop;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.CommandBars;
-using System.ComponentModel.Design;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -20,8 +11,8 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     public enum KindOfMarker
     {
-        Yellow,
-        YellowWithBorder
+        SnippetReplacement,
+        ActiveSnippetReplacement
     }
 
     /// <summary>
@@ -30,40 +21,16 @@ namespace Microsoft.SnippetDesigner
     [Guid(GuidList.markerServiceString)]
     public class HighlightMarkerService : IVsTextMarkerTypeProvider
     {
-
         private SnippetDesignerPackage package;
 
-        private YellowHighlightMarker yellowHighlightMarker;
-        private YellowHighlightMarkerWithBorder yellowHighlightMarkerWithBorder;
+        private SnippetReplacementMarker snippetReplacementMarker;
+        private ActiveSnippetReplacementMarker activeSnippetReplacementMarker;
+
         internal HighlightMarkerService(SnippetDesignerPackage package)
-		{
-			this.package = package;
-            yellowHighlightMarker = new YellowHighlightMarker();
-            yellowHighlightMarkerWithBorder = new YellowHighlightMarkerWithBorder();
-		}
-
-        ~HighlightMarkerService()
-		{
-		}
-
-
-
-        /// <summary>
-        /// Insert a mark over the current Selection
-        /// </summary>
-        /// <param name="cmdID">the cmdId of the desired marker</param>
-        /// <returns>true if success</returns>
-        public bool InsertMarker(uint cmdID)
         {
-            IVsTextManager textManager = (IVsTextManager)package.GetService(typeof(SVsTextManager));
-
-            IVsTextView textView;
-            int hr = textManager.GetActiveView(0, null, out textView);
-            TextSpan[] ts = new TextSpan[1];
-            hr = textView.GetSelectionSpan(ts);
-
-            return InsertMarker(cmdID, ts[0]);
-            
+            this.package = package;
+            snippetReplacementMarker = new SnippetReplacementMarker();
+            activeSnippetReplacementMarker = new ActiveSnippetReplacementMarker();
         }
 
 
@@ -81,20 +48,20 @@ namespace Microsoft.SnippetDesigner
 
             switch (cmdID)
             {
-                case PkgCmdIDList.cmdidYellowHighlightMarker:
-                    guidMarker = typeof(YellowHighlightMarker).GUID;
-                    textMarkerClient = (IVsTextMarkerClient)yellowHighlightMarker;
+                case PkgCmdIDList.cmdidSnippetReplacementMarker:
+                    guidMarker = typeof (SnippetReplacementMarker).GUID;
+                    textMarkerClient = snippetReplacementMarker;
                     break;
-                case PkgCmdIDList.cmdidYellowHighlightMarkerWithBorder:
-                    guidMarker = typeof(YellowHighlightMarkerWithBorder).GUID;
-                    textMarkerClient = (IVsTextMarkerClient)yellowHighlightMarkerWithBorder;
+                case PkgCmdIDList.cmdidActiveSnippetReplacementMarker:
+                    guidMarker = typeof (ActiveSnippetReplacementMarker).GUID;
+                    textMarkerClient = activeSnippetReplacementMarker;
                     break;
                 default:
                     Debug.Assert(false, Resources.ErrorInvalidMarkerID);
                     return false;
             }
 
-            IVsTextManager textManager = (IVsTextManager)package.GetService(typeof(SVsTextManager));
+            IVsTextManager textManager = (IVsTextManager) package.GetService(typeof (SVsTextManager));
             if (textManager == null)
             {
                 return false;
@@ -114,8 +81,13 @@ namespace Microsoft.SnippetDesigner
                 return false;
             }
 
-            hr = textLines.CreateLineMarker(markerTypeID, ts.iStartLine, ts.iStartIndex,
-                ts.iEndLine, ts.iEndIndex, textMarkerClient, null);
+            hr = textLines.CreateLineMarker(markerTypeID,
+                                            ts.iStartLine,
+                                            ts.iStartIndex,
+                                            ts.iEndLine,
+                                            ts.iEndIndex,
+                                            textMarkerClient,
+                                            null);
 
             return true;
         }
@@ -124,22 +96,22 @@ namespace Microsoft.SnippetDesigner
 
         public int GetTextMarkerType(ref Guid pguidMarker, out IVsPackageDefinedTextMarkerType ppMarkerType)
         {
-            if (pguidMarker == typeof(YellowHighlightMarker).GUID)
+            if (pguidMarker == typeof (SnippetReplacementMarker).GUID)
             {
-                ppMarkerType = yellowHighlightMarker;
+                ppMarkerType = snippetReplacementMarker;
                 return VSConstants.S_OK;
             }
-            else if (pguidMarker == typeof(YellowHighlightMarkerWithBorder).GUID)
+            else if (pguidMarker == typeof (ActiveSnippetReplacementMarker).GUID)
             {
-                ppMarkerType = yellowHighlightMarkerWithBorder;
+                ppMarkerType = activeSnippetReplacementMarker;
                 return VSConstants.S_OK;
             }
-            
+
 
             ppMarkerType = null;
             return VSConstants.E_FAIL;
         }
+
         #endregion
     }
 }
-        
