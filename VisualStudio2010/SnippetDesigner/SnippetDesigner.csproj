@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Microsoft.SnippetDesigner</RootNamespace>
+    <AssemblyName>SnippetDesigner</AssemblyName>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectGuid>{1508F8F3-74F4-4ABD-B553-DF359ACFF483}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunRegRiched>true</RunRegRiched>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunRegRiched>true</RunRegRiched>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EnvDTE" />
+    <Reference Include="envdte80, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.OLE.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Package.LanguageService.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.8.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.9.0" />
+    <Reference Include="Microsoft.VisualStudio.Shell.Interop.10.0" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop" />
+    <Reference Include="Microsoft.VisualStudio.Shell.10.0">
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CmdParser\AppCmdLineAgruments.cs" />
+    <Compile Include="CmdParser\NewSnippetCommand.cs" />
+    <Compile Include="CodeWindow\CodeWindow.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CodeWindow\CodeWindow.designer.cs">
+      <DependentUpon>CodeWindow.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CodeWindow\ISnippetCodeWindow.cs" />
+    <Compile Include="CodeWindow\TextPoint.cs" />
+    <Compile Include="EditorFactory.cs" />
+    <Compile Include="ExportToSnippetData.cs" />
+    <Compile Include="Guids.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="LanguageMaps.cs" />
+    <Compile Include="LanguageService\CSharpSnippetLanguageService.cs" />
+    <Compile Include="LanguageService\SnippetColorizer.cs" />
+    <Compile Include="LanguageService\SnippetLanguageService.cs" />
+    <Compile Include="LanguageService\VBSnippetLanguageService.cs" />
+    <Compile Include="LanguageService\XMLSnippetLanguageService.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Markers\HighlightMarkers.cs" />
+    <Compile Include="Markers\HighlightMarkerService.cs" />
+    <Compile Include="Markers\MarkerAttributes.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="OptionPages\CustomFileNameEditor.cs" />
+    <Compile Include="OptionPages\ResetOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="OptionPages\ResetOptionsControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionPages\ResetOptionsControl.Designer.cs">
+      <DependentUpon>ResetOptionsControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionPages\SnippetDesignerOptions.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PkgCmdID.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyAttributes.cs" />
+    <Compile Include="Resources.Designer.cs" />
+    <Compile Include="SnippetDirectories.cs" />
+    <Compile Include="SnippetEditor\CommandFilter.cs" />
+    <Compile Include="SnippetEditor\EditorProperties.cs" />
+    <Compile Include="SnippetEditor\FilteredPropertiesTypeDescriptor.cs" />
+    <Compile Include="SnippetEditor\ICodeWindowHost.cs" />
+    <Compile Include="SnippetEditor\ISnippetEditor.cs" />
+    <Compile Include="SnippetEditor\SnippetEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SnippetEditor\SnippetEditorConfiguration.cs" />
+    <Compile Include="SnippetEditor\SnippetEditorForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SnippetEditor\SnippetEditorForm.Designer.cs">
+      <DependentUpon>SnippetEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SnippetExplorer\SnippetExplorerForm.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="SnippetExplorer\SnippetExplorerForm.Designer.cs">
+      <DependentUpon>SnippetExplorerForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SnippetExplorer\SnippetExplorerToolWindow.cs" />
+    <Compile Include="SnippetExplorer\SnippetSearch.Designer.cs" />
+    <Compile Include="SnippetIndex\SnippetIndex.cs" />
+    <Compile Include="SnippetIndex\SnippetIndexItem.cs" />
+    <Compile Include="SnippetIndex\SnippetIndexItemCollection.cs" />
+    <Compile Include="StringConstants.cs" />
+    <Compile Include="VsPkg.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Files\EULA.rtf" />
+    <Content Include="ItemTemplates\CodeSnippet.vstemplate" />
+    <Content Include="ItemTemplates\SnippetFile.snippet">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <None Include="source.extension.vsixmanifest">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="tom">
+      <Guid>{8CC497C9-A1DF-11CE-8098-00AA0047BE5D}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RegistryTools\RegistryTools.csproj">
+      <Project>{F49D29B5-63FE-4A5E-B20C-D7B785FCE9BC}</Project>
+      <Name>RegistryTools</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SnippetLibrary\SnippetLibrary.csproj">
+      <Project>{05A6F322-8297-4D9F-B91C-5B77CA1064D8}</Project>
+      <Name>SnippetLibrary</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CodeWindow\CodeWindow.resx">
+      <DependentUpon>CodeWindow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionPages\ResetOptionsControl.resx">
+      <DependentUpon>ResetOptionsControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources.resx" />
+    <EmbeddedResource Include="Resources\SnippetEditor.resx" />
+    <EmbeddedResource Include="SnippetEditor\SnippetEditorForm.resx">
+      <DependentUpon>SnippetEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SnippetExplorer\SnippetExplorerForm.resx">
+      <DependentUpon>SnippetExplorerForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SnippetExplorer\SnippetSearch.resx" />
+    <EmbeddedResource Include="VSPackage.resx">
+      <MergeWithCTO>true</MergeWithCTO>
+      <ManifestResourceName>VSPackage</ManifestResourceName>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Files\Readme.htm" />
+    <Content Include="ItemTemplates\__TemplateIcon.ico" />
+    <Content Include="Resources\File.ico" />
+    <Content Include="Resources\GenericPackage.bmp" />
+    <Content Include="Resources\GenericPackage.ico" />
+    <Content Include="Resources\HomeHS.bmp" />
+    <Content Include="Resources\HomeHS.ico" />
+    <Content Include="Resources\Images_24bit.bmp" />
+    <Content Include="Resources\Images_32bit.bmp" />
+    <Content Include="Resources\Package.ico" />
+    <Content Include="Resources\Product.ico" />
+    <VSCTCompile Include="SnippetDesigner.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
+  </ItemGroup>
+  <PropertyGroup>
+    <!--
+    To specify a different registry root to register your package, uncomment the TargetRegistryRoot
+    tag and specify a registry root in it.
+    <TargetRegistryRoot></TargetRegistryRoot>
+    -->
+    <RegisterOutputPackage>true</RegisterOutputPackage>
+    <RegisterWithCodebase>true</RegisterWithCodebase>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

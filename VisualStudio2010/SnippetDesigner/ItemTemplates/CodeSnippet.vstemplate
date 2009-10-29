@@ -1,0 +1,14 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
+  <TemplateData>
+    <DefaultName>SnippetFile.snippet</DefaultName>
+    <Name>Code Snippet</Name>
+    <Description>A template for a code snippet file</Description>
+    <ProjectType>CSharp</ProjectType>
+    <SortOrder>10</SortOrder>
+    <Icon>__TemplateIcon.ico</Icon>
+  </TemplateData>
+  <TemplateContent>
+    <References />
+    <ProjectItem SubType="" TargetFileName="$fileinputname$.snippet" ReplaceParameters="false">SnippetFile.snippet</ProjectItem>
+  </TemplateContent>
+</VSTemplate>
