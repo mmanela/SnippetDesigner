@@ -132,6 +132,7 @@ namespace Microsoft.SnippetDesigner
             changesToIgnore = 0; //start with no changes to ignore
 
             InitializePropertiesWindow(); //set up the properties window
+
             InitializeComponent(); //initialize gui components
             snippetCodeWindow.CodeWindowHost = this; //tell the code window this is its parent codeWindowHost
 
@@ -423,7 +424,11 @@ namespace Microsoft.SnippetDesigner
             {
                 hr = VSConstants.E_FAIL;
             }
-            //TODO:see if I need to support any other exceptions here
+            catch (UnauthorizedAccessException)
+            {
+                logger.MessageBox("Unable to access file", "Unable to write to " + fileName + "  Do you not have rights to access this file?  You might need to run VS as admin", LogType.Error);
+                hr = VSConstants.E_FAIL;
+            }
             finally
             {
                 //restore the file change notifications

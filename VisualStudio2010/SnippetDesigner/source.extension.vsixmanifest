@@ -20,6 +20,5 @@
   <References />
   <Content>
     <VsPackage>|SnippetDesigner;PkgdefProjectOutputGroup|</VsPackage>
-    <ItemTemplate>ItemTemplates</ItemTemplate>
   </Content>
 </Vsix>

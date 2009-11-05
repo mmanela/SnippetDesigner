@@ -25,7 +25,7 @@ namespace Microsoft.SnippetDesigner
         private readonly Guid defaultLanguage;
         private IConnectionPoint textViewEventsConnectionPoint;
         private IConnectionPoint textLinesEventsConnectionPoint;
-
+        private bool IsTextInitialized;
 
         public IVsCodeWindow VsCodeWindow { get; private set; }
 
@@ -57,11 +57,27 @@ namespace Microsoft.SnippetDesigner
             set
             {
                 IVsTextLines vsTextLines = TextLines;
+
                 if (vsTextLines != null)
                 {
-                    SetText(value);
+                    if (IsTextInitialized)
+                        SetText(value);
+                    else
+                    {
+                        InitializeText(value);
+                        IsTextInitialized = true;
+                    }
                 }
             }
+        }
+
+
+        private void InitializeText(string newText)
+        {
+            IVsTextLines textLines = TextLines;
+            newText = newText ?? "";
+            ErrorHandler.ThrowOnFailure(textLines.InitializeContent(newText, newText.Length));
+
         }
 
         /// <summary>
@@ -485,12 +501,12 @@ namespace Microsoft.SnippetDesigner
 
         public void HighlightSpan(TextSpan span)
         {
-            if (SnippetDesignerPackage.Instance == null)
-            {
-                return;
-            }
+            //if (SnippetDesignerPackage.Instance == null)
+            //{
+            //    return;
+            //}
 
-            SnippetDesignerPackage.Instance.MarkerService.InsertMarker(PkgCmdIDList.cmdidSnippetReplacementMarker, span);
+            //SnippetDesignerPackage.Instance.MarkerService.InsertMarker(PkgCmdIDList.cmdidSnippetReplacementMarker, span);
 
         }
 
@@ -548,7 +564,10 @@ namespace Microsoft.SnippetDesigner
 
             IVsTextView textView = TextView;
             TextSpan[] span = new TextSpan[1];
-            textView.GetWordExtent(positon.Line, positon.Index, 0, span);
+
+            int length;
+            TextLines.GetLengthOfLine(positon.Line, out length);
+            textView.GetWordExtent(positon.Line, Math.Min(positon.Index, length - 1), 0, span);
             return span[0];
         }
     }

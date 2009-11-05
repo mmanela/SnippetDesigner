@@ -27,16 +27,13 @@ namespace Microsoft.SnippetDesigner
         //Snippy Library Access Code
         private SnippetFile snippetFile; //represents an instance of this snippet application
         private int snippetIndex; // index of the snippet in the snippetFile
-        private Snippet activeSnippet; //represents the current snippet in memory
-
+   
         //if the user typed a single character then store it here so we know what it is
         //otherwise its null
         protected string lastCharacterEntered;
 
         //hash which maps the display names of the languages to the path to their user snippet directory
         internal readonly Dictionary<string, string> snippetDirectories = SnippetDirectories.Instance.UserSnippetDirectories;
-
-        private bool isFormDirty; //is this form in a dirty state
 
         //the value of the id cell you entered before edit
         //the purpose of this is so if you modify a replcement id in the gridview we can know which ids in the codewindow
@@ -51,7 +48,6 @@ namespace Microsoft.SnippetDesigner
 
         //store the last language selected so we know when to remove adornments
         private string previousLanguageSelected = String.Empty;
-
 
         //header snippet data
         private string snippetTitle = String.Empty;
@@ -72,18 +68,25 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public Snippet ActiveSnippet
         {
-            get { return activeSnippet; }
-
-            set { activeSnippet = value; }
+            get;
+            set;
         }
 
+
+        public bool FormLoadFinished
+        {
+            get;
+            set;
+        }
+
+        bool formDirty = false;
         /// <summary>
         /// Is this form in a diry state
         /// </summary>
         public bool IsFormDirty
         {
-            get { return isFormDirty; }
-            set { isFormDirty = value; }
+            get { return FormLoadFinished ? formDirty : false; }
+            set { formDirty = value; }
         }
 
         /// <summary>
@@ -124,7 +127,7 @@ namespace Microsoft.SnippetDesigner
                 {
                     toolStripSnippetTitles.Items.Add(title);
                 }
-                toolStripSnippetTitles.SelectedIndex = toolStripSnippetTitles.Items.IndexOf(activeSnippet.Title);
+                toolStripSnippetTitles.SelectedIndex = toolStripSnippetTitles.Items.IndexOf(ActiveSnippet.Title);
             }
         }
 
@@ -147,7 +150,7 @@ namespace Microsoft.SnippetDesigner
             {
                 if (snippetDescription != value)
                 {
-                    isFormDirty = true;
+                    IsFormDirty = true;
                 }
                 snippetDescription = value;
             }
@@ -161,7 +164,7 @@ namespace Microsoft.SnippetDesigner
             {
                 if (snippetAuthor != value)
                 {
-                    isFormDirty = true;
+                    IsFormDirty = true;
                 }
                 snippetAuthor = value;
             }
@@ -175,7 +178,7 @@ namespace Microsoft.SnippetDesigner
             {
                 if (snippetHelpUrl != value)
                 {
-                    isFormDirty = true;
+                    IsFormDirty = true;
                 }
                 snippetHelpUrl = value;
             }
@@ -189,7 +192,7 @@ namespace Microsoft.SnippetDesigner
             {
                 if (snippetShortcut != value)
                 {
-                    isFormDirty = true;
+                    IsFormDirty = true;
                 }
                 snippetShortcut = value;
             }
@@ -202,7 +205,7 @@ namespace Microsoft.SnippetDesigner
             set
             {
                 //TODO: check if the keywords have changed
-                isFormDirty = true;
+                IsFormDirty = true;
 
 
                 snippetKeywords.Clear();
@@ -224,7 +227,7 @@ namespace Microsoft.SnippetDesigner
             set
             {
                 //TODO: check if the snippettype have changed
-                isFormDirty = true;
+                IsFormDirty = true;
 
 
                 snippetTypes.Clear();
@@ -432,12 +435,14 @@ namespace Microsoft.SnippetDesigner
                 snippetIndex = 0;
 
                 //set this snippet as the active snippet
-                activeSnippet = snippetFile.Snippets[snippetIndex];
-                ;
+                ActiveSnippet = snippetFile.Snippets[snippetIndex];
+                
                 //populate the gui with this snippets information
                 PullFieldsFromActiveSnippet();
                 //indicate that this snippet is not dirty
-                isFormDirty = false;
+                IsFormDirty = false;
+
+                FormLoadFinished = true;
             }
             catch (IOException) //abort loading snippet, fail program
             {
@@ -455,43 +460,43 @@ namespace Microsoft.SnippetDesigner
         public void PullFieldsFromActiveSnippet()
         {
             //snippet information
-            SnippetTitle = activeSnippet.Title;
-            SnippetAuthor = activeSnippet.Author;
-            SnippetDescription = activeSnippet.Description;
-            SnippetHelpUrl = activeSnippet.HelpUrl;
-            SnippetShortcut = activeSnippet.Shortcut;
-            SnippetKeywords = activeSnippet.Keywords;
+            SnippetTitle = ActiveSnippet.Title;
+            SnippetAuthor = ActiveSnippet.Author;
+            SnippetDescription = ActiveSnippet.Description;
+            SnippetHelpUrl = ActiveSnippet.HelpUrl;
+            SnippetShortcut = ActiveSnippet.Shortcut;
+            SnippetKeywords = ActiveSnippet.Keywords;
 
 
             SnippetTitles = GetSnippetTitles();
 
-            if (activeSnippet.SnippetTypes.Count <= 0)
+            if (ActiveSnippet.SnippetTypes.Count <= 0)
             {
                 //if no type specified then make it expansion by default
                 snippetTypes.Add(new SnippetType(StringConstants.SnippetTypeExpansion));
             }
             else
             {
-                SnippetTypes = activeSnippet.SnippetTypes;
+                SnippetTypes = ActiveSnippet.SnippetTypes;
             }
 
 
             //code - for some unknown reason this must be done before language is set to stop some inconsitency
             //including highlighting and color coding 
-            SnippetCode = activeSnippet.Code;
+            SnippetCode = ActiveSnippet.Code;
 
             //kind and language values
-            SnippetKind = activeSnippet.CodeKindAttribute;
+            SnippetKind = ActiveSnippet.CodeKindAttribute;
 
-            SnippetLanguage = activeSnippet.CodeLanguageAttribute;
+            SnippetLanguage = ActiveSnippet.CodeLanguageAttribute;
 
             //imports and references
-            SnippetImports = activeSnippet.Imports;
+            SnippetImports = ActiveSnippet.Imports;
 
-            SnippetReferences = activeSnippet.References;
+            SnippetReferences = ActiveSnippet.References;
 
             //literals and objects
-            SnippetReplacements = activeSnippet.Literals;
+            SnippetReplacements = ActiveSnippet.Literals;
         }
 
 
@@ -501,39 +506,39 @@ namespace Microsoft.SnippetDesigner
         public void PushFieldsIntoActiveSnippet()
         {
             //add header info
-            activeSnippet.Title = SnippetTitle;
-            activeSnippet.Author = SnippetAuthor;
-            activeSnippet.Description = SnippetDescription;
-            activeSnippet.HelpUrl = SnippetHelpUrl;
-            activeSnippet.Shortcut = SnippetShortcut;
+            ActiveSnippet.Title = SnippetTitle;
+            ActiveSnippet.Author = SnippetAuthor;
+            ActiveSnippet.Description = SnippetDescription;
+            ActiveSnippet.HelpUrl = SnippetHelpUrl;
+            ActiveSnippet.Shortcut = SnippetShortcut;
 
             //update keywords
-            activeSnippet.Keywords = SnippetKeywords;
+            ActiveSnippet.Keywords = SnippetKeywords;
 
 
             //add snippet types
-            activeSnippet.SnippetTypes = SnippetTypes;
+            ActiveSnippet.SnippetTypes = SnippetTypes;
 
 
             //add code
-            activeSnippet.Code = SnippetCode;
+            ActiveSnippet.Code = SnippetCode;
 
 
             //must be after code node is declared
             //kind and language values
-            activeSnippet.CodeKindAttribute = SnippetKind;
+            ActiveSnippet.CodeKindAttribute = SnippetKind;
 
 
-            activeSnippet.CodeLanguageAttribute = SnippetLanguage;
+            ActiveSnippet.CodeLanguageAttribute = SnippetLanguage;
 
 
             //imports and references
-            activeSnippet.Imports = SnippetImports;
+            ActiveSnippet.Imports = SnippetImports;
 
-            activeSnippet.References = SnippetReferences;
+            ActiveSnippet.References = SnippetReferences;
 
             //literals and objects
-            activeSnippet.Literals = SnippetReplacements;
+            ActiveSnippet.Literals = SnippetReplacements;
         }
 
         private List<String> GetSnippetTitles()
@@ -560,7 +565,7 @@ namespace Microsoft.SnippetDesigner
                     }
 
                     snippetCodeWindow.SetLanguageService(languageText);
-                    isFormDirty = true;
+                    IsFormDirty = true;
 
                     if (languageText == Resources.DisplayNameXML)
                     {
@@ -597,7 +602,7 @@ namespace Microsoft.SnippetDesigner
             if (snippetsBox != null)
             {
                 string newTitle = snippetsBox.SelectedItem as string;
-                if (!String.IsNullOrEmpty(newTitle) && newTitle != activeSnippet.Title)
+                if (!String.IsNullOrEmpty(newTitle) && newTitle != ActiveSnippet.Title)
                 {
                     PushFieldsIntoActiveSnippet();
 
@@ -607,7 +612,7 @@ namespace Microsoft.SnippetDesigner
                         if (snippetFile.Snippets[i].Title.Equals(newTitle, StringComparison.InvariantCulture))
                         {
                             snippetIndex = i;
-                            activeSnippet = snippetFile.Snippets[i];
+                            ActiveSnippet = snippetFile.Snippets[i];
                         }
                     }
 
@@ -641,7 +646,7 @@ namespace Microsoft.SnippetDesigner
                     snippetsBox.Items.Remove(snippetTitle);
                     snippetTitle = newTitle;
                     PushFieldsIntoActiveSnippet();
-                    isFormDirty = true;
+                    IsFormDirty = true;
                 }
             }
         }
@@ -691,7 +696,7 @@ namespace Microsoft.SnippetDesigner
             DataGridView grid = sender as DataGridView;
             if (grid != null)
             {
-                isFormDirty = true;
+                IsFormDirty = true;
                 if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnID)
                 {
                     string newIdValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
@@ -717,7 +722,7 @@ namespace Microsoft.SnippetDesigner
                             ReplaceAll(oldReplacement, newReplacement, false);
                             ReplaceAll(newIdValue, newReplacement, true);
 
-                            isFormDirty = true; //form is now dirty
+                            IsFormDirty = true; //form is now dirty
                         }
                         else
                         {
@@ -792,7 +797,6 @@ namespace Microsoft.SnippetDesigner
 
         protected void RefreshReplacementMarkers(int lineToMark)
         {
-            ClearAllMarkers(lineToMark);
             List<string> allReplacements = new List<string>();
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
@@ -811,75 +815,25 @@ namespace Microsoft.SnippetDesigner
             RefreshReplacementMarkers(-1);
         }
 
-        private void ClearAllMarkers(int lineToClear)
-        {
-            //clear all yellow markers
-            ClearMarkersOfType(GuidList.yellowMarker, lineToClear);
-            //clear all yellow markers with borders
-            ClearMarkersOfType(GuidList.yellowMarkerWithBorder, lineToClear);
-        }
-
-        private void ClearMarkersOfType(Guid markerGuid, int lineToClear)
-        {
-            return;
-            //if (SnippetDesignerPackage.Instance == null)
-            //{
-            //    return;
-            //}
-
-            //int lastLine = CodeWindow.LineCount - 1;
-
-
-            //int markerTypeID;
-
-            ////get text manager service
-            //IVsTextManager textManager = (IVsTextManager)SnippetDesignerPackage.Instance.GetService(typeof(SVsTextManager));
-            ////get marker ID of the yellow marker
-            //textManager.GetRegisteredMarkerTypeID(ref markerGuid, out markerTypeID);
-
-            //IVsEnumLineMarkers markerEnum;
-            ////get enum of all yellow markers
-            //CodeWindow.TextLines.EnumMarkers(lineToClear < 0 ? 0 : lineToClear, 0, lineToClear < 0 ? lastLine : lineToClear, CodeWindow.LineLength(lastLine), markerTypeID, 0, out markerEnum);
-
-            //int markerCount = 0;
-            //markerEnum.GetCount(out markerCount);
-            //IVsTextLineMarker marker;
-            ////loop over each marker
-            //for (int i = 0; i < markerCount; i++)
-            //{
-            //    markerEnum.Next(out marker);
-            //    TextSpan[] span = new TextSpan[1];
-            //    marker.GetCurrentSpan(span);
-            //    //if this is the right line to clear or if we are clearing all lines
-            //    if (span[0].iStartLine == lineToClear || lineToClear < 0)
-            //    {
-            //        //clear and tell the code window to stop keeping track of this marker
-            //        marker.Invalidate();
-            //        marker.UnadviseClient();
-            //    }
-            //}
-        }
-
         public void MakeClickedReplacementActive()
         {
-            //TextSpan currentWordSpan;
-            ////see if the person clicked inside of a replacement and return its span
-            //if (GetClickedOnReplacementSpan(out currentWordSpan))
-            //{
-            //    string currentWord = CodeWindow.GetSpanText(currentWordSpan);
+            TextSpan currentWordSpan;
+            //see if the person clicked inside of a replacement and return its span
+            if (GetClickedOnReplacementSpan(out currentWordSpan))
+            {
+                string currentWord = CodeWindow.GetSpanText(currentWordSpan);
 
-            //    foreach (DataGridViewRow row in replacementGridView.Rows)
-            //    {
-            //        if ((string)row.Cells[StringConstants.ColumnID].Value == currentWord)
-            //        {
-            //            replacementGridView.ClearSelection();
-            //            row.Selected = true;
-            //            currentlySelectedId = row.Cells[StringConstants.ColumnID].Value as string;
-            //            RefreshReplacementMarkers();
-            //            break;
-            //        }
-            //    }
-            //}
+                foreach (DataGridViewRow row in replacementGridView.Rows)
+                {
+                    if ((string)row.Cells[StringConstants.ColumnID].Value == currentWord)
+                    {
+                        replacementGridView.ClearSelection();
+                        row.Selected = true;
+                        currentlySelectedId = row.Cells[StringConstants.ColumnID].Value as string;
+                        break;
+                    }
+                }
+            }
         }
 
         public void ReplacementRemove()
@@ -1269,7 +1223,6 @@ namespace Microsoft.SnippetDesigner
             }
             return false;
         }
-
 
         private void mainObjectsRepaiont_Paint(object sender, PaintEventArgs e)
         {

@@ -39,7 +39,7 @@ namespace Microsoft.SnippetDesigner
     // package needs to have a valid load key (it can be requested at 
     // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
     // package has a load key embedded in its resources.
-    [ProvideLoadKey("Standard", "1.2", "Snippet Designer", "Microsoft", 1)]
+    //[ProvideLoadKey("Standard", "1.2", "Snippet Designer", "Microsoft", 1)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
@@ -63,7 +63,8 @@ namespace Microsoft.SnippetDesigner
     [ProvideEditorExtension(typeof (EditorFactory), StringConstants.SnippetExtension, 70,
         ProjectGuid = GuidList.provideEditorExtensionProject,
         DefaultName = "Snippet Designer",
-        TemplateDir = @"ItemTemplates"
+        NameResourceID=100,
+         TemplateDir = "..\\..\\ItemTemplates"
         )]
     [ProvideEditorLogicalView(typeof (EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
@@ -365,12 +366,14 @@ namespace Microsoft.SnippetDesigner
         {
             if (DTE != null)
             {
-                int TemplateNameResourceID = 106;
-                uint EnvironmentTemplateCategoryResourceID = 13565;
+                int templateNameResourceID = 106;
+                int categoryResourceId = 100;
+               // uint EnvironmentTemplateCategoryResourceID = 13565;
                 var commandArgs = string.Format(
                     StringConstants.MakeSnippetDTEFormat,
-                    GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID),
-                    GetResourceString(TemplateNameResourceID));
+                     GetResourceString(categoryResourceId),
+                    //GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID),
+                    GetResourceString(templateNameResourceID));
                 DTE.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
             }
         }

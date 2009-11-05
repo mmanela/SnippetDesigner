@@ -216,7 +216,6 @@ namespace Microsoft.SnippetDesigner
             // snippetCodeWindow
             // 
             resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
-            this.snippetCodeWindow.CodeText = global::Microsoft.SnippetDesigner.Resources.Empty;
             this.snippetCodeWindow.MinimumSize = new System.Drawing.Size(250, 100);
             this.snippetCodeWindow.Name = "snippetCodeWindow";
             this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);

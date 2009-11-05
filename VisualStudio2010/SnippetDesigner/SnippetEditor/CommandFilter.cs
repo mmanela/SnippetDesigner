@@ -110,7 +110,11 @@ namespace Microsoft.SnippetDesigner
                             prgCmds[0].cmdf = (uint) OLECMDF.OLECMDF_SUPPORTED | (uint) OLECMDF.OLECMDF_ENABLED;
                             return VSConstants.S_OK;
                         }
-
+                    case (uint)VSConstants.VSStd2KCmdID.ECMD_LEFTCLICK:
+                        {
+                            prgCmds[0].cmdf = (uint)OLECMDF.OLECMDF_SUPPORTED | (uint)OLECMDF.OLECMDF_ENABLED;
+                            return VSConstants.S_OK;
+                        }
                     default:
                         {
                             return oldFilter.QueryStatus(ref pguidCmdGroup, cCmds, prgCmds, pCmdText);
