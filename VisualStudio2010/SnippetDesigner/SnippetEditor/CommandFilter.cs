@@ -2,8 +2,6 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
-using MsOle = Microsoft.VisualStudio.OLE.Interop;
-using MsVsShell = Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.SnippetDesigner
 {

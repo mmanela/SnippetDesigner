@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Package;
-using System.Runtime.InteropServices;
+using Microsoft.VisualStudio.TextManager.Interop;
 
 namespace Microsoft.SnippetDesigner
 {

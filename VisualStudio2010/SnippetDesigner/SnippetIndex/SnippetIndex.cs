@@ -2,19 +2,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
-using System.IO.IsolatedStorage;
-using System.IO;
-using System.Globalization;
-using Microsoft.SnippetLibrary;
-using Microsoft.SnippetDesigner.SnippetExplorer;
-using System.Windows.Forms;
-using Microsoft.RegistryTools;
-using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
+using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using Microsoft.SnippetDesigner.SnippetExplorer;
+using Microsoft.SnippetLibrary;
 
 namespace Microsoft.SnippetDesigner.ContentTypes
 {

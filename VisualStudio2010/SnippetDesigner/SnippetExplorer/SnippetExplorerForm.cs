@@ -1,24 +1,15 @@
 ﻿// Copyright (C) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Windows.Forms;
-using System.Runtime.InteropServices;
-using System.Xml;
 using System.IO;
-using EnvDTE;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
 using EnvDTE80;
-using System.Text.RegularExpressions;
 using Microsoft.SnippetDesigner.ContentTypes;
-using Microsoft.SnippetLibrary;
-
-using IServiceProvider = System.IServiceProvider;
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.SnippetDesigner.OptionPages;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.SnippetDesigner.SnippetExplorer
 {

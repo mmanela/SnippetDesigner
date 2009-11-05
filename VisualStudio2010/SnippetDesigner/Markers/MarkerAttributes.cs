@@ -1,15 +1,10 @@
 // Copyright (C) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Diagnostics;
-using System.Globalization;
 using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.SnippetDesigner
 {
-
-    #region ProvideCustomMarkerAttribute
-
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
     public class ProvideCustomMarkerAttribute : RegistrationAttribute
     {
@@ -68,6 +63,5 @@ namespace Microsoft.SnippetDesigner
 
     }
 
-    #endregion ProvideCustomMarkerAttribute
 
 }

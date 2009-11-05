@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Microsoft.VisualStudio.Shell.Interop;
 using System.Globalization;
+using Microsoft.VisualStudio.Shell.Interop;
 
 namespace Microsoft.SnippetDesigner
 {

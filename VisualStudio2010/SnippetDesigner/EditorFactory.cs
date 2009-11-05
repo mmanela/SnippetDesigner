@@ -5,14 +5,10 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.OLE.Interop;
-using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Shell;
-using EnvDTE;
-using EnvDTE80;
+using Microsoft.VisualStudio.Shell.Interop;
 
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+
 
 namespace Microsoft.SnippetDesigner
 {

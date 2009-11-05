@@ -7,30 +7,19 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace Microsoft.SnippetDesigner
 {
     /// <summary>
-    /// different type of markers available
-    /// </summary>
-    public enum KindOfMarker
-    {
-        SnippetReplacement,
-        ActiveSnippetReplacement
-    }
-
-    /// <summary>
     /// Service which proffers the markers and also has fucntions to isnert markers
     /// </summary>
     [Guid(GuidList.markerServiceString)]
     public class HighlightMarkerService : IVsTextMarkerTypeProvider
     {
         private SnippetDesignerPackage package;
-
+       
         private SnippetReplacementMarker snippetReplacementMarker;
-        private ActiveSnippetReplacementMarker activeSnippetReplacementMarker;
 
         internal HighlightMarkerService(SnippetDesignerPackage package)
         {
             this.package = package;
             snippetReplacementMarker = new SnippetReplacementMarker();
-            activeSnippetReplacementMarker = new ActiveSnippetReplacementMarker();
         }
 
 
@@ -51,10 +40,6 @@ namespace Microsoft.SnippetDesigner
                 case PkgCmdIDList.cmdidSnippetReplacementMarker:
                     guidMarker = typeof (SnippetReplacementMarker).GUID;
                     textMarkerClient = snippetReplacementMarker;
-                    break;
-                case PkgCmdIDList.cmdidActiveSnippetReplacementMarker:
-                    guidMarker = typeof (ActiveSnippetReplacementMarker).GUID;
-                    textMarkerClient = activeSnippetReplacementMarker;
                     break;
                 default:
                     Debug.Assert(false, Resources.ErrorInvalidMarkerID);
@@ -99,11 +84,6 @@ namespace Microsoft.SnippetDesigner
             if (pguidMarker == typeof (SnippetReplacementMarker).GUID)
             {
                 ppMarkerType = snippetReplacementMarker;
-                return VSConstants.S_OK;
-            }
-            else if (pguidMarker == typeof (ActiveSnippetReplacementMarker).GUID)
-            {
-                ppMarkerType = activeSnippetReplacementMarker;
                 return VSConstants.S_OK;
             }
 

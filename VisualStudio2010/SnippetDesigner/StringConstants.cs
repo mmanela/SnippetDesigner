@@ -48,7 +48,8 @@ namespace Microsoft.SnippetDesigner
         public const string SymbolReplacement = "$";
         public const string SymbolSelected = "$selected$";
         public const string SymbolSelectedWord = "selected";
-        public const string ValidReplacementString = @"^(("".*"")|(\w+))$";
+        public const string ValidPotentialReplacementString = @"^(("".*"")|(\w+))$";
+        public const string ValidExistingReplacementString = @"^\$(("".*"")|(\w+))\$$";
         public const string VSRegistryRegistrationName = "Registration";
         public const string VSRegistryRegistrationNameEntry = "UserName";
     }

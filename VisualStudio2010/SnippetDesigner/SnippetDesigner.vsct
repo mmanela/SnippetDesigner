@@ -262,8 +262,7 @@
       <IDSymbol name="cmdidExportToSnippetCommandLine" value="0x105" />
       <IDSymbol name="cmdidSnippetRemoveReplacement" value="0x106" />
 
-      <IDSymbol name="cmdidYellowHighlightMarker" value="0x1100" />
-      <IDSymbol name="cmdidYellowHighlightMarkerWithBorder" value="0x1200" />
+      <IDSymbol name="cmdidSnippetReplacementMarker" value="0x1100" />
 
     </GuidSymbol>
 

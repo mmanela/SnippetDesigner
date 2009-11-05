@@ -2,18 +2,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections;
-using System.Collections.ObjectModel;
-using System.Text;
-using System.IO;
 using System.ComponentModel;
-using System.Windows.Forms;
-using System.Windows.Forms.Design;
 using System.ComponentModel.Design;
-using Microsoft.VisualStudio.Package;
-using Microsoft.SnippetLibrary;
-using Microsoft.VisualStudio.Shell;
 using System.Drawing.Design;
+using Microsoft.SnippetLibrary;
 
 namespace Microsoft.SnippetDesigner
 {

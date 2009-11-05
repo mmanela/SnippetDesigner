@@ -1,21 +1,10 @@
 ﻿// Copyright (C) Microsoft Corporation. All rights reserved.
 
 using System;
-using System.Diagnostics;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-using System.ComponentModel.Design;
-using Microsoft.VisualStudio.Shell.Interop;
+using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio;
 
-using Microsoft.VisualStudio.OLE.Interop;
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
-using MsOle = Microsoft.VisualStudio.OLE.Interop;
 
 namespace Microsoft.SnippetDesigner.SnippetExplorer
 {

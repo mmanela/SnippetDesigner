@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices;
-using Microsoft.VisualStudio.Shell;
 using System.ComponentModel;
-using System.Drawing.Design;
-using System.Windows.Forms;
 using System.Drawing;
+using System.Runtime.InteropServices;
+using System.Windows.Forms;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.SnippetDesigner.OptionPages
 {

@@ -14,7 +14,6 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
-using MsOle = Microsoft.VisualStudio.OLE.Interop;
 
 
 namespace Microsoft.SnippetDesigner
@@ -59,7 +58,6 @@ namespace Microsoft.SnippetDesigner
     // These attributes registers the HighLightMarker service and two custom markers 
     [ProvideService(typeof (HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
     [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
-    [ProvideCustomMarker(StringConstants.ActiveSnippetReplacementMarker, 201, typeof (ActiveSnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
     //cause the package to autoload - Only when a solution exists
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
     [ProvideEditorExtension(typeof (EditorFactory), StringConstants.SnippetExtension, 70,

@@ -1,8 +1,5 @@
 using System;
-using System.Text;
-using System.Reflection;
 using System.ComponentModel;
-using System.Collections.Generic;
 
 namespace Microsoft.SnippetDesigner
 {

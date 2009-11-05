@@ -8,10 +8,10 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.SnippetDesigner.SnippetExplorer {
-    using System;
-    
-    
+namespace Microsoft.SnippetDesigner.SnippetExplorer
+{
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>

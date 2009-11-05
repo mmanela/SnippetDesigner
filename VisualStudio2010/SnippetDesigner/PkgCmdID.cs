@@ -1,7 +1,6 @@
 ﻿// Copyright (C) Microsoft Corporation. All rights reserved.
 
 // PkgCmdID.cs must match SnippetDesigner
-using System;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -23,6 +22,5 @@ namespace Microsoft.SnippetDesigner
         public const uint cmdidExportToSnippetCommandLine = 0x105;
         public const uint cmdidSnippetRemoveReplacement = 0x106;
         public const uint cmdidSnippetReplacementMarker = 0x1100;
-        public const uint cmdidActiveSnippetReplacementMarker = 0x1200;
     };
 }

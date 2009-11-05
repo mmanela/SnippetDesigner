@@ -64,8 +64,8 @@ namespace Microsoft.SnippetDesigner
         private readonly List<string> snippetImports = new List<string>();
         private readonly List<string> snippetReferences = new List<string>();
         private readonly List<SnippetType> snippetTypes = new List<SnippetType>();
-        private readonly Regex validReplacement = new Regex(StringConstants.ValidReplacementString, RegexOptions.Compiled);
-
+        public static readonly Regex ValidPotentialReplacementRegex = new Regex(StringConstants.ValidPotentialReplacementString, RegexOptions.Compiled);
+        public static readonly Regex ValidExistingReplacementRegex = new Regex(StringConstants.ValidExistingReplacementString, RegexOptions.Compiled);
 
         /// <summary>
         /// the current snippet we are working with in the snippet file
@@ -821,64 +821,65 @@ namespace Microsoft.SnippetDesigner
 
         private void ClearMarkersOfType(Guid markerGuid, int lineToClear)
         {
-            if (SnippetDesignerPackage.Instance == null)
-            {
-                return;
-            }
+            return;
+            //if (SnippetDesignerPackage.Instance == null)
+            //{
+            //    return;
+            //}
 
-            int lastLine = CodeWindow.LineCount - 1;
+            //int lastLine = CodeWindow.LineCount - 1;
 
 
-            int markerTypeID;
+            //int markerTypeID;
 
-            //get text manager service
-            IVsTextManager textManager = (IVsTextManager)SnippetDesignerPackage.Instance.GetService(typeof(SVsTextManager));
-            //get marker ID of the yellow marker
-            textManager.GetRegisteredMarkerTypeID(ref markerGuid, out markerTypeID);
+            ////get text manager service
+            //IVsTextManager textManager = (IVsTextManager)SnippetDesignerPackage.Instance.GetService(typeof(SVsTextManager));
+            ////get marker ID of the yellow marker
+            //textManager.GetRegisteredMarkerTypeID(ref markerGuid, out markerTypeID);
 
-            IVsEnumLineMarkers markerEnum;
-            //get enum of all yellow markers
-            CodeWindow.TextLines.EnumMarkers(lineToClear < 0 ? 0 : lineToClear, 0, lineToClear < 0 ? lastLine : lineToClear, CodeWindow.LineLength(lastLine), markerTypeID, 0, out markerEnum);
+            //IVsEnumLineMarkers markerEnum;
+            ////get enum of all yellow markers
+            //CodeWindow.TextLines.EnumMarkers(lineToClear < 0 ? 0 : lineToClear, 0, lineToClear < 0 ? lastLine : lineToClear, CodeWindow.LineLength(lastLine), markerTypeID, 0, out markerEnum);
 
-            int markerCount = 0;
-            markerEnum.GetCount(out markerCount);
-            IVsTextLineMarker marker;
-            //loop over each marker
-            for (int i = 0; i < markerCount; i++)
-            {
-                markerEnum.Next(out marker);
-                TextSpan[] span = new TextSpan[1];
-                marker.GetCurrentSpan(span);
-                //if this is the right line to clear or if we are clearing all lines
-                if (span[0].iStartLine == lineToClear || lineToClear < 0)
-                {
-                    //clear and tell the code window to stop keeping track of this marker
-                    marker.Invalidate();
-                    marker.UnadviseClient();
-                }
-            }
+            //int markerCount = 0;
+            //markerEnum.GetCount(out markerCount);
+            //IVsTextLineMarker marker;
+            ////loop over each marker
+            //for (int i = 0; i < markerCount; i++)
+            //{
+            //    markerEnum.Next(out marker);
+            //    TextSpan[] span = new TextSpan[1];
+            //    marker.GetCurrentSpan(span);
+            //    //if this is the right line to clear or if we are clearing all lines
+            //    if (span[0].iStartLine == lineToClear || lineToClear < 0)
+            //    {
+            //        //clear and tell the code window to stop keeping track of this marker
+            //        marker.Invalidate();
+            //        marker.UnadviseClient();
+            //    }
+            //}
         }
 
         public void MakeClickedReplacementActive()
         {
-            TextSpan currentWordSpan;
-            //see if the person clicked inside of a replacement and return its span
-            if (GetClickedOnReplacementSpan(out currentWordSpan))
-            {
-                string currentWord = CodeWindow.GetSpanText(currentWordSpan);
+            //TextSpan currentWordSpan;
+            ////see if the person clicked inside of a replacement and return its span
+            //if (GetClickedOnReplacementSpan(out currentWordSpan))
+            //{
+            //    string currentWord = CodeWindow.GetSpanText(currentWordSpan);
 
-                foreach (DataGridViewRow row in replacementGridView.Rows)
-                {
-                    if ((string)row.Cells[StringConstants.ColumnID].Value == currentWord)
-                    {
-                        replacementGridView.ClearSelection();
-                        row.Selected = true;
-                        currentlySelectedId = row.Cells[StringConstants.ColumnID].Value as string;
-                        RefreshReplacementMarkers();
-                        break;
-                    }
-                }
-            }
+            //    foreach (DataGridViewRow row in replacementGridView.Rows)
+            //    {
+            //        if ((string)row.Cells[StringConstants.ColumnID].Value == currentWord)
+            //        {
+            //            replacementGridView.ClearSelection();
+            //            row.Selected = true;
+            //            currentlySelectedId = row.Cells[StringConstants.ColumnID].Value as string;
+            //            RefreshReplacementMarkers();
+            //            break;
+            //        }
+            //    }
+            //}
         }
 
         public void ReplacementRemove()
@@ -940,7 +941,7 @@ namespace Microsoft.SnippetDesigner
 
         private bool IsValidReplaceableText(string text)
         {
-            return validReplacement.IsMatch(text);
+            return ValidPotentialReplacementRegex.IsMatch(text);
         }
 
         private bool CreateReplacement(string textToChange)
@@ -1041,18 +1042,7 @@ namespace Microsoft.SnippetDesigner
                                 replacementMarkerSpan.iStartIndex = index;
                                 replacementMarkerSpan.iEndIndex = nextIndex + 1;
 
-                                KindOfMarker markerType;
-                                //determine if this is the active replacement
-                                //and chosoe the right marker
-                                if (CurrentlySelectedId != null && CurrentlySelectedId == textBetween)
-                                {
-                                    markerType = KindOfMarker.ActiveSnippetReplacement;
-                                }
-                                else
-                                {
-                                    markerType = KindOfMarker.SnippetReplacement;
-                                }
-                                CodeWindow.HighlightSpan(replacementMarkerSpan, markerType); //mark this span with the desired color marker
+                                CodeWindow.HighlightSpan(replacementMarkerSpan); //mark this span with the desired color marker
                                 index = nextIndex; //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
                             }
                             else
