@@ -9,6 +9,8 @@ using Microsoft.SnippetLibrary;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.TextManager.Interop;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
+using Microsoft.VisualStudio.Text;
+using System.Linq;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -27,7 +29,7 @@ namespace Microsoft.SnippetDesigner
         //Snippy Library Access Code
         private SnippetFile snippetFile; //represents an instance of this snippet application
         private int snippetIndex; // index of the snippet in the snippetFile
-   
+
         //if the user typed a single character then store it here so we know what it is
         //otherwise its null
         protected string lastCharacterEntered;
@@ -436,7 +438,7 @@ namespace Microsoft.SnippetDesigner
 
                 //set this snippet as the active snippet
                 ActiveSnippet = snippetFile.Snippets[snippetIndex];
-                
+
                 //populate the gui with this snippets information
                 PullFieldsFromActiveSnippet();
                 //indicate that this snippet is not dirty
@@ -817,7 +819,7 @@ namespace Microsoft.SnippetDesigner
 
         public void MakeClickedReplacementActive()
         {
-            TextSpan currentWordSpan;
+            SnapshotSpan currentWordSpan;
             //see if the person clicked inside of a replacement and return its span
             if (GetClickedOnReplacementSpan(out currentWordSpan))
             {
@@ -838,10 +840,10 @@ namespace Microsoft.SnippetDesigner
 
         public void ReplacementRemove()
         {
-            TextSpan currentWordSpan;
+            SnapshotSpan currentWordSpan;
             if (GetClickedOnReplacementSpan(out currentWordSpan))
             {
-                string currentWord = CodeWindow.GetSpanText(currentWordSpan);
+                string currentWord = currentWordSpan.GetText();
                 ReplacementRemove(currentWord);
             }
         }
@@ -887,9 +889,8 @@ namespace Microsoft.SnippetDesigner
             }
             else if (CreateReplacement(selectedText) && selectionLength > 0)
             {
-                // If replacement succeeded we must make the selction larger to match the added characters
-                selection.iEndIndex += StringConstants.SymbolReplacement.Length * 2;
-                CodeWindow.Selection = selection;
+                var newSnapshot = selection.Snapshot.TextBuffer.CurrentSnapshot;
+                CodeWindow.Selection = new SnapshotSpan(newSnapshot, new Span(selection.Start.Position, selection.End.Position + (StringConstants.SymbolReplacement.Length * 2)));
             }
         }
 
@@ -996,7 +997,7 @@ namespace Microsoft.SnippetDesigner
                                 replacementMarkerSpan.iStartIndex = index;
                                 replacementMarkerSpan.iEndIndex = nextIndex + 1;
 
-                                CodeWindow.HighlightSpan(replacementMarkerSpan); //mark this span with the desired color marker
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!  // FIX THIS CodeWindow.HighlightSpan(replacementMarkerSpan); //mark this span with the desired color marker
                                 index = nextIndex; //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
                             }
                             else
@@ -1031,42 +1032,31 @@ namespace Microsoft.SnippetDesigner
 
         private int ReplaceAll(string currentWord, string newWord, bool replacementAware)
         {
-            TextSpan span;
-            TextPoint nextPoint = new TextPoint();
-            int numberReplaced = 0;
-            //search through every string we can replace
-            while (FindNextReplaceableString(currentWord, nextPoint, out span))
-            {
-                //calculate the difference in word length
-                int differenceInWordLength = newWord.Length - currentWord.Length;
 
-                nextPoint.Line = span.iEndLine;
-                nextPoint.Index = span.iEndIndex + differenceInWordLength;
+            var textview = CodeWindow.TextView;
+            int numberReplaced = 0;
+
+            var textEdit = textview.TextBuffer.CreateEdit();
+            foreach (var replaceableSpan in GetReplaceableSpans(textview.TextBuffer.CurrentSnapshot, currentWord))
+            {
 
                 //replace the span with the given text
-                if (ReplaceSpanWithText(newWord, span, replacementAware))
+                if (ReplaceSpanWithText(textEdit, newWord, replaceableSpan, replacementAware))
                 {
                     numberReplaced++;
-                    nextPoint.Index++;
                 }
             }
+            textEdit.Apply();
             return numberReplaced;
         }
 
-        private bool ReplaceSpanWithText(string newWord, TextSpan replaceSpan, bool replacementAware)
+        private bool ReplaceSpanWithText(ITextEdit textEdit, string newWord, SnapshotSpan replaceSpan, bool replacementAware)
         {
-            IVsTextView textView = CodeWindow.TextView;
             try
             {
-                //either we arent marking this as a replacement so just replace the text
-                //or we are marking it as a replacement so we need to make sure its not a reaplcement marker already
-                if ((replacementAware && !IsSpanReplacement(replaceSpan)) || !replacementAware) //are we creating a replacement marker
+                if ((replacementAware && !IsSpanReplacement(replaceSpan)) || !replacementAware)
                 {
-                    textView.ReplaceTextOnLine(replaceSpan.iStartLine,
-                                               replaceSpan.iStartIndex,
-                                               (replaceSpan.iEndIndex - replaceSpan.iStartIndex),
-                                               newWord,
-                                               newWord.Length);
+                    textEdit.Replace(replaceSpan.Span, newWord);
 
                     return true;
                 }
@@ -1079,28 +1069,28 @@ namespace Microsoft.SnippetDesigner
             return false;
         }
 
-        private bool FindEnclosingReplacementQuoteSpan(TextSpan span, out TextSpan quoteSpan)
+        private bool FindEnclosingReplacementQuoteSpan(SnapshotSpan span, out SnapshotSpan quoteSpan)
         {
-            int line = span.iStartLine;
-            int lineLength = CodeWindow.LineLength(line);
-            int left = span.iStartIndex - 1;
-            int right = span.iEndIndex;
-            quoteSpan = new TextSpan();
-            while (left >= 0 && CodeWindow.GetCharacterAtPosition(new TextPoint(line, left)) != StringConstants.DoubleQuoteString)
+            var lineSnapshot = span.Snapshot.GetLineFromPosition(span.Start.Position);
+
+            int left = span.Start.Position - 1;
+            int right = span.End.Position;
+            var text = span.Snapshot.GetText();
+            quoteSpan = new SnapshotSpan();
+            while (left >= lineSnapshot.Start.Position && text[left].ToString() != StringConstants.DoubleQuoteString)
             {
                 left--;
             }
-            while (right < lineLength && CodeWindow.GetCharacterAtPosition(new TextPoint(line, right)) != StringConstants.DoubleQuoteString)
+            while (right < lineSnapshot.End.Position && text[right].ToString() != StringConstants.DoubleQuoteString)
             {
                 right++;
             }
-            if (right >= lineLength || left < 0)
+            if (right >= lineSnapshot.End.Position || left < lineSnapshot.Start.Position)
             {
                 return false; //we didnt find a quoted replacement string
             }
-            quoteSpan.iStartLine = quoteSpan.iEndLine = line;
-            quoteSpan.iStartIndex = left;
-            quoteSpan.iEndIndex = right + 1; //the end character should be exclusive not inclusive
+
+            quoteSpan = new SnapshotSpan(span.Snapshot, new Span(left, right + 1 - left));
 
             //is this span surrounded by the replcement markers
             if (!IsSpanReplacement(quoteSpan))
@@ -1112,12 +1102,14 @@ namespace Microsoft.SnippetDesigner
             return true;
         }
 
-        private bool GetClickedOnReplacementSpan(out TextSpan replacementSpan)
+        private bool GetClickedOnReplacementSpan(out SnapshotSpan replacementSpan)
         {
-            replacementSpan = CodeWindow.GetWordTextSpanFromCurrentPosition();
-            TextSpan currentWordSpan = replacementSpan;
+            var textView = CodeWindow.TextView;
 
-            string currentWord = CodeWindow.GetSpanText(replacementSpan);
+            replacementSpan = CodeWindow.GetWordTextSpanFromCurrentPosition();
+            var currentWordSpan = replacementSpan;
+
+            string currentWord = currentWordSpan.GetText();
 
             if (String.IsNullOrEmpty(currentWord)) //you might have selected more than a word, so use what you selected
             {
@@ -1139,89 +1131,86 @@ namespace Microsoft.SnippetDesigner
             return true;
         }
 
-        private bool IsSpanReplacement(TextSpan replaceSpan)
+        private bool IsSpanReplacement(SnapshotSpan replaceSpan)
         {
-            int length = CodeWindow.LineLength(replaceSpan.iEndLine);
-            //make sure there is room for this replacement
-            if (replaceSpan.iStartIndex >= 0 && replaceSpan.iEndIndex <= length && (replaceSpan.iEndIndex - replaceSpan.iStartIndex) >= 1)
+            var spanText = replaceSpan.GetText();
+            if (string.IsNullOrEmpty(spanText))
+                return false;
+            var firstChar = spanText[0];
+            var lastChar = spanText[spanText.Length - 1];
+
+            //check the first and last characters of the span to see if they are the replacement symbols
+            if (firstChar.ToString() == StringConstants.SymbolReplacement &&
+                lastChar.ToString() == StringConstants.SymbolReplacement
+                )
             {
-                //see if replacement symbols surround this span
-                if (CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iStartLine, replaceSpan.iStartIndex - 1)) == StringConstants.SymbolReplacement &&
-                    CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iEndLine, replaceSpan.iEndIndex)) == StringConstants.SymbolReplacement
-                    )
-                {
-                    return true;
-                }
-                //check the first and last characters of the span to see if they are the replacement symbols
-                if (CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iStartLine, replaceSpan.iStartIndex)) == StringConstants.SymbolReplacement &&
-                    CodeWindow.GetCharacterAtPosition(new TextPoint(replaceSpan.iEndLine, replaceSpan.iEndIndex - 1)) == StringConstants.SymbolReplacement
+                return true;
+            }
+
+            //see if replacement symbols surround this span
+            if (replaceSpan.Span.Start - 1 >= 0 && replaceSpan.Span.End < replaceSpan.Snapshot.Length)
+            {
+                var beforeFirstChar = replaceSpan.Snapshot[replaceSpan.Span.Start - 1];
+                var afterLastChar = replaceSpan.Snapshot[replaceSpan.Span.End];
+
+                if (beforeFirstChar.ToString() == StringConstants.SymbolReplacement &&
+                    afterLastChar.ToString() == StringConstants.SymbolReplacement
                     )
                 {
                     return true;
                 }
             }
+
+
             return false;
         }
 
-        private bool FindNextReplaceableString(string textToFind, TextPoint startPositon, out TextSpan returnSpan)
+        private IEnumerable<SnapshotSpan> GetReplaceableSpans(ITextSnapshot textSnapshot, string textToFind)
         {
-            int lastLine = CodeWindow.LineCount - 1;
-            TextPoint endPositon = new TextPoint(lastLine, CodeWindow.LineLength(lastLine));
-
-            if (startPositon == null || textToFind == null)
+            var textView = CodeWindow.TextView;
+            var text = textSnapshot.GetText();
+            int start = 0;
+            while ((start = text.IndexOf(textToFind, start)) != -1)
             {
-                returnSpan = new TextSpan();
-                return false;
+                var end = start + textToFind.Length;
+                if((start-1 < 0 || !CodeWindow.IsWordChar(text[start-1])) && (end >= text.Length || !CodeWindow.IsWordChar(text[end])))
+                    yield return new SnapshotSpan(textSnapshot, start, textToFind.Length);
+                start += textToFind.Length;
             }
 
-            IVsTextLines textLines = CodeWindow.TextLines;
+            ////loop through all the lines we are searching
+            //foreach (var line in textSnapshot.Lines.Skip(startPositon.Line))
+            //{
+            //    var lineText = line.GetText();
+            //    var lineLength = line.Length;
+            //    int position = startPositon.Index;
+            //    int index = -1;
+            //    //find the next index where textToFind appears starting from position
+            //    while (position < lineLength && ((index = lineText.IndexOf(textToFind, position)) > -1))
+            //    {
+            //        //only three items are valid replaceable strings
+            //        //1. a word which is [A-Za-z0-9_]+
+            //        //2. if the string begins and ends with the replacement symbol then we are replacing a replacement
+            //        //3. if the string beings and ends with quotes then this is a quote string we are replacing
 
-            int lineLength;
-            string lineText;
-            returnSpan = new TextSpan();
-            //loop through all the lines we are searching
-            for (int line = startPositon.Line; line <= endPositon.Line; line++)
-            {
-                if (line == endPositon.Line)
-                {
-                    //if this is the last line then get the correct end index
-                    lineLength = endPositon.Index;
-                }
-                else
-                {
-                    //if this isnt the last line then the line length is the end index
-                    lineLength = CodeWindow.LineLength(line);
-                }
-                //retrieve all the text on this line as a string
-                textLines.GetLineText(line, 0, line, lineLength, out lineText);
-
-                int position = startPositon.Index; //initialize the start position
-                int index = -1;
-                //find the next index where textToFind appears starting from position
-                while (position < lineLength && ((index = lineText.IndexOf(textToFind, position)) > -1))
-                {
-                    //only three items are valid replaceable strings
-                    //1. a word which is [A-Za-z0-9_]+
-                    //2. if the string begins and ends with the replacement symbol then we are replacing a replacement
-                    //3. if the string beings and ends with quotes then this is a quote string we are replacing
-                    if (CodeWindow.GetWordFromPosition(new TextPoint(line, index)) == textToFind ||
-                        //or is this the text we are looking for 
-                        textToFind[0] == StringConstants.SymbolReplacement[0] && textToFind[textToFind.Length - 1] == StringConstants.SymbolReplacement[0] ||
-                        textToFind[0] == StringConstants.DoubleQuoteString[0] && textToFind[textToFind.Length - 1] == StringConstants.DoubleQuoteString[0]
-                        )
-                    {
-                        //update the span to reflect what text we found
-                        returnSpan.iStartIndex = index;
-                        returnSpan.iStartLine = line;
-                        returnSpan.iEndIndex = index + textToFind.Length;
-                        returnSpan.iEndLine = line;
-                        return true;
-                    }
-                    position += textToFind.Length + index; //move to the next position and repeat the loop
-                }
-                startPositon.Index = 0; //only offset from first line
-            }
-            return false;
+            //        if (CodeWindow.GetWordFromPosition(new TextPoint(line, index)) == textToFind ||
+            //            //or is this the text we are looking for 
+            //            textToFind[0] == StringConstants.SymbolReplacement[0] && textToFind[textToFind.Length - 1] == StringConstants.SymbolReplacement[0] ||
+            //            textToFind[0] == StringConstants.DoubleQuoteString[0] && textToFind[textToFind.Length - 1] == StringConstants.DoubleQuoteString[0]
+            //            )
+            //        {
+            //            //update the span to reflect what text we found
+            //            returnSpan.iStartIndex = index;
+            //            returnSpan.iStartLine = line;
+            //            returnSpan.iEndIndex = index + textToFind.Length;
+            //            returnSpan.iEndLine = line;
+            //            return true;
+            //        }
+            //        position += textToFind.Length + index; //move to the next position and repeat the loop
+            //    }
+            //    startPositon.Index = 0; //only offset from first line
+            //}
+            //return false;
         }
 
         private void mainObjectsRepaiont_Paint(object sender, PaintEventArgs e)

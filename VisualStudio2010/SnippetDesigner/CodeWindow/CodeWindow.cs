@@ -6,6 +6,11 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
+using Microsoft.VisualStudio.Editor;
+using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Editor;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -26,8 +31,29 @@ namespace Microsoft.SnippetDesigner
         private IConnectionPoint textViewEventsConnectionPoint;
         private IConnectionPoint textLinesEventsConnectionPoint;
         private bool IsTextInitialized;
-
+        private IComponentModel componentModel;
         public IVsCodeWindow VsCodeWindow { get; private set; }
+        private IVsEditorAdaptersFactoryService editorAdapterFactoryService;
+
+
+        /// <summary>
+        /// Constructor for the code window which is a user snippetExplorerForm that hosts a vscodewindow
+        /// </summary>
+        public CodeWindow()
+        {
+            InitializeComponent();
+
+            //add the languages we support to a has that maps a display name of a language to its guid
+            langServ.Add(Resources.DisplayNameVisualBasic, GuidList.vbSnippetLanguageService);
+            langServ.Add(Resources.DisplayNameCSharp, GuidList.csharpSnippetLanguageService);
+            langServ.Add(Resources.DisplayNameXML, GuidList.xmlSnippetLanguageService);
+
+            //default to text
+            defaultLanguage = GuidList.textLangSvc;
+
+            editorAdapterFactoryService = ComponentModel.GetService<IVsEditorAdaptersFactoryService>();
+        }
+
 
         public Dictionary<string, Guid> LangServices
         {
@@ -112,6 +138,29 @@ namespace Microsoft.SnippetDesigner
         }
 
 
+        internal IComponentModel ComponentModel
+        {
+            get
+            {
+                if (componentModel == null)
+                {
+
+                    componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+                }
+                return componentModel;
+
+            }
+        }
+
+        internal ITextBuffer TextBuffer
+        {
+            get
+            {
+                return TextView.TextBuffer;
+
+            }
+        }
+
         /// <summary>
         /// The TextLines interface of the codewindows textbuffer
         /// </summary>
@@ -133,10 +182,22 @@ namespace Microsoft.SnippetDesigner
             set { vsTextBuffer = value; }
         }
 
+        internal ITextView TextView
+        {
+            get
+            {
+                if (VsCodeWindow != null)
+                {
+                    return editorAdapterFactoryService.GetWpfTextView(OldTextView);
+                }
+                return null;
+            }
+        }
+
         /// <summary>
         /// the primary view for the code window
         /// </summary>
-        internal IVsTextView TextView
+        internal IVsTextView OldTextView
         {
             get
             {
@@ -187,21 +248,6 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        /// <summary>
-        /// Constructor for the code window which is a user snippetExplorerForm that hosts a vscodewindow
-        /// </summary>
-        public CodeWindow()
-        {
-            InitializeComponent();
-
-            //add the languages we support to a has that maps a display name of a language to its guid
-            langServ.Add(Resources.DisplayNameVisualBasic, GuidList.vbSnippetLanguageService);
-            langServ.Add(Resources.DisplayNameCSharp, GuidList.csharpSnippetLanguageService);
-            langServ.Add(Resources.DisplayNameXML, GuidList.xmlSnippetLanguageService);
-
-            //default to text
-            defaultLanguage = GuidList.textLangSvc;
-        }
 
         /// <summary> 
         /// Clean up any resources being used.
@@ -362,7 +408,7 @@ namespace Microsoft.SnippetDesigner
             hr = vsWindowPane.CreatePaneWindow(Handle, 0, 0, Parent.Size.Width, Parent.Size.Height, out hWndCodeWindow);
 
             //get the textview object
-            IVsTextView vsTextView = TextView;
+            IVsTextView vsTextView = OldTextView;
 
 
             //we are only getting events if the codewindowhost is the snippet editor
@@ -440,23 +486,16 @@ namespace Microsoft.SnippetDesigner
         /// gets or sets the selection text span
         /// </summary>
         /// <returns>selected text</returns>
-        internal TextSpan Selection
+        internal SnapshotSpan Selection
         {
             get
             {
-                if (TextView != null)
-                {
-                    TextSpan[] selSpan = new TextSpan[1];
-                    TextView.GetSelectionSpan(selSpan);
-                    return selSpan[0];
-                }
-                else
-                {
-                    TextSpan empty = new TextSpan();
-                    return empty;
-                }
+                return TextView.Selection.SelectedSpans[0];
             }
-            set { TextView.SetSelection(value.iStartLine, value.iStartIndex, value.iEndLine, value.iEndIndex); }
+            set
+            {
+                TextView.Selection.Select(value, false);
+            }
         }
 
         /// <summary>
@@ -467,10 +506,10 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                if (TextView != null)
+                if (OldTextView != null)
                 {
                     string selectedText = String.Empty;
-                    TextView.GetSelectedText(out selectedText);
+                    OldTextView.GetSelectedText(out selectedText);
                     return selectedText;
                 }
                 else
@@ -499,7 +538,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        public void HighlightSpan(TextSpan span)
+        public void HighlightSpan(SnapshotSpan span)
         {
             //if (SnippetDesignerPackage.Instance == null)
             //{
@@ -510,11 +549,9 @@ namespace Microsoft.SnippetDesigner
 
         }
 
-        public string GetSpanText(TextSpan span)
+        public string GetSpanText(SnapshotSpan span)
         {
-            string word;
-            TextLines.GetLineText(span.iStartLine, span.iStartIndex, span.iEndLine, span.iEndIndex, out word);
-            return word;
+            return span.GetText();
         }
 
         public string GetCharacterAtPosition(TextPoint positon)
@@ -525,50 +562,62 @@ namespace Microsoft.SnippetDesigner
             return charAtPos;
         }
 
-        public TextSpan GetWordTextSpanFromCurrentPosition()
+        public SnapshotSpan GetWordTextSpanFromCurrentPosition()
         {
-            int line;
-            int column;
-            TextView.GetCaretPos(out line, out column);
-            return GetWordTextSpanFromPosition(new TextPoint(line, column));
+
+            return GetWordSpanFromPosition(TextView.Caret.Position.BufferPosition);
         }
 
         public string GetWordFromCurrentPosition()
         {
-            int line;
-            int column;
-            TextView.GetCaretPos(out line, out column);
-            return GetWordFromPosition(new TextPoint(line, column));
+
+            return GetWordFromPosition(TextView.Caret.Position.BufferPosition);
         }
 
-        public string GetWordFromPosition(TextPoint positon)
+        public string GetWordFromPosition(SnapshotPoint positon)
         {
-            IVsTextLines textLines = TextLines;
-            IVsTextView textView = TextView;
 
-            TextSpan[] span = new TextSpan[1];
-            textView.GetWordExtent(positon.Line, positon.Index, 0, span);
-            string wordAtPos;
-            textLines.GetLineText(span[0].iStartLine,
-                                  span[0].iStartIndex,
-                                  span[0].iEndLine,
-                                  span[0].iEndIndex,
-                                  out wordAtPos);
-            return wordAtPos;
+
+            var span = GetWordSpanFromPosition(positon);
+
+            return span.GetText();
         }
 
-        public TextSpan GetWordTextSpanFromPosition(TextPoint positon)
+        private SnapshotSpan GetWordSpanFromPosition(SnapshotPoint positon)
         {
-            if (positon == null)
-                return new TextSpan();
+            if(positon.Position >= positon.Snapshot.Length)
+                return new SnapshotSpan(positon, 0);
 
-            IVsTextView textView = TextView;
-            TextSpan[] span = new TextSpan[1];
+            var charAtPos = positon.GetChar();
+            var text = positon.Snapshot.GetText();
+            var lineSnapshot = positon.Snapshot.GetLineFromPosition(positon);
+            int left, right;
+            left = right = positon.Position;
 
-            int length;
-            TextLines.GetLengthOfLine(positon.Line, out length);
-            textView.GetWordExtent(positon.Line, Math.Min(positon.Index, length - 1), 0, span);
-            return span[0];
+            if (IsWordChar(charAtPos))
+            {
+
+                while (left - 1 >= lineSnapshot.Start.Position && IsWordChar(text[left - 1]))
+                {
+                    left--;
+                }
+                while (right + 1 < lineSnapshot.End.Position && IsWordChar(text[right + 1]))
+                {
+                    right++;
+                }
+
+                return new SnapshotSpan(positon.Snapshot, left, right + 1 - left);
+
+            }
+            else
+            {
+                return new SnapshotSpan(positon, 1);
+            }
+        }
+
+        public static bool IsWordChar(char c)
+        {
+            return char.IsLetterOrDigit(c) || c == '_';
         }
     }
 }

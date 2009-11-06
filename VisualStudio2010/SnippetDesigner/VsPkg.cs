@@ -14,6 +14,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using Microsoft.VisualStudio.ComponentModelHost;
 
 
 namespace Microsoft.SnippetDesigner
@@ -223,7 +224,6 @@ namespace Microsoft.SnippetDesigner
                 return registeredName;
             }
         }
-
 
         public new Object GetService(Type serviceType)
         {

@@ -295,7 +295,7 @@ namespace Microsoft.SnippetDesigner
         {
             CommandFilter filter = new CommandFilter(this);
             IOleCommandTarget originalFilter;
-            ErrorHandler.ThrowOnFailure(CodeWindow.TextView.AddCommandFilter(filter, out originalFilter));
+            ErrorHandler.ThrowOnFailure(CodeWindow.OldTextView.AddCommandFilter(filter, out originalFilter));
             filter.Init(originalFilter);
         }
 
@@ -321,7 +321,7 @@ namespace Microsoft.SnippetDesigner
             // Show the menu.
             Guid menuGuid = GuidList.SnippetDesignerCmdSet;
             //tell the ui shell to show the context menu
-            uiShell.ShowContextMenu(0, ref menuGuid, (int)PkgCmdIDList.SnippetContextMenu, pnts, snippetCodeWindow.TextView as IOleCommandTarget);
+            uiShell.ShowContextMenu(0, ref menuGuid, (int)PkgCmdIDList.SnippetContextMenu, pnts, snippetCodeWindow.OldTextView as IOleCommandTarget);
         }
 
         /// <summary>
