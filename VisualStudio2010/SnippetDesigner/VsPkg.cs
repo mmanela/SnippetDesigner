@@ -15,6 +15,8 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.Text.Tagging;
+using Microsoft.VisualStudio.Text.Editor;
 
 
 namespace Microsoft.SnippetDesigner
@@ -314,7 +316,17 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal TextDocument CurrentTextDocument
         {
-            get { return GetTextDocumentFromWindow(DTE.ActiveWindow); }
+            get {
+                try
+                {
+                    return GetTextDocumentFromWindow(DTE.ActiveWindow);
+                }
+                catch (Exception e)
+                {
+                    Logger.Log("Error getting active window", "VsPkg", e);
+                    return null;
+                }
+            }
         }
 
         internal TextDocument GetTextDocumentFromWindow(Window window)
@@ -462,6 +474,11 @@ namespace Microsoft.SnippetDesigner
                 MarkerService = new HighlightMarkerService(this);
                 ((IServiceContainer) this).AddService(MarkerService.GetType(), MarkerService, true);
 
+
+                //var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+              //  var taggerProviders = componentModel.GetExtensions<IViewTaggerProvider>();
+               // var adorners = componentModel.GetExtensions<IWpfTextViewCreationListener>();
+                //var services = componentModel.GetService<IViewTaggerProvider>();
                 //initialize the snippet index
                 SnippetIndex = new SnippetIndex();
                 ThreadPool.QueueUserWorkItem(

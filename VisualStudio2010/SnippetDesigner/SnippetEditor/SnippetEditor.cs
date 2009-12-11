@@ -456,7 +456,7 @@ namespace Microsoft.SnippetDesigner
                 }
                 isDirty = false;
                 IsFormDirty = false;
-                IVsTextBuffer buffer = (IVsTextBuffer)snippetCodeWindow.TextLines;
+                IVsTextBuffer buffer = (IVsTextBuffer)snippetCodeWindow.OldTextLines;
                 buffer.SetStateFlags(0);
             }
 
@@ -946,7 +946,7 @@ namespace Microsoft.SnippetDesigner
                 isDirty = false; //the file is not dirty since we just loaded it
                 //clear the buffer dirty flag, this stops the * from appearing after we load
                 //it doesnt make sense to call a file dirty when you first load it 
-                IVsTextBuffer buffer = (IVsTextBuffer)snippetCodeWindow.TextLines;
+                IVsTextBuffer buffer = (IVsTextBuffer)snippetCodeWindow.OldTextLines;
                 buffer.SetStateFlags(0);
 
 
@@ -979,7 +979,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.IsDirty(out int dirty)
         {
-            IVsPersistDocData bufferDoc = (IVsPersistDocData)snippetCodeWindow.TextLines;
+            IVsPersistDocData bufferDoc = (IVsPersistDocData)snippetCodeWindow.OldTextLines;
             int codeWindowDirty = 0;
             bufferDoc.IsDocDataDirty(out codeWindowDirty);
 
@@ -1157,7 +1157,7 @@ namespace Microsoft.SnippetDesigner
         int IVsPersistDocData.LoadDocData(string fileToLoad)
         {
             //set the buffer moniker
-            IVsUserData udata = (IVsUserData)CodeWindow.TextLines;
+            IVsUserData udata = (IVsUserData)CodeWindow.OldTextLines;
             //generate random gui
             string uniqueMoniker = Guid.NewGuid().ToString();
             //guid for buffer moniker property

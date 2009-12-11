@@ -11,6 +11,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.VisualStudio.Text;
 using System.Linq;
+using SnippetDesignerComponents;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -64,6 +65,17 @@ namespace Microsoft.SnippetDesigner
         private readonly List<SnippetType> snippetTypes = new List<SnippetType>();
         public static readonly Regex ValidPotentialReplacementRegex = new Regex(StringConstants.ValidPotentialReplacementString, RegexOptions.Compiled);
         public static readonly Regex ValidExistingReplacementRegex = new Regex(StringConstants.ValidExistingReplacementString, RegexOptions.Compiled);
+
+
+        protected override void OnLoad(EventArgs e)
+        {
+            this.CodeWindow.OnTextViewCreated += new EventHandler(CodeWindow_OnTextViewCreated);
+        }
+
+        void CodeWindow_OnTextViewCreated(object sender, EventArgs e)
+        {
+            UpdateTaggerReplacementList();
+        }
 
         /// <summary>
         /// the current snippet we are working with in the snippet file
@@ -371,6 +383,7 @@ namespace Microsoft.SnippetDesigner
                     {
                         SetOrDisableTypeField(false, rowIndex);
                     }
+                    UpdateTaggerReplacementList();
                 }
             }
         }
@@ -483,6 +496,9 @@ namespace Microsoft.SnippetDesigner
             }
 
 
+            //literals and objects
+            SnippetReplacements = ActiveSnippet.Literals;
+
             //code - for some unknown reason this must be done before language is set to stop some inconsitency
             //including highlighting and color coding 
             SnippetCode = ActiveSnippet.Code;
@@ -497,8 +513,7 @@ namespace Microsoft.SnippetDesigner
 
             SnippetReferences = ActiveSnippet.References;
 
-            //literals and objects
-            SnippetReplacements = ActiveSnippet.Literals;
+
         }
 
 
@@ -719,6 +734,8 @@ namespace Microsoft.SnippetDesigner
                             string oldReplacement = TurnTextIntoReplacementSymbol(previousIDValue);
 
 
+                            UpdateTaggerReplacementList();
+
                             //replace all occurances of the oldReplacement with newReplacement
                             //set false so it allows us to overdie existing replacements
                             ReplaceAll(oldReplacement, newReplacement, false);
@@ -797,7 +814,7 @@ namespace Microsoft.SnippetDesigner
             return StringConstants.SymbolReplacement + text + StringConstants.SymbolReplacement;
         }
 
-        protected void RefreshReplacementMarkers(int lineToMark)
+        private List<string> GetCurrentReplacements()
         {
             List<string> allReplacements = new List<string>();
             foreach (DataGridViewRow row in replacementGridView.Rows)
@@ -808,6 +825,19 @@ namespace Microsoft.SnippetDesigner
                     allReplacements.Add(idValue);
                 }
             }
+            return allReplacements;
+        }
+
+        private void UpdateTaggerReplacementList()
+        {
+            if(CodeWindow.TextView != null)
+                CodeWindow.TextView.Properties[SnippetReplacementTagger.ReplacementListKey] = GetCurrentReplacements();
+        }
+
+        protected void RefreshReplacementMarkers(int lineToMark)
+        {
+            var allReplacements = GetCurrentReplacements();
+            
             //search through the code window and update all replcement highlight martkers
             MarkReplacements(allReplacements, lineToMark);
         }
@@ -864,18 +894,18 @@ namespace Microsoft.SnippetDesigner
             {
                 UpdateMarkersAfterDeletedGridViewRow(rowToDelete);
                 replacementGridView.Rows.Remove(rowToDelete);
+                UpdateTaggerReplacementList();
             }
         }
 
         public void CreateReplacementFromSelection()
         {
             string selectedText;
-            var selection = CodeWindow.Selection;
-            var selectionLength = CodeWindow.SelectionLength;
+            var selectionLength = CodeWindow.Selection.Length;
             if (selectionLength > 0)
             {
                 //trim any replacement symbols or spaces
-                selectedText = CodeWindow.SelectedText.Trim();
+                selectedText = CodeWindow.Selection.GetText().Trim();
             }
             else
             {
@@ -889,8 +919,8 @@ namespace Microsoft.SnippetDesigner
             }
             else if (CreateReplacement(selectedText) && selectionLength > 0)
             {
-                var newSnapshot = selection.Snapshot.TextBuffer.CurrentSnapshot;
-                CodeWindow.Selection = new SnapshotSpan(newSnapshot, new Span(selection.Start.Position, selection.End.Position + (StringConstants.SymbolReplacement.Length * 2)));
+                var newSnapshot = CodeWindow.Selection.Snapshot.TextBuffer.CurrentSnapshot;
+               // CodeWindow.Selection = new SnapshotSpan(newSnapshot, new Span(CodeWindow.Selection.Start.Position, CodeWindow.Selection.End.Position + (StringConstants.SymbolReplacement.Length * 2)));
             }
         }
 
@@ -901,8 +931,6 @@ namespace Microsoft.SnippetDesigner
 
         private bool CreateReplacement(string textToChange)
         {
-
-
             //check if replacement exists already
             bool existsAlready = false;
             foreach (DataGridViewRow row in replacementGridView.Rows)
@@ -922,6 +950,7 @@ namespace Microsoft.SnippetDesigner
                 object[] newRow = { textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true };
                 int rowIndex = replacementGridView.Rows.Add(newRow);
                 SetOrDisableTypeField(false, rowIndex);
+                UpdateTaggerReplacementList();
             }
 
             //replace all occurances of the textToFind with $textToFind$
@@ -983,21 +1012,12 @@ namespace Microsoft.SnippetDesigner
                         if (nextIndex < lineLength) //we found another SymbolReplacement
                         {
                             //create text span for the space between the two SnippetDesigner.StringConstants.ReplacementSymbols
-                            string textBetween;
-
                             //make sure text between the $ symbols matches replaceID
-                            CodeWindow.TextLines.GetLineText(line, index + 1, line, nextIndex, out textBetween);
+                            var lineText = CodeWindow.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(line).GetText();
+                            string textBetween = lineText.Substring(index + 1, nextIndex - (index + 1 ));
+                           
                             if (replaceIDs.Contains(textBetween))
                             {
-                                //this replacement exists already so mark
-
-                                //create span that we will mark
-                                TextSpan replacementMarkerSpan;
-                                replacementMarkerSpan.iStartLine = replacementMarkerSpan.iEndLine = line;
-                                replacementMarkerSpan.iStartIndex = index;
-                                replacementMarkerSpan.iEndIndex = nextIndex + 1;
-
-      //!!!!!!!!!!!!!!!!!!!!!!!!!!!  // FIX THIS CodeWindow.HighlightSpan(replacementMarkerSpan); //mark this span with the desired color marker
                                 index = nextIndex; //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
                             }
                             else
@@ -1173,7 +1193,7 @@ namespace Microsoft.SnippetDesigner
             while ((start = text.IndexOf(textToFind, start)) != -1)
             {
                 var end = start + textToFind.Length;
-                if((start-1 < 0 || !CodeWindow.IsWordChar(text[start-1])) && (end >= text.Length || !CodeWindow.IsWordChar(text[end])))
+                if ((start - 1 < 0 || !CodeWindow.IsWordChar(text[start - 1])) && (end >= text.Length || !CodeWindow.IsWordChar(text[end])))
                     yield return new SnapshotSpan(textSnapshot, start, textToFind.Length);
                 start += textToFind.Length;
             }

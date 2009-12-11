@@ -20,5 +20,6 @@
   <References />
   <Content>
     <VsPackage>|SnippetDesigner;PkgdefProjectOutputGroup|</VsPackage>
+    <MefComponent>|SnippetDesignerComponents|</MefComponent>
   </Content>
 </Vsix>

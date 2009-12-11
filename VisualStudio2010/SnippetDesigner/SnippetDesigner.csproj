@@ -166,6 +166,12 @@
       <Project>{F49D29B5-63FE-4A5E-B20C-D7B785FCE9BC}</Project>
       <Name>RegistryTools</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SnippetDesignerComponents\SnippetDesignerComponents.csproj">
+      <Project>{11CE2924-DBFB-4DE5-A118-EF921195AD97}</Project>
+      <Name>SnippetDesignerComponents</Name>
+      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3b</IncludeOutputGroupsInVSIX>
+      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
+    </ProjectReference>
     <ProjectReference Include="..\SnippetLibrary\SnippetLibrary.csproj">
       <Project>{05A6F322-8297-4D9F-B91C-5B77CA1064D8}</Project>
       <Name>SnippetLibrary</Name>
