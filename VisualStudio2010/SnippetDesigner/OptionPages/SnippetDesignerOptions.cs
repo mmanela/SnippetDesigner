@@ -105,19 +105,6 @@ namespace Microsoft.SnippetDesigner.OptionPages
         }
 
         [Category("Editor")]
-        [DisplayName("Enable Snippet Language Services (Buggy)")]
-        [Description(@"This will enable the snippet language services.  
-This will provide color coding of snippets and some other language service features such as code collapsing. 
-NOTE: This is current buggy for VB and C# language services.  
-If you have a project open at the same time as the snippet language service, the snippet language service will report 'fake' errors in the error list.  
-These won't stop you from building your project but can be annoying.")]
-        public bool EnableColorization
-        {
-            get;
-            set;
-        }
-
-        [Category("Editor")]
         [Description("The default language the Snippet Editor starts in.")]
         public Language DefaultLanguage
         {

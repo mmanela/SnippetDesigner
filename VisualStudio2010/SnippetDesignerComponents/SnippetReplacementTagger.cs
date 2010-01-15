@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -13,6 +10,7 @@ using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 using Microsoft.VisualStudio.Utilities;
 using System.Text.RegularExpressions;
+using System.Windows.Threading;
 
 
 namespace SnippetDesignerComponents
@@ -23,10 +21,6 @@ namespace SnippetDesignerComponents
     [TagType(typeof(SnippetReplacementTag))]
     public class SnippetReplacementTaggerProvider : IViewTaggerProvider
     {
-        public SnippetReplacementTaggerProvider()
-        {
-        }
-
         [Import]
         internal ITextSearchService TextSearchService { get; set; }
 
@@ -46,19 +40,11 @@ namespace SnippetDesignerComponents
         }
     }
 
-    /// <summary>
-    /// Derive from TextMarkerTag, in case anyone wants to consume
-    /// just the HighlightWordTags by themselves.
-    /// </summary>
     public class SnippetReplacementTag : TextMarkerTag
     {
         public SnippetReplacementTag() : base("blue") { }
     }
 
-    /// <summary>
-    /// This tagger will provide tags for every word in the buffer that
-    /// matches the word currently under the cursor.
-    /// </summary>
     public class SnippetReplacementTagger : ITagger<SnippetReplacementTag>
     {
         public const string ReplacementListKey = "CurrentReplacements";
@@ -78,12 +64,9 @@ namespace SnippetDesignerComponents
         int ReplacementCount { get; set; }
 
 
-        public static int TaggerNumber = 0;
-
         public SnippetReplacementTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService,
                                    ITextStructureNavigator textStructureNavigator)
         {
-            TaggerNumber += 1;
             this.View = view;
             this.SourceBuffer = sourceBuffer;
             this.TextSearchService = textSearchService;
@@ -91,15 +74,13 @@ namespace SnippetDesignerComponents
 
             this.WordSpans = new NormalizedSnapshotSpanCollection();
 
-            // Subscribe to both change events in the view - any time the view is updated
-            // or the caret is moved, we refresh our list of highlighted words.
-           // this.View.Caret.PositionChanged += CaretPositionChanged;
             this.View.LayoutChanged += ViewLayoutChanged;
+        
             ThreadPool.QueueUserWorkItem(UpdateSnippetReplacementAdornments);
         }
 
 
-  
+
         void ViewLayoutChanged(object sender, TextViewLayoutChangedEventArgs e)
         {
             // If a new snapshot wasn't generated, then skip this layout
@@ -113,7 +94,12 @@ namespace SnippetDesignerComponents
         {
             try
             {
-                const string DecoratedReplacement = "${0}$";
+                const string DecoratedReplacement = @"\${0}\$";
+                for(int i = 0; i < 1000 && !View.Properties.ContainsProperty(ReplacementListKey); i++)
+                {
+                    Thread.Sleep(10);
+                }
+
                 if (!View.Properties.ContainsProperty(ReplacementListKey)) return;
 
                 List<string> currentReplacements = View.Properties[ReplacementListKey] as List<string>;
@@ -126,7 +112,7 @@ namespace SnippetDesignerComponents
 
                 foreach (var replacement in currentReplacements)
                 {
-                    var findOptions = FindOptions.WholeWord | FindOptions.MatchCase;
+                    var findOptions = FindOptions.UseRegularExpressions | FindOptions.MatchCase;
                     var findData = new FindData(string.Format(DecoratedReplacement, replacement), View.TextBuffer.CurrentSnapshot, findOptions, null);
                     wordSpans.AddRange(TextSearchService.FindAll(findData));
 
@@ -138,6 +124,8 @@ namespace SnippetDesignerComponents
             catch (ArgumentException)
             {
             }
+            catch (Exception) { }
+
         }
 
         /// <summary>
@@ -185,7 +173,7 @@ namespace SnippetDesignerComponents
                 yield return new TagSpan<SnippetReplacementTag>(span, new SnippetReplacementTag());
             }
         }
- }
+    }
 
 }
 

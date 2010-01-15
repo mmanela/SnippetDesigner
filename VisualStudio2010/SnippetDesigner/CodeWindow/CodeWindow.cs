@@ -34,7 +34,6 @@ namespace Microsoft.SnippetDesigner
         private IConnectionPoint textViewEventsConnectionPoint;
         private IConnectionPoint textLinesEventsConnectionPoint;
         private bool IsTextInitialized;
-        private IComponentModel componentModel;
         public IVsCodeWindow VsCodeWindow { get; private set; }
 
         private IVsEditorAdaptersFactoryService editorAdapterFactoryService;
@@ -56,9 +55,9 @@ namespace Microsoft.SnippetDesigner
             langServ.Add(Resources.DisplayNameCSharp, "CSharp");
             langServ.Add(Resources.DisplayNameXML, "XML");
 
-            editorAdapterFactoryService = ComponentModel.GetService<IVsEditorAdaptersFactoryService>();
-            textSearchService = ComponentModel.GetService<ITextSearchService>();
-            contentTypeService = ComponentModel.GetService<IContentTypeRegistryService>();
+            editorAdapterFactoryService = SnippetDesignerPackage.Instance.ComponentModel.GetService<IVsEditorAdaptersFactoryService>();
+            textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
+            contentTypeService = SnippetDesignerPackage.Instance.ComponentModel.GetService<IContentTypeRegistryService>();
 
 
 
@@ -82,15 +81,18 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                IVsTextLines vsTextLines = OldTextLines;
-                if (vsTextLines != null)
+             //   IVsTextLines vsTextLines = OldTextLines;
+
+                if (TextBuffer != null)
                 {
-                    string codeText = String.Empty;
-                    int numLines;
-                    int lastLineIndex;
-                    ErrorHandler.ThrowOnFailure(vsTextLines.GetLastLineIndex(out numLines, out lastLineIndex));
-                    ErrorHandler.ThrowOnFailure(vsTextLines.GetLineText(0, 0, numLines, lastLineIndex, out codeText));
-                    return codeText;
+                    //string codeText = String.Empty;
+                    //int numLines;
+                    //int lastLineIndex;
+
+                    return TextBuffer.CurrentSnapshot.GetText();
+                    //ErrorHandler.ThrowOnFailure(vsTextLines.GetLastLineIndex(out numLines, out lastLineIndex));
+                    //ErrorHandler.ThrowOnFailure(vsTextLines.GetLineText(0, 0, numLines, lastLineIndex, out codeText));
+                    //return codeText;
                 }
                 else
                 {
@@ -137,20 +139,6 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        internal IComponentModel ComponentModel
-        {
-            get
-            {
-                if (componentModel == null)
-                {
-
-                    componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
-                }
-                return componentModel;
-
-            }
-        }
-
         internal ITextView TextView
         {
             get
@@ -167,6 +155,7 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
+                if (TextView == null) return null;
                 return TextView.TextBuffer;
 
             }
@@ -310,18 +299,18 @@ namespace Microsoft.SnippetDesigner
         /// <param name="lang"></param>
         public void SetLanguageService(string lang)
         {
-            if (TextView != null)
-            {
-                string contentTypeName = "code";
+            //if (TextView != null)
+            //{
+            //    string contentTypeName = "code";
 
-                if (langServ.ContainsKey(lang))
-                {
-                    contentTypeName = langServ[lang];
-                }
+            //    if (langServ.ContainsKey(lang))
+            //    {
+            //        contentTypeName = langServ[lang];
+            //    }
 
-                var contentType = contentTypeService.GetContentType(contentTypeName);
-                TextView.TextBuffer.ChangeContentType(contentType, new object());
-            }
+            //    var contentType = contentTypeService.GetContentType(contentTypeName);
+            //    TextView.TextBuffer.ChangeContentType(contentType, new object());
+            //}
         }
 
         /// <summary>

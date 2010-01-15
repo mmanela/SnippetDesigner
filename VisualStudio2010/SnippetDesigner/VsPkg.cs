@@ -50,14 +50,6 @@ namespace Microsoft.SnippetDesigner
     // Options pages
     [ProvideOptionPage(typeof (SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
     [ProvideOptionPage(typeof (ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
-    // Language Service
-    // This attribute is needed to indicate that the we offer this language service
-    [ProvideService(typeof (CSharpSnippetLanguageService))]
-    [ProvideLanguageService(typeof (CSharpSnippetLanguageService), "CSharp Snippets", 202)]
-    [ProvideService(typeof (VBSnippetLanguageService))]
-    [ProvideLanguageService(typeof (VBSnippetLanguageService), "VB Snippets", 203)]
-    [ProvideService(typeof (XMLSnippetLanguageService))]
-    [ProvideLanguageService(typeof (XMLSnippetLanguageService), "XML Snippets", 204)]
     // These attributes registers the HighLightMarker service and two custom markers 
     [ProvideService(typeof (HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
     [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
@@ -83,14 +75,10 @@ namespace Microsoft.SnippetDesigner
         private Window previousWindow;
         private Window currentWindow;
 
-        private CSharpSnippetLanguageService csharpSnippetLangService;
-        private VBSnippetLanguageService vbSnippetLangService;
-        private XMLSnippetLanguageService xmlSnippetLangService;
-
         //needed for the custom type descriptor provider
         private string activeSnippetTitle = String.Empty;
         private string activeSnippetLanguage = String.Empty;
-
+        private IComponentModel componentModel;
         internal ILogger Logger { get; private set; }
 
         //index of snippets
@@ -109,6 +97,17 @@ namespace Microsoft.SnippetDesigner
             Instance = this;
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
         }
+
+        public IComponentModel ComponentModel
+        {
+            get
+            {
+                if(componentModel == null)
+                    componentModel  = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+                return componentModel;
+            }
+        }
+
 
         /// <summary>
         /// Gets the settings.
@@ -414,24 +413,8 @@ namespace Microsoft.SnippetDesigner
 
 
                 Logger = new Logger(this);
-
+                var tagger = 
                 Settings = GetDialogPage(typeof (SnippetDesignerOptions)) as SnippetDesignerOptions;
-
-
-                // Create instance of RegularExpressionLanguageService type
-                csharpSnippetLangService = new CSharpSnippetLanguageService();
-                csharpSnippetLangService.SetSite(this);
-
-                vbSnippetLangService = new VBSnippetLanguageService();
-                vbSnippetLangService.SetSite(this);
-
-                xmlSnippetLangService = new XMLSnippetLanguageService();
-                xmlSnippetLangService.SetSite(this);
-
-                // Add our language service objects to packages services container
-                ((IServiceContainer) this).AddService(typeof (CSharpSnippetLanguageService), csharpSnippetLangService, true);
-                ((IServiceContainer) this).AddService(typeof (VBSnippetLanguageService), vbSnippetLangService, true);
-                ((IServiceContainer) this).AddService(typeof (XMLSnippetLanguageService), xmlSnippetLangService, true);
 
                 //Create Editor Factory
                 editorFactory = new EditorFactory(this);

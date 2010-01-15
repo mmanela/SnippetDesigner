@@ -12,6 +12,7 @@ using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.VisualStudio.Text;
 using System.Linq;
 using SnippetDesignerComponents;
+using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -830,14 +831,15 @@ namespace Microsoft.SnippetDesigner
 
         private void UpdateTaggerReplacementList()
         {
-            if(CodeWindow.TextView != null)
+            if (CodeWindow.TextView != null)
                 CodeWindow.TextView.Properties[SnippetReplacementTagger.ReplacementListKey] = GetCurrentReplacements();
+
         }
 
         protected void RefreshReplacementMarkers(int lineToMark)
         {
             var allReplacements = GetCurrentReplacements();
-            
+
             //search through the code window and update all replcement highlight martkers
             MarkReplacements(allReplacements, lineToMark);
         }
@@ -920,7 +922,7 @@ namespace Microsoft.SnippetDesigner
             else if (CreateReplacement(selectedText) && selectionLength > 0)
             {
                 var newSnapshot = CodeWindow.Selection.Snapshot.TextBuffer.CurrentSnapshot;
-               // CodeWindow.Selection = new SnapshotSpan(newSnapshot, new Span(CodeWindow.Selection.Start.Position, CodeWindow.Selection.End.Position + (StringConstants.SymbolReplacement.Length * 2)));
+                // CodeWindow.Selection = new SnapshotSpan(newSnapshot, new Span(CodeWindow.Selection.Start.Position, CodeWindow.Selection.End.Position + (StringConstants.SymbolReplacement.Length * 2)));
             }
         }
 
@@ -1014,8 +1016,8 @@ namespace Microsoft.SnippetDesigner
                             //create text span for the space between the two SnippetDesigner.StringConstants.ReplacementSymbols
                             //make sure text between the $ symbols matches replaceID
                             var lineText = CodeWindow.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(line).GetText();
-                            string textBetween = lineText.Substring(index + 1, nextIndex - (index + 1 ));
-                           
+                            string textBetween = lineText.Substring(index + 1, nextIndex - (index + 1));
+
                             if (replaceIDs.Contains(textBetween))
                             {
                                 index = nextIndex; //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
