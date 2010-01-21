@@ -149,7 +149,13 @@
     <Compile Include="VsPkg.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Files\EULA.rtf" />
+    <Content Include="ScreenShot.png">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="EULA.rtf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="ItemTemplates\SnippetFile.snippet" />
     <Content Include="ItemTemplates\SnippetFile.vsdir" />
     <None Include="source.extension.vsixmanifest">
@@ -194,7 +200,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Files\Readme.htm" />
+    <Content Include="Product.ico">
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <Content Include="Resources\File.ico" />
     <Content Include="Resources\GenericPackage.bmp" />
     <Content Include="Resources\GenericPackage.ico" />
@@ -202,10 +210,17 @@
     <Content Include="Resources\HomeHS.ico" />
     <Content Include="Resources\Images_24bit.bmp" />
     <Content Include="Resources\Images_32bit.bmp" />
-    <Content Include="Resources\Package.ico" />
-    <Content Include="Resources\Product.ico" />
+    <Content Include="Resources\Package.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
+    <Content Include="Resources\Product.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <IncludeInVSIX>true</IncludeInVSIX>
+    </Content>
     <VSCTCompile Include="SnippetDesigner.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
+      <SubType>Designer</SubType>
     </VSCTCompile>
   </ItemGroup>
   <PropertyGroup>

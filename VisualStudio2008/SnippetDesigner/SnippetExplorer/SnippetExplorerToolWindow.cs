@@ -54,7 +54,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // while the Index is the offset in the bitmap strip. Each image in
             // the strip being 16x16.
             this.BitmapResourceID = 301;
-            this.BitmapIndex = 1;
+            this.BitmapIndex = 2;
 
             snippetExplorerForm = new SnippetExplorerForm();
         }
