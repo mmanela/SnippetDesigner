@@ -11,7 +11,6 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.VisualStudio.Text;
 using System.Linq;
-using SnippetDesignerComponents;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace Microsoft.SnippetDesigner
@@ -831,8 +830,8 @@ namespace Microsoft.SnippetDesigner
 
         private void UpdateTaggerReplacementList()
         {
-            if (CodeWindow.TextView != null)
-                CodeWindow.TextView.Properties[SnippetReplacementTagger.ReplacementListKey] = GetCurrentReplacements();
+           // if (CodeWindow.TextView != null)
+               // CodeWindow.TextView.Properties[SnippetReplacementTagger.ReplacementListKey] = GetCurrentReplacements();
 
         }
 

@@ -521,31 +521,38 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive)
         {
-            TextDocument textDoc = CurrentTextDocument;
-            if (currentWindow == null)
+            try
             {
-                currentWindow = DTE.ActiveWindow;
-            }
-            else if (currentWindow != DTE.ActiveWindow)
-            {
-                previousWindow = currentWindow;
-                currentWindow = DTE.ActiveWindow;
-            }
+                TextDocument textDoc = CurrentTextDocument;
+                if (currentWindow == null)
+                {
+                    currentWindow = DTE.ActiveWindow;
+                }
+                else if (currentWindow != DTE.ActiveWindow)
+                {
+                    previousWindow = currentWindow;
+                    currentWindow = DTE.ActiveWindow;
+                }
 
-            string lang = CurrentWindowLanguage.ToLower(); //turn to lower case for comparisons
-            //TODO: move these into a config file
-            if (lang == StringConstants.ExportNameCSharp
-                || lang == StringConstants.ExportNameVisualBasic
-                || lang == StringConstants.ExportNameXML
-                )
-            {
-                //make the export context menu item visible
-                snippetExportCommand.Visible = true;
+                string lang = CurrentWindowLanguage.ToLower(); //turn to lower case for comparisons
+                //TODO: move these into a config file
+                if (lang == StringConstants.ExportNameCSharp
+                    || lang == StringConstants.ExportNameVisualBasic
+                    || lang == StringConstants.ExportNameXML
+                    )
+                {
+                    //make the export context menu item visible
+                    snippetExportCommand.Visible = true;
+                }
+                else
+                {
+                    //make the export context menu item not visible
+                    snippetExportCommand.Visible = false;
+                }
             }
-            else
+            catch (Exception ex)
             {
-                //make the export context menu item not visible
-                snippetExportCommand.Visible = false;
+                Logger.Log(ex.Message, "OnCmdUIContextChanged", ex);
             }
             return VSConstants.S_OK;
         }

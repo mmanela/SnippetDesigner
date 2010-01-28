@@ -101,29 +101,38 @@ namespace Microsoft.SnippetDesigner
             }
             set
             {
-                IVsTextLines vsTextLines = OldTextLines;
-
-                if (vsTextLines != null)
+                try
                 {
-                    if (IsTextInitialized)
-                        SetText(value);
-                    else
+                    IVsTextLines vsTextLines = OldTextLines;
+
+                    if (vsTextLines != null)
                     {
-                        InitializeText(value);
-                        IsTextInitialized = true;
+                        if (IsTextInitialized)
+                            SetText(value);
+                        else
+                        {
+                            if(InitializeText(value))
+                                IsTextInitialized = true;
+                        }
                     }
+                }
+                catch (NullReferenceException ex)
+                {
+                    SnippetDesignerPackage.Instance.Logger.Log("Text Lines not ready yet?", "CodeWindow::CodeText", ex);
                 }
             }
         }
 
-        private void InitializeText(string newText)
+        private bool InitializeText(string newText)
         {
             IVsTextLines textLines = OldTextLines;
             newText = newText ?? "";
-            ErrorHandler.ThrowOnFailure(textLines.InitializeContent(newText, newText.Length));
+            if (ErrorHandler.Failed(textLines.InitializeContent(newText, newText.Length)))
+                return false;
+
             if (OnTextViewCreated != null)
                 OnTextViewCreated(null,null);
-
+            return true;
         }
 
         /// <summary>
