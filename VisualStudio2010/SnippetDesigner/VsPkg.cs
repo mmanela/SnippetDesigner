@@ -59,7 +59,7 @@ namespace Microsoft.SnippetDesigner
         ProjectGuid = GuidList.provideEditorExtensionProject,
         DefaultName = "Snippet Designer",
         NameResourceID=100,
-         TemplateDir = "..\\..\\ItemTemplates"
+         TemplateDir = @"..\..\Templates"
         )]
     [ProvideEditorLogicalView(typeof (EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
