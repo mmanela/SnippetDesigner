@@ -575,30 +575,24 @@ namespace Microsoft.SnippetDesigner
             {
                 string languageText = langCombo.SelectedItem.ToString();
                 if (previousLanguageSelected != languageText) //make sure this is actually a change
-                {
-                    if (!snippetCodeWindow.LangServices.ContainsKey(languageText))
-                    {
-                        languageText = String.Empty;
-                    }
-
-                    snippetCodeWindow.SetLanguageService(languageText);
+                {   
                     IsFormDirty = true;
 
-                    if (languageText == Resources.DisplayNameXML)
-                    {
-                        //The XML Editor defines its own properties window and by removing adornments it will stop it
-                        // from showing and allow ours to show
-                        IOleServiceProvider sp = snippetCodeWindow.VsCodeWindow as IOleServiceProvider;
-                        if (sp != null)
-                        {
-                            ServiceProvider site = new ServiceProvider(sp);
-                            IVsCodeWindowManager cMan = site.GetService(typeof(SVsCodeWindowManager)) as IVsCodeWindowManager;
-                            if (cMan != null)
-                            {
-                                cMan.RemoveAdornments();
-                            }
-                        }
-                    }
+                    //if (languageText == Resources.DisplayNameXML)
+                    //{
+                    //    //The XML Editor defines its own properties window and by removing adornments it will stop it
+                    //    // from showing and allow ours to show
+                    //    IOleServiceProvider sp = snippetCodeWindow.VsCodeWindow as IOleServiceProvider;
+                    //    if (sp != null)
+                    //    {
+                    //        ServiceProvider site = new ServiceProvider(sp);
+                    //        IVsCodeWindowManager cMan = site.GetService(typeof(SVsCodeWindowManager)) as IVsCodeWindowManager;
+                    //        if (cMan != null)
+                    //        {
+                    //            cMan.RemoveAdornments();
+                    //        }
+                    //    }
+                    //}
 
                     //store the last language
                     previousLanguageSelected = languageText;

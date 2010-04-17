@@ -269,13 +269,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 if (snippet != null)
                 {
                     codeToShow = snippet.Code;
-                    string lang = snippet.Language;
-                    if (!String.IsNullOrEmpty(lang))
-                    {
-                        this.previewCodeWindow.SetLanguageService(LanguageMaps.LanguageMap.SnippetSchemaLanguageToDisplay[lang.ToLower()]);
-                    }
-
-
                 }
             }
             this.previewCodeWindow.CodeText = codeToShow;

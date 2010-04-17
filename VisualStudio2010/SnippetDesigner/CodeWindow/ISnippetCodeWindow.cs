@@ -16,9 +16,8 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// Sets the programming language the snippet windows is going to display
+        /// Set content type of the editor
         /// </summary>
-        /// <param name="lang">A string representing the language</param>
-        void SetLanguageService(string lang);
+        void SetContentType();
     }
 }
