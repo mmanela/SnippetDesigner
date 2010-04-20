@@ -12,7 +12,7 @@ namespace SnippetDesignerComponents
         public SnippetMarker()
         {
             ZOrder = 1;
-            Fill = Brushes.Yellow;
+            Fill = new SolidColorBrush(Color.FromArgb(100,223, 223, 255));
             Fill.Freeze();
         }
     }
