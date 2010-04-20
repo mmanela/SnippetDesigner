@@ -27,7 +27,7 @@ namespace Microsoft.SnippetDesigner
         private IVsTextLines vsTextBuffer;
         private IConnectionPoint textViewEventsConnectionPoint;
         private IConnectionPoint textLinesEventsConnectionPoint;
-        private bool IsTextInitialized;
+        private bool isTextInitialized;
         public IVsCodeWindow VsCodeWindow { get; private set; }
 
         private readonly IVsEditorAdaptersFactoryService editorAdapterFactoryService;
@@ -98,12 +98,12 @@ namespace Microsoft.SnippetDesigner
 
                     if (vsTextLines != null)
                     {
-                        if (IsTextInitialized)
+                        if (isTextInitialized)
                             SetText(value);
                         else
                         {
                             if (InitializeText(value))
-                                IsTextInitialized = true;
+                                isTextInitialized = true;
                         }
                     }
                 }

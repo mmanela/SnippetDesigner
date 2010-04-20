@@ -26,7 +26,7 @@ namespace Microsoft.SnippetDesigner
         private readonly Guid defaultLanguage;
         private IConnectionPoint textViewEventsConnectionPoint;
         private IConnectionPoint textLinesEventsConnectionPoint;
-
+        private bool isTextInitialized;
 
         public IVsCodeWindow VsCodeWindow { get; private set; }
 
@@ -60,9 +60,25 @@ namespace Microsoft.SnippetDesigner
                 IVsTextLines vsTextLines = TextLines;
                 if (vsTextLines != null)
                 {
-                    SetText(value);
+                    if (isTextInitialized)
+                        SetText(value);
+                    else
+                    {
+                        if (InitializeText(value))
+                            isTextInitialized = true;
+                    }
                 }
             }
+        }
+
+        private bool InitializeText(string newText)
+        {
+            IVsTextLines textLines = TextLines;
+            newText = newText ?? "";
+            if (ErrorHandler.Failed(textLines.InitializeContent(newText, newText.Length)))
+                return false;
+
+            return true;
         }
 
         /// <summary>
@@ -273,18 +289,18 @@ namespace Microsoft.SnippetDesigner
         private int CreateVsCodeWindow()
         {
             int hr = VSConstants.S_OK;
-            Guid clsidVsCodeWindow = typeof (VsCodeWindowClass).GUID;
-            Guid iidVsCodeWindow = typeof (IVsCodeWindow).GUID;
-            Guid clsidVsTextBuffer = typeof (VsTextBufferClass).GUID;
-            Guid iidVsTextLines = typeof (IVsTextLines).GUID;
+            Guid clsidVsCodeWindow = typeof(VsCodeWindowClass).GUID;
+            Guid iidVsCodeWindow = typeof(IVsCodeWindow).GUID;
+            Guid clsidVsTextBuffer = typeof(VsTextBufferClass).GUID;
+            Guid iidVsTextLines = typeof(IVsTextLines).GUID;
 
             //create/site a VsTextBuffer object
             vsTextBuffer =
                 (IVsTextLines)
                 SnippetDesignerPackage.Instance.CreateInstance(ref clsidVsTextBuffer,
                                                                ref iidVsTextLines,
-                                                               typeof (IVsTextLines));
-            IObjectWithSite ows = (IObjectWithSite) vsTextBuffer;
+                                                               typeof(IVsTextLines));
+            IObjectWithSite ows = (IObjectWithSite)vsTextBuffer;
 
             //set the site of the buffer to the parent editor
             ows.SetSite(codeWindowHost.ServiceProvider);
@@ -292,7 +308,7 @@ namespace Microsoft.SnippetDesigner
             // tell the text buffer to not attempt to try to figure out the language service on its own
             // we only want it to use the language service we explicitly tell it to use
             Guid VsBufferDetectLangSID = VisualStudio.Package.EditorFactory.GuidVSBufferDetectLangSid;
-            IVsUserData vsUserData = (IVsUserData) vsTextBuffer;
+            IVsUserData vsUserData = (IVsUserData)vsTextBuffer;
             vsUserData.SetData(ref VsBufferDetectLangSID, false);
 
 
@@ -301,13 +317,13 @@ namespace Microsoft.SnippetDesigner
                 (IVsCodeWindow)
                 SnippetDesignerPackage.Instance.CreateInstance(ref clsidVsCodeWindow,
                                                                ref iidVsCodeWindow,
-                                                               typeof (IVsCodeWindow));
+                                                               typeof(IVsCodeWindow));
 
             //set readonly value based codewindowhosts readonly value
             uint readOnlyValue = 0;
             if (codeWindowHost.ReadOnlyCodeWindow)
             {
-                readOnlyValue = (uint) TextViewInitFlags2.VIF_READONLY;
+                readOnlyValue = (uint)TextViewInitFlags2.VIF_READONLY;
             }
 
             //set the inital view properties of the code window
@@ -318,28 +334,28 @@ namespace Microsoft.SnippetDesigner
             initView[0].fVirtualSpace = 0; //no virtual space
             initView[0].IndentStyle = vsIndentStyle.vsIndentStyleDefault;
 
-            IVsCodeWindowEx vsCodeWindowEx = (IVsCodeWindowEx) VsCodeWindow;
+            IVsCodeWindowEx vsCodeWindowEx = (IVsCodeWindowEx)VsCodeWindow;
             hr =
                 vsCodeWindowEx.Initialize(
-                    (uint) _codewindowbehaviorflags.CWB_DISABLEDROPDOWNBAR |
-                    (uint) _codewindowbehaviorflags.CWB_DISABLESPLITTER,
+                    (uint)_codewindowbehaviorflags.CWB_DISABLEDROPDOWNBAR |
+                    (uint)_codewindowbehaviorflags.CWB_DISABLESPLITTER,
                     0,
                     null,
                     null,
-                    //tell codewindow which flags to use
-                    (uint) TextViewInitFlags.VIF_SET_WIDGET_MARGIN |
-                    (uint) TextViewInitFlags.VIF_SET_SELECTION_MARGIN |
-                    (uint) TextViewInitFlags.VIF_SET_VIRTUAL_SPACE |
-                    (uint) TextViewInitFlags.VIF_SET_DRAGDROPMOVE |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESS_STATUS_BAR_UPDATE |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESSBORDER |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESSTRACKCHANGES |
+                //tell codewindow which flags to use
+                    (uint)TextViewInitFlags.VIF_SET_WIDGET_MARGIN |
+                    (uint)TextViewInitFlags.VIF_SET_SELECTION_MARGIN |
+                    (uint)TextViewInitFlags.VIF_SET_VIRTUAL_SPACE |
+                    (uint)TextViewInitFlags.VIF_SET_DRAGDROPMOVE |
+                    (uint)TextViewInitFlags2.VIF_SUPPRESS_STATUS_BAR_UPDATE |
+                    (uint)TextViewInitFlags2.VIF_SUPPRESSBORDER |
+                    (uint)TextViewInitFlags2.VIF_SUPPRESSTRACKCHANGES |
                     readOnlyValue |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESSTRACKGOBACK,
+                    (uint)TextViewInitFlags2.VIF_SUPPRESSTRACKGOBACK,
                     initView);
             //set the codewindows text buffer
             hr = VsCodeWindow.SetBuffer(vsTextBuffer);
-            IVsWindowPane vsWindowPane = (IVsWindowPane) VsCodeWindow;
+            IVsWindowPane vsWindowPane = (IVsWindowPane)VsCodeWindow;
             //set the site of the codewindow at the parent edtiors service provider
             hr = vsWindowPane.SetSite(codeWindowHost.ServiceProvider);
             //create the codewindow as the size of the snippetExplorerForm its in
@@ -353,8 +369,8 @@ namespace Microsoft.SnippetDesigner
             if (snippetEditor != null)
             {
                 // sink IVsTextViewEvents, so we can determine when a VsCodeWindow object actually has the focus.
-                IConnectionPointContainer connptCntr = (IConnectionPointContainer) vsTextView;
-                Guid riid = typeof (IVsTextViewEvents).GUID;
+                IConnectionPointContainer connptCntr = (IConnectionPointContainer)vsTextView;
+                Guid riid = typeof(IVsTextViewEvents).GUID;
 
                 //find the desired connection point
                 connptCntr.FindConnectionPoint(ref riid, out textViewEventsConnectionPoint);
@@ -363,8 +379,8 @@ namespace Microsoft.SnippetDesigner
 
 
                 // sink IVsTextLineEvents, so we can determine when the buffer is changed
-                connptCntr = (IConnectionPointContainer) TextLines;
-                riid = typeof (IVsTextLinesEvents).GUID;
+                connptCntr = (IConnectionPointContainer)TextLines;
+                riid = typeof(IVsTextLinesEvents).GUID;
 
                 //find the desired connection point
                 connptCntr.FindConnectionPoint(ref riid, out textLinesEventsConnectionPoint);
