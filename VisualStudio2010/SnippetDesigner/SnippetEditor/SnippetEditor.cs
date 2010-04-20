@@ -861,7 +861,7 @@ namespace Microsoft.SnippetDesigner
                 throw new ArgumentException(Resources.UnknownFileFormat);
             }
 
-            //initialize the enw snippet
+            //initialize the new snippet
             InitializeNewSnippet();
 
 

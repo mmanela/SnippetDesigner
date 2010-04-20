@@ -11,13 +11,10 @@ using Microsoft.SnippetDesigner.ContentTypes;
 using Microsoft.SnippetDesigner.OptionPages;
 using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
-using Microsoft.VisualStudio.ComponentModelHost;
-using Microsoft.VisualStudio.Text.Tagging;
-using Microsoft.VisualStudio.Text.Editor;
-
 
 namespace Microsoft.SnippetDesigner
 {
@@ -34,10 +31,10 @@ namespace Microsoft.SnippetDesigner
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-   // [DefaultRegistryRoot(@"Software\Microsoft\VisualStudio\10.0Exp")]
+    // [DefaultRegistryRoot(@"Software\Microsoft\VisualStudio\10.0Exp")]
     // This attribute is used to register the informations needed to show the this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration("#100", "#102", "1.2.3",IconResourceID=404)]
+    [InstalledProductRegistration("#100", "#102", "1.2.3", IconResourceID = 404)]
     // In order be loaded inside Visual Studio in a machine that has not the VS SDK installed, 
     // package needs to have a valid load key (it can be requested at 
     // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
@@ -51,14 +48,15 @@ namespace Microsoft.SnippetDesigner
     [ProvideOptionPage(typeof (ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
     // These attributes registers the HighLightMarker service and two custom markers 
     [ProvideService(typeof (HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
-    [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
+    [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker),
+        typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
     //cause the package to autoload - Only when a solution exists
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
     [ProvideEditorExtension(typeof (EditorFactory), StringConstants.SnippetExtension, 70,
-        ProjectGuid = GuidList.provideEditorExtensionProject,
+        ProjectGuid = GuidList.miscellaneousFilesProject,
         DefaultName = "Snippet Designer",
-        NameResourceID=100,
-         TemplateDir = @"..\..\Templates"
+        NameResourceID = 100,
+        TemplateDir = @"..\..\Templates"
         )]
     [ProvideEditorLogicalView(typeof (EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
@@ -101,8 +99,8 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                if(componentModel == null)
-                    componentModel  = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
+                if (componentModel == null)
+                    componentModel = (IComponentModel) GetGlobalService(typeof (SComponentModel));
                 return componentModel;
             }
         }
@@ -164,7 +162,8 @@ namespace Microsoft.SnippetDesigner
             string resourceValue;
             IVsResourceManager resourceManager = (IVsResourceManager) GetGlobalService(typeof (SVsResourceManager));
             if (resourceManager == null)
-                throw new InvalidOperationException("Could not get SVsResourceManager service. Make sure the package is Sited before calling this method.");
+                throw new InvalidOperationException(
+                    "Could not get SVsResourceManager service. Make sure the package is Sited before calling this method.");
 
             Guid packageGuid = typeof (SnippetDesignerPackage).GUID;
             int hr = resourceManager.LoadResourceString(ref packageGuid, -1, resourceName, out resourceValue);
@@ -181,7 +180,7 @@ namespace Microsoft.SnippetDesigner
 
         public string GetVisualStudioResourceString(uint resourceId)
         {
-            IVsShell shell = (IVsShell)GetService(typeof(SVsShell));
+            IVsShell shell = (IVsShell) GetService(typeof (SVsShell));
             string localizedResource = null;
             if (shell != null)
                 shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
@@ -277,7 +276,8 @@ namespace Microsoft.SnippetDesigner
                 try
                 {
                     //build export object
-                    ExportSnippetData = new ExportToSnippetData(codeDoc.Selection.Text.Normalize(), codeDoc.Language.ToLower());
+                    ExportSnippetData = new ExportToSnippetData(codeDoc.Selection.Text.Normalize(),
+                                                                codeDoc.Language.ToLower());
                     //launch new file
                     CreateNewSnippetFile();
                 }
@@ -314,7 +314,8 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal TextDocument CurrentTextDocument
         {
-            get {
+            get
+            {
                 try
                 {
                     return GetTextDocumentFromWindow(DTE.ActiveWindow);
@@ -378,10 +379,10 @@ namespace Microsoft.SnippetDesigner
             {
                 int templateNameResourceID = 106;
                 int categoryResourceId = 100;
-               // uint EnvironmentTemplateCategoryResourceID = 13565;
+                // uint EnvironmentTemplateCategoryResourceID = 13565;
                 var commandArgs = string.Format(
                     StringConstants.MakeSnippetDTEFormat,
-                     GetResourceString(categoryResourceId),
+                    GetResourceString(categoryResourceId),
                     //GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID),
                     GetResourceString(templateNameResourceID));
                 DTE.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
@@ -412,7 +413,6 @@ namespace Microsoft.SnippetDesigner
 
 
                 Logger = new Logger(this);
-                var tagger = 
                 Settings = GetDialogPage(typeof (SnippetDesignerOptions)) as SnippetDesignerOptions;
 
                 //Create Editor Factory
@@ -431,26 +431,32 @@ namespace Microsoft.SnippetDesigner
                 // Add our command handlers for menu (commands must exist in the .vstc file)
 
                 // Create the command for the tool window
-                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidSnippetExplorer);
+                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                                   (int) PkgCmdIDList.cmdidSnippetExplorer);
                 DefineCommandHandler(ShowSnippetExplorer, snippetExplorerCommandID);
 
 
                 //DefineCommandHandler not used for these since extra properties need to be set
                 // Create the command for the context menu export snippet
-                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidExportToSnippet);
+                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                       (int) PkgCmdIDList.cmdidExportToSnippet);
                 snippetExportCommand = DefineCommandHandler(ExportToSnippet, contextcmdID);
                 snippetExportCommand.Visible = false;
 
                 // commandline command for exporting as snippet
-                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
+                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                          (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
                 OleMenuCommand snippetExportCommandLine = DefineCommandHandler(ExportToSnippet, exportCmdLineID);
-                snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker; //a space means arguments are coming
+                snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker;
+                    //a space means arguments are coming
 
 
                 // Create the command for CreateSnippet
-                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidCreateSnippet);
+                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                      (int) PkgCmdIDList.cmdidCreateSnippet);
                 OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
-                createCommand.ParametersDescription = StringConstants.ArgumentStartMarker; //a space means arguments are coming
+                createCommand.ParametersDescription = StringConstants.ArgumentStartMarker;
+                    //a space means arguments are coming
 
                 // Create and proffer the marker service
                 MarkerService = new HighlightMarkerService(this);
@@ -458,8 +464,8 @@ namespace Microsoft.SnippetDesigner
 
 
                 //var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
-              //  var taggerProviders = componentModel.GetExtensions<IViewTaggerProvider>();
-               // var adorners = componentModel.GetExtensions<IWpfTextViewCreationListener>();
+                //  var taggerProviders = componentModel.GetExtensions<IViewTaggerProvider>();
+                // var adorners = componentModel.GetExtensions<IWpfTextViewCreationListener>();
                 //var services = componentModel.GetService<IViewTaggerProvider>();
                 //initialize the snippet index
                 SnippetIndex = new SnippetIndex();

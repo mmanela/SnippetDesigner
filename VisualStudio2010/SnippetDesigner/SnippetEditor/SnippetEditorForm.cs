@@ -6,12 +6,8 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.SnippetLibrary;
-using Microsoft.VisualStudio.Shell;
-using Microsoft.VisualStudio.TextManager.Interop;
-using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using Microsoft.VisualStudio.Text;
-using System.Linq;
-using Microsoft.VisualStudio.Text.Tagging;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -69,31 +65,19 @@ namespace Microsoft.SnippetDesigner
 
         protected override void OnLoad(EventArgs e)
         {
-            this.CodeWindow.OnTextViewCreated += new EventHandler(CodeWindow_OnTextViewCreated);
         }
 
-        void CodeWindow_OnTextViewCreated(object sender, EventArgs e)
-        {
-            UpdateTaggerReplacementList();
-        }
 
         /// <summary>
         /// the current snippet we are working with in the snippet file
         /// </summary>
-        public Snippet ActiveSnippet
-        {
-            get;
-            set;
-        }
+        public Snippet ActiveSnippet { get; set; }
 
 
-        public bool FormLoadFinished
-        {
-            get;
-            set;
-        }
+        public bool FormLoadFinished { get; set; }
 
-        bool formDirty = false;
+        private bool formDirty;
+
         /// <summary>
         /// Is this form in a diry state
         /// </summary>
@@ -342,24 +326,25 @@ namespace Microsoft.SnippetDesigner
                 foreach (DataGridViewRow row in replacementGridView.Rows)
                 {
                     if (row.IsNewRow) continue;
-                    string currId = (string)row.Cells[StringConstants.ColumnID].EditedFormattedValue;
+                    string currId = (string) row.Cells[StringConstants.ColumnID].EditedFormattedValue;
                     currId = currId.Trim();
                     if (String.IsNullOrEmpty(currId)) continue;
 
                     bool isObj = false;
-                    if (((row.Cells[StringConstants.ColumnReplacementKind]).EditedFormattedValue as string).ToLower() == Resources.ReplacementObjectName.ToLower())
+                    if (((row.Cells[StringConstants.ColumnReplacementKind]).EditedFormattedValue as string).ToLower() ==
+                        Resources.ReplacementObjectName.ToLower())
                     {
                         isObj = true;
                     }
 
-                    bool isEditable = (bool)(row.Cells[StringConstants.ColumnEditable]).EditedFormattedValue;
-                    replacements.Add(new Literal((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue,
-                                                 (string)row.Cells[StringConstants.ColumnTooltip].EditedFormattedValue,
-                                                 (string)row.Cells[StringConstants.ColumnDefault].EditedFormattedValue,
-                                                 (string)row.Cells[StringConstants.ColumnFunction].EditedFormattedValue,
+                    bool isEditable = (bool) (row.Cells[StringConstants.ColumnEditable]).EditedFormattedValue;
+                    replacements.Add(new Literal((string) row.Cells[StringConstants.ColumnID].EditedFormattedValue,
+                                                 (string) row.Cells[StringConstants.ColumnTooltip].EditedFormattedValue,
+                                                 (string) row.Cells[StringConstants.ColumnDefault].EditedFormattedValue,
+                                                 (string) row.Cells[StringConstants.ColumnFunction].EditedFormattedValue,
                                                  isObj,
                                                  isEditable,
-                                                 (string)row.Cells[StringConstants.ColumnType].EditedFormattedValue
+                                                 (string) row.Cells[StringConstants.ColumnType].EditedFormattedValue
                                          ));
                 }
                 return replacements;
@@ -377,13 +362,12 @@ namespace Microsoft.SnippetDesigner
                         objOrLiteral = Resources.ReplacementObjectName;
                     }
 
-                    object[] row = { literal.ID, literal.ToolTip, literal.DefaultValue, objOrLiteral, literal.Type, literal.Function, literal.Editable };
+                    object[] row = {literal.ID, literal.ToolTip, literal.DefaultValue, objOrLiteral, literal.Type, literal.Function, literal.Editable};
                     int rowIndex = replacementGridView.Rows.Add(row);
                     if (!literal.Object)
                     {
                         SetOrDisableTypeField(false, rowIndex);
                     }
-                    UpdateTaggerReplacementList();
                 }
             }
         }
@@ -397,7 +381,6 @@ namespace Microsoft.SnippetDesigner
         {
             get { return snippetCodeWindow; }
         }
-
 
         /// <summary>
         /// save snippet and update the snippets in memory
@@ -512,8 +495,6 @@ namespace Microsoft.SnippetDesigner
             SnippetImports = ActiveSnippet.Imports;
 
             SnippetReferences = ActiveSnippet.References;
-
-
         }
 
 
@@ -575,7 +556,7 @@ namespace Microsoft.SnippetDesigner
             {
                 string languageText = langCombo.SelectedItem.ToString();
                 if (previousLanguageSelected != languageText) //make sure this is actually a change
-                {   
+                {
                     IsFormDirty = true;
 
                     //if (languageText == Resources.DisplayNameXML)
@@ -685,7 +666,7 @@ namespace Microsoft.SnippetDesigner
             {
                 if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnID)
                 {
-                    previousIDValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
+                    previousIDValue = (string) grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
                     return;
                 }
             }
@@ -710,7 +691,7 @@ namespace Microsoft.SnippetDesigner
                 IsFormDirty = true;
                 if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnID)
                 {
-                    string newIdValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                    string newIdValue = (string) grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
                     if (newIdValue == null)
                     {
                         //if null make it empty
@@ -727,11 +708,8 @@ namespace Microsoft.SnippetDesigner
                             string newReplacement = TurnTextIntoReplacementSymbol(newIdValue);
                             string oldReplacement = TurnTextIntoReplacementSymbol(previousIDValue);
 
-
-                            UpdateTaggerReplacementList();
-
                             //replace all occurances of the oldReplacement with newReplacement
-                            //set false so it allows us to overdie existing replacements
+                            //set false so it allows us to override existing replacements
                             ReplaceAll(oldReplacement, newReplacement, false);
                             ReplaceAll(newIdValue, newReplacement, true);
 
@@ -748,7 +726,7 @@ namespace Microsoft.SnippetDesigner
                 }
                 else if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnReplacementKind)
                 {
-                    if ((string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue == Resources.ReplacementLiteralName)
+                    if ((string) grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue == Resources.ReplacementLiteralName)
                     {
                         SetOrDisableTypeField(false, e.RowIndex);
                     }
@@ -797,7 +775,6 @@ namespace Microsoft.SnippetDesigner
 
         #endregion
 
-
         private void AlertInvalidReplacement(string newIdValue)
         {
             logger.MessageBox("Invalid Replacement", String.Format(Resources.ErrorInvalidReplacementID, newIdValue), LogType.Warning);
@@ -813,20 +790,13 @@ namespace Microsoft.SnippetDesigner
             List<string> allReplacements = new List<string>();
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                string idValue = ((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue).Trim();
+                string idValue = ((string) row.Cells[StringConstants.ColumnID].EditedFormattedValue).Trim();
                 if (idValue.Length > 0)
                 {
                     allReplacements.Add(idValue);
                 }
             }
             return allReplacements;
-        }
-
-        private void UpdateTaggerReplacementList()
-        {
-           // if (CodeWindow.TextView != null)
-               // CodeWindow.TextView.Properties[SnippetReplacementTagger.ReplacementListKey] = GetCurrentReplacements();
-
         }
 
         protected void RefreshReplacementMarkers(int lineToMark)
@@ -852,7 +822,7 @@ namespace Microsoft.SnippetDesigner
 
                 foreach (DataGridViewRow row in replacementGridView.Rows)
                 {
-                    if ((string)row.Cells[StringConstants.ColumnID].Value == currentWord)
+                    if ((string) row.Cells[StringConstants.ColumnID].Value == currentWord)
                     {
                         replacementGridView.ClearSelection();
                         row.Selected = true;
@@ -878,7 +848,7 @@ namespace Microsoft.SnippetDesigner
             DataGridViewRow rowToDelete = null;
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                if ((string)row.Cells[StringConstants.ColumnID].Value == textToChange)
+                if ((string) row.Cells[StringConstants.ColumnID].Value == textToChange)
                 {
                     rowToDelete = row;
                     break;
@@ -889,7 +859,6 @@ namespace Microsoft.SnippetDesigner
             {
                 UpdateMarkersAfterDeletedGridViewRow(rowToDelete);
                 replacementGridView.Rows.Remove(rowToDelete);
-                UpdateTaggerReplacementList();
             }
         }
 
@@ -930,7 +899,7 @@ namespace Microsoft.SnippetDesigner
             bool existsAlready = false;
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                if ((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue == textToChange ||
+                if ((string) row.Cells[StringConstants.ColumnID].EditedFormattedValue == textToChange ||
                     textToChange.Trim() == String.Empty)
                 {
                     //this replacement already exists or is nothing don't add it to the replacement list
@@ -942,10 +911,9 @@ namespace Microsoft.SnippetDesigner
             string newText = TurnTextIntoReplacementSymbol(textToChange);
             if (!existsAlready)
             {
-                object[] newRow = { textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true };
+                object[] newRow = {textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true};
                 int rowIndex = replacementGridView.Rows.Add(newRow);
                 SetOrDisableTypeField(false, rowIndex);
-                UpdateTaggerReplacementList();
             }
 
             //replace all occurances of the textToFind with $textToFind$
@@ -1013,7 +981,8 @@ namespace Microsoft.SnippetDesigner
 
                             if (replaceIDs.Contains(textBetween))
                             {
-                                index = nextIndex; //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
+                                index = nextIndex;
+                                //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
                             }
                             else
                             {
@@ -1045,18 +1014,16 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        private int ReplaceAll(string currentWord, string newWord, bool replacementAware)
+        private int ReplaceAll(string currentWord, string newWord, bool skipIfAlreadyReplacement)
         {
-
             var textview = CodeWindow.TextView;
             int numberReplaced = 0;
 
             var textEdit = textview.TextBuffer.CreateEdit();
             foreach (var replaceableSpan in GetReplaceableSpans(textview.TextBuffer.CurrentSnapshot, currentWord))
             {
-
                 //replace the span with the given text
-                if (ReplaceSpanWithText(textEdit, newWord, replaceableSpan, replacementAware))
+                if (ReplaceSpanWithText(textEdit, newWord, replaceableSpan, skipIfAlreadyReplacement))
                 {
                     numberReplaced++;
                 }
@@ -1065,14 +1032,13 @@ namespace Microsoft.SnippetDesigner
             return numberReplaced;
         }
 
-        private bool ReplaceSpanWithText(ITextEdit textEdit, string newWord, SnapshotSpan replaceSpan, bool replacementAware)
+        private static bool ReplaceSpanWithText(ITextEdit textEdit, string newWord, SnapshotSpan replaceSpan, bool skipIfAlreadyReplacement)
         {
             try
             {
-                if ((replacementAware && !IsSpanReplacement(replaceSpan)) || !replacementAware)
+                if ((skipIfAlreadyReplacement && !IsSpanReplacement(replaceSpan)) || !skipIfAlreadyReplacement)
                 {
                     textEdit.Replace(replaceSpan.Span, newWord);
-
                     return true;
                 }
             }
@@ -1084,7 +1050,7 @@ namespace Microsoft.SnippetDesigner
             return false;
         }
 
-        private bool FindEnclosingReplacementQuoteSpan(SnapshotSpan span, out SnapshotSpan quoteSpan)
+        private static bool FindEnclosingReplacementQuoteSpan(SnapshotSpan span, out SnapshotSpan quoteSpan)
         {
             var lineSnapshot = span.Snapshot.GetLineFromPosition(span.Start.Position);
 
@@ -1119,8 +1085,6 @@ namespace Microsoft.SnippetDesigner
 
         private bool GetClickedOnReplacementSpan(out SnapshotSpan replacementSpan)
         {
-            var textView = CodeWindow.TextView;
-
             replacementSpan = CodeWindow.GetWordTextSpanFromCurrentPosition();
             var currentWordSpan = replacementSpan;
 
@@ -1146,13 +1110,10 @@ namespace Microsoft.SnippetDesigner
             return true;
         }
 
-        private bool IsSpanReplacement(SnapshotSpan replaceSpan)
+        private static bool IsTextReplacement(string text)
         {
-            var spanText = replaceSpan.GetText();
-            if (string.IsNullOrEmpty(spanText))
-                return false;
-            var firstChar = spanText[0];
-            var lastChar = spanText[spanText.Length - 1];
+            var firstChar = text[0];
+            var lastChar = text[text.Length - 1];
 
             //check the first and last characters of the span to see if they are the replacement symbols
             if (firstChar.ToString() == StringConstants.SymbolReplacement &&
@@ -1161,6 +1122,18 @@ namespace Microsoft.SnippetDesigner
             {
                 return true;
             }
+
+            return false;
+        }
+
+        private static bool IsSpanReplacement(SnapshotSpan replaceSpan)
+        {
+            var spanText = replaceSpan.GetText();
+            if (string.IsNullOrEmpty(spanText))
+                return false;
+
+            if (IsTextReplacement(spanText))
+                return true;
 
             //see if replacement symbols surround this span
             if (replaceSpan.Span.Start - 1 >= 0 && replaceSpan.Span.End < replaceSpan.Snapshot.Length)
@@ -1183,49 +1156,17 @@ namespace Microsoft.SnippetDesigner
         private IEnumerable<SnapshotSpan> GetReplaceableSpans(ITextSnapshot textSnapshot, string textToFind)
         {
             var textView = CodeWindow.TextView;
+            bool isReplacement = IsTextReplacement(textToFind);
             var text = textSnapshot.GetText();
             int start = 0;
             while ((start = text.IndexOf(textToFind, start)) != -1)
             {
                 var end = start + textToFind.Length;
-                if ((start - 1 < 0 || !CodeWindow.IsWordChar(text[start - 1])) && (end >= text.Length || !CodeWindow.IsWordChar(text[end])))
+                if ((start - 1 < 0 || !CodeWindow.IsWordChar(text[start - 1])) && (end >= text.Length || !CodeWindow.IsWordChar(text[end]))
+                    || isReplacement)
                     yield return new SnapshotSpan(textSnapshot, start, textToFind.Length);
                 start += textToFind.Length;
             }
-
-            ////loop through all the lines we are searching
-            //foreach (var line in textSnapshot.Lines.Skip(startPositon.Line))
-            //{
-            //    var lineText = line.GetText();
-            //    var lineLength = line.Length;
-            //    int position = startPositon.Index;
-            //    int index = -1;
-            //    //find the next index where textToFind appears starting from position
-            //    while (position < lineLength && ((index = lineText.IndexOf(textToFind, position)) > -1))
-            //    {
-            //        //only three items are valid replaceable strings
-            //        //1. a word which is [A-Za-z0-9_]+
-            //        //2. if the string begins and ends with the replacement symbol then we are replacing a replacement
-            //        //3. if the string beings and ends with quotes then this is a quote string we are replacing
-
-            //        if (CodeWindow.GetWordFromPosition(new TextPoint(line, index)) == textToFind ||
-            //            //or is this the text we are looking for 
-            //            textToFind[0] == StringConstants.SymbolReplacement[0] && textToFind[textToFind.Length - 1] == StringConstants.SymbolReplacement[0] ||
-            //            textToFind[0] == StringConstants.DoubleQuoteString[0] && textToFind[textToFind.Length - 1] == StringConstants.DoubleQuoteString[0]
-            //            )
-            //        {
-            //            //update the span to reflect what text we found
-            //            returnSpan.iStartIndex = index;
-            //            returnSpan.iStartLine = line;
-            //            returnSpan.iEndIndex = index + textToFind.Length;
-            //            returnSpan.iEndLine = line;
-            //            return true;
-            //        }
-            //        position += textToFind.Length + index; //move to the next position and repeat the loop
-            //    }
-            //    startPositon.Index = 0; //only offset from first line
-            //}
-            //return false;
         }
 
         private void mainObjectsRepaiont_Paint(object sender, PaintEventArgs e)
@@ -1233,6 +1174,5 @@ namespace Microsoft.SnippetDesigner
             SnippetDesignerPackage.Instance.ActiveSnippetLanguage = SnippetLanguage;
             SnippetDesignerPackage.Instance.ActiveSnippetTitle = SnippetTitle;
         }
-
     }
 }

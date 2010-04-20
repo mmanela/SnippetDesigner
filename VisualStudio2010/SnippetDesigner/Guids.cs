@@ -26,7 +26,7 @@ namespace Microsoft.SnippetDesigner
 
         internal const string editorFactoryLogicalView = "{7651a703-06e5-11d1-8ebd-00a0c90f26ea}";
 
-        internal const string provideEditorExtensionProject = "{A2FE74E1-B743-11d0-AE1A-00A0C90FFFC3}";
+        internal const string miscellaneousFilesProject = "{A2FE74E1-B743-11d0-AE1A-00A0C90FFFC3}";
 
         internal const string snippetExplorerString = "8332D89B-E52F-46d7-8D9E-6D201943C631";
 

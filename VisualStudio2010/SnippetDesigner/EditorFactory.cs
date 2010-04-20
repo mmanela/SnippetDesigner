@@ -1,14 +1,11 @@
-﻿// Copyright (C) Microsoft Corporation. All rights reserved.
-
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-
-
+using IServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -22,21 +19,20 @@ namespace Microsoft.SnippetDesigner
         private ServiceProvider vsServiceProvider;
         private bool disposed;
 
-        private SnippetDesignerPackage editorPackage;
+        private readonly SnippetDesignerPackage editorPackage;
 
 
         public EditorFactory(SnippetDesignerPackage package)
         {
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering {0} constructor", this.ToString()));
+            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering {0} constructor", ToString()));
             editorPackage = package;
         }
 
-
         #region IVsEditorFactory Members
 
-        public int SetSite(Microsoft.VisualStudio.OLE.Interop.IServiceProvider psp)
+        public int SetSite(IServiceProvider psp)
         {
-            vsServiceProvider = new ServiceProvider(psp,false);
+            vsServiceProvider = new ServiceProvider(psp, false);
             return VSConstants.S_OK;
         }
 
@@ -76,13 +72,13 @@ namespace Microsoft.SnippetDesigner
         //
         public int MapLogicalView(ref Guid rguidLogicalView, out string pbstrPhysicalView)
         {
-            pbstrPhysicalView = null;   // initialize out parameter
+            pbstrPhysicalView = null; // initialize out parameter
 
             // we support only a single physical view
             if (VSConstants.LOGVIEWID_Primary == rguidLogicalView)
-                return VSConstants.S_OK;        // primary view uses NULL as pbstrPhysicalView
+                return VSConstants.S_OK; // primary view uses NULL as pbstrPhysicalView
             else
-                return VSConstants.E_NOTIMPL;   // you must return E_NOTIMPL for any unrecognized rguidLogicalView values
+                return VSConstants.E_NOTIMPL; // you must return E_NOTIMPL for any unrecognized rguidLogicalView values
         }
 
         public int Close()
@@ -106,19 +102,19 @@ namespace Microsoft.SnippetDesigner
         /// <param name="pgrfCDW"></param>
         /// <returns></returns>
         public int CreateEditorInstance(
-                        uint grfCreateDoc,
-                        string pszMkDocument,
-                        string pszPhysicalView,
-                        IVsHierarchy pvHier,
-                        uint itemid,
-                        System.IntPtr punkDocDataExisting,
-                        out System.IntPtr ppunkDocView,
-                        out System.IntPtr ppunkDocData,
-                        out string pbstrEditorCaption,
-                        out Guid pguidCmdUI,
-                        out int pgrfCDW)
+            uint grfCreateDoc,
+            string pszMkDocument,
+            string pszPhysicalView,
+            IVsHierarchy pvHier,
+            uint itemid,
+            IntPtr punkDocDataExisting,
+            out IntPtr ppunkDocView,
+            out IntPtr ppunkDocData,
+            out string pbstrEditorCaption,
+            out Guid pguidCmdUI,
+            out int pgrfCDW)
         {
-            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering {0} CreateEditorInstance()", this.ToString()));
+            Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering {0} CreateEditorInstance()", ToString()));
 
             // Initialize to null
             ppunkDocView = IntPtr.Zero;
@@ -149,10 +145,9 @@ namespace Microsoft.SnippetDesigner
 
         #endregion
 
-
         #region IDisposable
 
-         // Implement IDisposable.
+        // Implement IDisposable.
         // Do not make this method virtual.
         // A derived class should not be able to override this method.
         public void Dispose()
@@ -176,15 +171,15 @@ namespace Microsoft.SnippetDesigner
         private void Dispose(bool disposing)
         {
             // Check to see if Dispose has already been called.
-            if(!this.disposed)
+            if (!disposed)
             {
                 // If disposing equals true, dispose all managed 
                 // and unmanaged resources.
-                if(disposing)
+                if (disposing)
                 {
-                // Dispose managed resources.
+                    // Dispose managed resources.
                 }
-    		 
+
                 // Call the appropriate methods to clean up 
                 // unmanaged resources here.
                 // If disposing is false, 
@@ -194,9 +189,8 @@ namespace Microsoft.SnippetDesigner
                     vsServiceProvider.Dispose();
                 }
             }
-            disposed = true;         
+            disposed = true;
         }
-
 
 
         // Use C# destructor syntax for finalization code.
@@ -204,15 +198,13 @@ namespace Microsoft.SnippetDesigner
         // does not get called.
         // It gives your base class the opportunity to finalize.
         // Do not provide destructors in types derived from this class.
-        ~EditorFactory()      
+        ~EditorFactory()
         {
             // Do not re-create Dispose clean-up code here.
             // Calling Dispose(false) is optimal in terms of
             // readability and maintainability.
             Dispose(false);
         }
-
-
 
         #endregion
     }

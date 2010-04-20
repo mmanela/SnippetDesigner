@@ -35,7 +35,6 @@ namespace Microsoft.SnippetDesigner
         private readonly IContentTypeRegistryService contentTypeService;
 
         private const string CodeSnippetContentType = "codesnippet";
-        public event EventHandler OnTextViewCreated;
 
         /// <summary>
         /// Constructor for the code window which is a user snippetExplorerForm that hosts a vscodewindow
@@ -124,8 +123,6 @@ namespace Microsoft.SnippetDesigner
 
             SetContentType();
 
-            if (OnTextViewCreated != null)
-                OnTextViewCreated(null, null);
             return true;
         }
 
@@ -510,16 +507,6 @@ namespace Microsoft.SnippetDesigner
             {
                 return -1;
             }
-        }
-
-        public void HighlightSpan(SnapshotSpan span)
-        {
-            //if (SnippetDesignerPackage.Instance == null)
-            //{
-            //    return;
-            //}
-
-            //SnippetDesignerPackage.Instance.MarkerService.InsertMarker(PkgCmdIDList.cmdidSnippetReplacementMarker, span);
         }
 
         public string GetSpanText(SnapshotSpan span)
