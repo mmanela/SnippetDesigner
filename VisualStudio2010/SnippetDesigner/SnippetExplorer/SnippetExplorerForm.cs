@@ -1,6 +1,4 @@
-﻿// Copyright (C) Microsoft Corporation. All rights reserved.
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -19,9 +17,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
     [ComVisible(true)]
     public partial class SnippetExplorerForm : UserControl, ICodeWindowHost
     {
-
         private SnippetIndex snippetIndex; // class which gets snippet data and how to display
-        List<CheckBox> languageFilterBoxList = new List<CheckBox>();
+        private readonly List<CheckBox> languageFilterBoxList = new List<CheckBox>();
         private string iconCellName = "Icon";
         private string titleCellName = "Title";
         private string descriptionCellName = "Description";
@@ -36,10 +33,10 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         public SnippetExplorerForm()
         {
             InitializeComponent();
-            this.previewCodeWindow.CodeWindowHost = this;
-            languageFilterBoxList.Add(this.CSharpFilterBox);
-            languageFilterBoxList.Add(this.vbFilterBox);
-            languageFilterBoxList.Add(this.xmlFilterBox);
+            previewCodeWindow.CodeWindowHost = this;
+            languageFilterBoxList.Add(CSharpFilterBox);
+            languageFilterBoxList.Add(vbFilterBox);
+            languageFilterBoxList.Add(xmlFilterBox);
         }
 
         /// <summary>
@@ -47,7 +44,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.ComponentModel.PropertyChangedEventArgs"/> instance containing the event data.</param>
-        void SnippetIndexChanged(object sender, PropertyChangedEventArgs e)
+        private void SnippetIndexChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != null)
             {
@@ -67,52 +64,36 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             if (!snippetIndex.IsIndexLoading)
             {
-                this.Invoke(
-                    (MethodInvoker)delegate
-                    {
-                        statusLabel.Text = "";
-                    });
+                Invoke(
+                    (MethodInvoker) delegate { statusLabel.Text = ""; });
             }
             else
             {
-                this.Invoke(
-                    (MethodInvoker)delegate
-                    {
-                        statusLabel.Text = "Loading Snippet Index...";
-                    });
+                Invoke(
+                    (MethodInvoker) delegate { statusLabel.Text = "Loading Snippet Index..."; });
             }
 
             if (!snippetIndex.IsIndexUpdating)
             {
-                this.Invoke(
-                    (MethodInvoker)delegate
-                    {
-                        statusLabel.Text = "";
-                    });
+                Invoke(
+                    (MethodInvoker) delegate { statusLabel.Text = ""; });
             }
             else
             {
-                this.Invoke(
-                    (MethodInvoker)delegate
-                    {
-                        statusLabel.Text = "Updating Snippet Index...";
-                    });
+                Invoke(
+                    (MethodInvoker) delegate { statusLabel.Text = "Updating Snippet Index..."; });
             }
         }
 
- 
+
         /// <summary>
         /// Gets the preview code window.
         /// </summary>
         /// <value>The preview code window.</value>
         public CodeWindow PreviewCodeWindow
         {
-            get
-            {
-                return previewCodeWindow;
-            }
+            get { return previewCodeWindow; }
         }
-
 
 
         /// <summary>
@@ -120,10 +101,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         public IOleServiceProvider ServiceProvider
         {
-            get
-            {
-                return (IOleServiceProvider)SnippetDesignerPackage.Instance.GetService(typeof(IOleServiceProvider));
-            }
+            get { return (IOleServiceProvider) SnippetDesignerPackage.Instance.GetService(typeof (IOleServiceProvider)); }
         }
 
         /// <summary>
@@ -132,10 +110,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         public bool ReadOnlyCodeWindow
         {
-            get
-            {
-                return true;
-            }
+            get { return true; }
         }
 
         /// <summary>
@@ -147,7 +122,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             //currently not using
             return;
         }
-
 
 
         /// <summary> 
@@ -164,7 +138,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         }
 
 
-
         /// <summary>
         /// Handles the Load event of the SnippetExplorerForm control.
         /// </summary>
@@ -172,19 +145,18 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private void SnippetExplorerForm_Load(object sender, EventArgs e)
         {
-            dte2 = (DTE2)SnippetDesignerPackage.Instance.DTE;
+            dte2 = SnippetDesignerPackage.Instance.Dte;
             snippetIndex = SnippetDesignerPackage.Instance.SnippetIndex;
 
             UpdateStatusLabel();
 
-            snippetIndex.PropertyChanged += new PropertyChangedEventHandler(SnippetIndexChanged);
+            snippetIndex.PropertyChanged += SnippetIndexChanged;
 
             SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
             CSharpFilterBox.Checked = !options.HideCSharp;
             vbFilterBox.Checked = !options.HideVisualBasic;
             xmlFilterBox.Checked = !options.HideXML;
         }
-
 
 
         /// <summary>
@@ -200,7 +172,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 if (langBox.Checked)
                 {
                     langsToDisplay.Add(LanguageMaps.LanguageMap.DisplayLanguageToXML[langBox.Text]);
-
                 }
             }
 
@@ -222,7 +193,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 //but wont fire a selection change
                 searchResultView_SelectionChanged(searchResultView, null);
             }
-
         }
 
 
@@ -247,11 +217,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 newRow.Cells[pathCellName].Value = item.File;
                 newRow.Cells[iconCellName].Value = Resources.localIcon;
                 newRow.Tag = item;
-
             }
-
         }
-
 
 
         /// <summary>
@@ -271,7 +238,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     codeToShow = snippet.Code;
                 }
             }
-            this.previewCodeWindow.CodeText = codeToShow;
+            previewCodeWindow.CodeText = codeToShow;
         }
 
 
@@ -286,7 +253,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 SnippetIndexItem item = searchResultView.Rows[rowIndex].Tag as SnippetIndexItem;
                 if (item != null && !String.IsNullOrEmpty(item.File) && File.Exists(item.File))
                 {
-
                     string openFileCommand = "File.OpenFile";
                     string quotedFilePath = "\"" + item.File + "\"";
                     dte2.ExecuteCommand(openFileCommand, quotedFilePath);
@@ -294,12 +260,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 else
                 {
                     MessageBox.Show("Unable to open Snippet.",
-                        dte2.Application.Name,
-                        MessageBoxButtons.OK,
-                        MessageBoxIcon.Asterisk);
+                                    dte2.Application.Name,
+                                    MessageBoxButtons.OK,
+                                    MessageBoxIcon.Asterisk);
                 }
             }
-
         }
 
 
@@ -311,8 +276,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             OpenSnippetInDesigner(rowIndex);
         }
-
-
 
 
         /// <summary>
@@ -329,15 +292,14 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 if (item != null)
                 {
                     DialogResult result = MessageBox.Show("Are you sure you want to delete this snippet?",
-                        dte2.Application.Name,
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
+                                                          dte2.Application.Name,
+                                                          MessageBoxButtons.YesNo,
+                                                          MessageBoxIcon.Question);
                     if (result == DialogResult.Yes)
                     {
                         snippetIndex.DeleteSnippetFile(item.File, item.Title);
                         deleteHappened = true;
                     }
-
                 }
             }
             return deleteHappened;
@@ -350,10 +312,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// <param name="e"></param>
         private void searchResultView_KeyDown(object sender, KeyEventArgs e)
         {
-
             if (e.KeyCode == Keys.Enter)
             {
-
                 if (searchResultView.SelectedRows.Count > 0)
                 {
                     OpenSnippetInDesigner(searchResultView.SelectedRows[0].Index);
@@ -362,7 +322,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             }
             else if (e.KeyCode == Keys.Delete)
             {
-
                 e.SuppressKeyPress = true;
                 if (searchResultView.SelectedRows.Count > 0)
                 {
@@ -372,9 +331,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                         e.SuppressKeyPress = false;
                     }
                 }
-
-
-
             }
         }
 
@@ -389,7 +345,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             DataGridView.HitTestInfo info = searchResultView.HitTest(e.X, e.Y);
             if (e.Button == MouseButtons.Right)
             {
-
                 if (info.RowIndex >= 0)
                 {
                     searchResultView.Rows[info.RowIndex].Selected = true;
@@ -398,7 +353,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     SnippetIndexItem currentItem = searchResultView.Rows[info.RowIndex].Tag as SnippetIndexItem;
                     if (currentItem != null)
                     {
-
                     }
                 }
                 else
@@ -419,7 +373,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                         SnippetIndexItem item = searchResultView.Rows[info.RowIndex].Tag as SnippetIndexItem;
                         if (item != null)
                         {
-
                             if (item.File != null)
                             {
                                 //this will let you drag the item but seems to break the double click command
@@ -428,9 +381,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                         }
                     }
                 }
-
             }
-
         }
 
         private void searchResultView_CellMouseEnter(object sender, DataGridViewCellEventArgs e)
@@ -445,7 +396,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 }
             }
         }
-
 
 
         /// <summary>
@@ -502,8 +452,5 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 PerformSearch(searchBox.Text);
             }
         }
-
-
-
     }
 }

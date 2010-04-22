@@ -147,7 +147,7 @@
     <Compile Include="SnippetIndex\SnippetIndexItem.cs" />
     <Compile Include="SnippetIndex\SnippetIndexItemCollection.cs" />
     <Compile Include="StringConstants.cs" />
-    <Compile Include="VsPkg.cs" />
+    <Compile Include="SnippetDesignerPackage.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ScreenShot.png">

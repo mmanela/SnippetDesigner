@@ -211,7 +211,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         private string GetInstallRoot()
         {
-            string fullName = SnippetDesignerPackage.Instance.DTE.Application.FullName;
+            string fullName = SnippetDesignerPackage.Instance.Dte.Application.FullName;
             string pathRoot = Path.GetPathRoot(fullName);
             string[] parts = fullName.Split(Path.DirectorySeparatorChar);
             string vsDirPath = "";

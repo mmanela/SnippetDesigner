@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
 
 namespace SnippetDesignerComponents
 {
-    public class SnippetReplacementTagger : ITagger<SnippetReplacementTag>
+    public class SnippetReplacementTagger : ITagger<ClassificationTag>
     {
+        private readonly IClassificationType classificationType;
         public const string ReplacementListKey = "CurrentReplacements";
         public const string ValidExistingReplacementString = @"\$(("".*"")|(\w+))\$";
 
@@ -28,8 +30,9 @@ namespace SnippetDesignerComponents
 
 
         public SnippetReplacementTagger(ITextView view, ITextBuffer sourceBuffer, ITextSearchService textSearchService,
-                                        ITextStructureNavigator textStructureNavigator)
+                                        ITextStructureNavigator textStructureNavigator, IClassificationType classificationType)
         {
+            this.classificationType = classificationType;
             View = view;
             SourceBuffer = sourceBuffer;
             TextSearchService = textSearchService;
@@ -90,7 +93,7 @@ namespace SnippetDesignerComponents
         }
 
 
-        public IEnumerable<ITagSpan<SnippetReplacementTag>> GetTags(NormalizedSnapshotSpanCollection spans)
+        public IEnumerable<ITagSpan<ClassificationTag>> GetTags(NormalizedSnapshotSpanCollection spans)
         {
             // Hold on to a "snapshot" of the word spans, so that we maintain the same
             // collection throughout
@@ -110,7 +113,7 @@ namespace SnippetDesignerComponents
             // Yield all the replacement spans in the file
             foreach (SnapshotSpan span in NormalizedSnapshotSpanCollection.Overlap(spans, wordSpans))
             {
-                yield return new TagSpan<SnippetReplacementTag>(span, new SnippetReplacementTag());
+                yield return new TagSpan<ClassificationTag>(span, new ClassificationTag(classificationType));
             }
         }
     }

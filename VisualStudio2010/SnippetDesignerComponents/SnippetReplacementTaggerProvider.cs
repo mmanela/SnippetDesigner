@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text;
+using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.Text.Tagging;
@@ -9,9 +10,11 @@ namespace SnippetDesignerComponents
 {
     [Export(typeof (IViewTaggerProvider))]
     [ContentType("codesnippet")]
-    [TagType(typeof (SnippetReplacementTag))]
+    [TagType(typeof (ClassificationTag))]
     public class SnippetReplacementTaggerProvider : IViewTaggerProvider
     {
+        [Import] private IClassificationTypeRegistryService Registry;
+
         [Import]
         internal ITextSearchService TextSearchService { get; set; }
 
@@ -24,11 +27,9 @@ namespace SnippetDesignerComponents
             if (textView.TextBuffer != buffer)
                 return null;
 
-            ITextStructureNavigator textStructureNavigator =
-                TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
+            ITextStructureNavigator textStructureNavigator = TextStructureNavigatorSelector.GetTextStructureNavigator(buffer);
 
-            return
-                new SnippetReplacementTagger(textView, buffer, TextSearchService, textStructureNavigator) as ITagger<T>;
+            return new SnippetReplacementTagger(textView, buffer, TextSearchService, textStructureNavigator, Registry.GetClassificationType("snippet-replacement")) as ITagger<T>;
         }
     }
 }

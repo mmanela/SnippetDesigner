@@ -48,7 +48,7 @@ namespace Microsoft.SnippetDesigner
             textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
             contentTypeService =
                 SnippetDesignerPackage.Instance.ComponentModel.GetService<IContentTypeRegistryService>();
-
+              
             RegisterCodeSnippetContentType();
         }
 

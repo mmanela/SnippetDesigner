@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.RegistryTools;
 using Microsoft.SnippetDesigner.ContentTypes;
 using Microsoft.SnippetDesigner.OptionPages;
@@ -144,7 +145,7 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// the one instance of the dte object created by this package
         /// </summary>
-        public DTE DTE { get; private set; }
+        public DTE2 Dte { get; private set; }
 
         /// <summary>
         /// Get the export snippet data
@@ -281,9 +282,9 @@ namespace Microsoft.SnippetDesigner
                     //launch new file
                     CreateNewSnippetFile();
                 }
-                catch (NullReferenceException)
+                catch (Exception ex)
                 {
-                    //if this happens then just exit, export failed
+                    Logger.Log(ex.Message, "ExportToSnippet", ex);
                 }
                 return;
             }
@@ -318,7 +319,7 @@ namespace Microsoft.SnippetDesigner
             {
                 try
                 {
-                    return GetTextDocumentFromWindow(DTE.ActiveWindow);
+                    return GetTextDocumentFromWindow(Dte.ActiveWindow);
                 }
                 catch (Exception e)
                 {
@@ -331,7 +332,7 @@ namespace Microsoft.SnippetDesigner
         internal TextDocument GetTextDocumentFromWindow(Window window)
         {
             TextDocument codeDoc = null;
-            if (DTE != null)
+            if (Dte != null)
             {
                 Document doc = null;
                 try
@@ -360,7 +361,7 @@ namespace Microsoft.SnippetDesigner
         private void CreateSnippet(object sender, EventArgs e)
         {
             OleMenuCmdEventArgs eventArgs = e as OleMenuCmdEventArgs;
-            if (eventArgs != null && DTE != null)
+            if (eventArgs != null && Dte != null)
             {
                 NewSnippetCommand newSnippet = new NewSnippetCommand(eventArgs.InValue.ToString().Split(' '));
 
@@ -375,20 +376,25 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal void CreateNewSnippetFile()
         {
-            if (DTE != null)
+            if (Dte != null)
             {
                 int templateNameResourceID = 106;
                 int categoryResourceId = 100;
-                // uint EnvironmentTemplateCategoryResourceID = 13565;
                 var commandArgs = string.Format(
                     StringConstants.MakeSnippetDTEFormat,
                     GetResourceString(categoryResourceId),
-                    //GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID),
                     GetResourceString(templateNameResourceID));
-                DTE.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
+                Dte.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
             }
         }
 
+        public IVsProject GetProjecHierarchy(IServiceProvider serviceProvider, Project project)
+        {
+            var solution = serviceProvider.GetService(typeof (SVsSolution)) as IVsSolution;
+            IVsHierarchy hierarchy;
+            solution.GetProjectOfUniqueName(project.UniqueName, out hierarchy);
+            return (IVsProject) hierarchy;
+        }
 
         /// <summary>
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
@@ -403,8 +409,8 @@ namespace Microsoft.SnippetDesigner
 
 
                 //create the dte automation object so rest of package can access the automation model
-                DTE = (DTE) GetService(typeof (DTE));
-                if (DTE == null)
+                Dte = (DTE2) GetService(typeof (DTE));
+                if (Dte == null)
                 {
                     //if dte is null then we throw a excpetion
                     //this is a fatal error
@@ -448,7 +454,7 @@ namespace Microsoft.SnippetDesigner
                                                           (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
                 OleMenuCommand snippetExportCommandLine = DefineCommandHandler(ExportToSnippet, exportCmdLineID);
                 snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker;
-                    //a space means arguments are coming
+                //a space means arguments are coming
 
 
                 // Create the command for CreateSnippet
@@ -456,7 +462,7 @@ namespace Microsoft.SnippetDesigner
                                                       (int) PkgCmdIDList.cmdidCreateSnippet);
                 OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
                 createCommand.ParametersDescription = StringConstants.ArgumentStartMarker;
-                    //a space means arguments are coming
+                //a space means arguments are coming
 
                 // Create and proffer the marker service
                 MarkerService = new HighlightMarkerService(this);
@@ -531,12 +537,12 @@ namespace Microsoft.SnippetDesigner
                 TextDocument textDoc = CurrentTextDocument;
                 if (currentWindow == null)
                 {
-                    currentWindow = DTE.ActiveWindow;
+                    currentWindow = Dte.ActiveWindow;
                 }
-                else if (currentWindow != DTE.ActiveWindow)
+                else if (currentWindow != Dte.ActiveWindow)
                 {
                     previousWindow = currentWindow;
-                    currentWindow = DTE.ActiveWindow;
+                    currentWindow = Dte.ActiveWindow;
                 }
 
                 string lang = CurrentWindowLanguage.ToLower(); //turn to lower case for comparisons

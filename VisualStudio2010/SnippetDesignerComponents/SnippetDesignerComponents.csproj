@@ -62,8 +62,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SnippetMarker.cs" />
-    <Compile Include="SnippetReplacementTag.cs" />
+    <Compile Include="SnippetReplacementClassification.cs" />
     <Compile Include="SnippetReplacementTagger.cs" />
     <Compile Include="SnippetReplacementTaggerProvider.cs" />
   </ItemGroup>
