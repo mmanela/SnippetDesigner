@@ -149,7 +149,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(ProjectDir)..\SnippetDesigner.Settings.targets" />
   <PropertyGroup>
     <PreBuildEvent>
     </PreBuildEvent>

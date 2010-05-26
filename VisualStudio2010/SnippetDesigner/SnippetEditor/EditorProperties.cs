@@ -62,7 +62,6 @@ namespace Microsoft.SnippetDesigner
         }
     }
 
-
     /// <summary>
     /// The properties to display in the properties window
     /// This works through reflection.  The properties window will scan this file and pick up all the properties.
