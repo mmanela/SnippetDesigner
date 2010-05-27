@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
 using EnvDTE;
+using EnvDTE80;
 using Microsoft.RegistryTools;
 using Microsoft.SnippetDesigner.ContentTypes;
 using Microsoft.SnippetDesigner.OptionPages;
@@ -371,14 +372,30 @@ namespace Microsoft.SnippetDesigner
         {
             if (DTE != null)
             {
-                int TemplateNameResourceID = 106;
-                uint EnvironmentTemplateCategoryResourceID = 13565;
-                var commandArgs = string.Format(
-                    StringConstants.MakeSnippetDTEFormat,
-                    GetVisualStudioResourceString(EnvironmentTemplateCategoryResourceID),
-                    GetResourceString(TemplateNameResourceID));
-                DTE.ExecuteCommand(StringConstants.NewFileDTECommand, commandArgs);
+                DTE.ItemOperations.NewFile(StringConstants.NewFileFormat, GetNextAvailableNewSnippetTitle(),"{" + Guid.Empty + "}");
             }
+        }
+
+        private string GetNextAvailableNewSnippetTitle()
+        {
+            int i = 1;
+            string newTitle = null;
+
+            newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
+            while (DoesWindowWithCaptionExist(newTitle))
+            {
+                newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
+            }
+
+            return newTitle;
+        }
+
+        private bool DoesWindowWithCaptionExist(string caption)
+        {
+            foreach(Window window in DTE.Windows)
+                if(window.Caption.Equals(caption))
+                    return true;
+            return false;
         }
 
 

@@ -6,8 +6,8 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     public static class StringConstants
     {
-        public static readonly string MakeSnippetDTEFormat = "/template:\"{0}\\{1}\"";
-        public static readonly string NewFileDTECommand = "File.NewFile";
+        public const string NewFileFormat = @"General\Text File";
+        public const string NewSnippetTitleFormat = "SnippetFile{0}.snippet";
 
         //the extension associated with a snippet file
         public const string SnippetExtension = ".snippet";
