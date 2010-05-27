@@ -1,29 +1,37 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.SnippetLibrary;
 
-namespace Microsoft.SnippetDesigner.ContentTypes
+namespace Microsoft.SnippetDesigner
 {
     /// <summary>
     /// Represents the index file of snippets
     /// </summary>
     public class SnippetIndex : INotifyPropertyChanged
     {
-        private string snippetIndexFilePath;
+        private readonly string snippetIndexFilePath;
 
         // Maps SnippetFilePath|SnippetTitle to SnippetIndexItem
-        private Dictionary<String, SnippetIndexItem> indexedSnippets;
+        private readonly Dictionary<String, SnippetIndexItem> indexedSnippets;
         private bool isIndexLoading;
         private bool isIndexUpdating;
-        private ILogger logger;
+        private readonly ILogger logger;
+
+        private readonly List<Tuple<Func<SnippetIndexItem, string>, int>> fieldRankings = new List<Tuple<Func<SnippetIndexItem, string>, int>>
+                                    {
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Title, 10),
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Code, 5),
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Description, 3),
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Keywords, 2)
+                                    };
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is index updating.
@@ -33,10 +41,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// </value>
         public bool IsIndexUpdating
         {
-            get
-            {
-                return isIndexUpdating;
-            }
+            get { return isIndexUpdating; }
             set
             {
                 if (isIndexUpdating != value)
@@ -56,10 +61,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// </value>
         public bool IsIndexLoading
         {
-            get
-            {
-                return isIndexLoading;
-            }
+            get { return isIndexLoading; }
             set
             {
                 if (isIndexLoading != value)
@@ -88,6 +90,12 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             return filePath.ToUpperInvariant().Trim() + "|" + title.ToUpperInvariant().Trim();
         }
 
+
+        private static Regex CreateRegex(string pattern, string arg)
+        {
+            return new Regex(string.Format(pattern, Regex.Escape(arg), RegexOptions.IgnoreCase));
+        }
+
         /// <summary>
         /// Performs a search on the  snippets on the computer and return an index item collection containing them
         /// </summary>
@@ -95,69 +103,32 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// <param name="languagesToGet">The languages to get.</param>
         /// <param name="maxResultCount">The max result count.</param>
         /// <returns>collection of found snippets</returns>
-        public List<SnippetIndexItem> PerformSnippetSearch(string searchString, List<string> languagesToGet, int maxResultCount)
+        public IEnumerable<SnippetIndexItem> PerformSnippetSearch(string searchString, List<string> languagesToGet, int maxResultCount)
         {
-      
-            List<SnippetIndexItem> foundSnippets = new List<SnippetIndexItem>();
-            foreach (KeyValuePair<string, SnippetIndexItem> pair in indexedSnippets)
-            {
-                if (foundSnippets.Count >= maxResultCount)
-                {
-                    break;
-                }
+            var filterSnippets = indexedSnippets.Where(x => languagesToGet.Contains(x.Value.Language));
+            if (String.IsNullOrEmpty(searchString))
+                return filterSnippets.Select(x => x.Value).Take(maxResultCount);
 
-                SnippetIndexItem item = pair.Value;
-
-                //filter out the languages we dont want to show
-                if (!languagesToGet.Contains(item.Language.ToLower()))
-                {
-                    continue;
-                }
-
-                List<string> fieldsToSearch = new List<string>();
-                fieldsToSearch.Add(item.Title);
-                fieldsToSearch.Add(item.Description);
-                fieldsToSearch.Add(item.Keywords);
-                fieldsToSearch.Add(item.Code);
+            var matchRankings = new List<Tuple<Regex, double>>
+                                    {
+                                        Tuple.Create(CreateRegex(@"\b{0}\b", searchString), 1.0),
+                                        Tuple.Create(CreateRegex(@"{0}", searchString), 0.1)
+                                    };
 
 
+            var search = from snippet in filterSnippets
+                         from fieldRanking in fieldRankings
+                         from matchRanking in matchRankings
+                         where matchRanking.Item1.IsMatch(fieldRanking.Item1(snippet.Value))
+                         let rank = fieldRanking.Item2*matchRanking.Item2
+                         group rank by snippet.Value
+                         into matchResults
+                         orderby matchResults.Sum(x => x) descending 
+                         select matchResults.Key;
 
-                if (String.IsNullOrEmpty(searchString))
-                {
-                    foundSnippets.Add(item);
-                }
-                else
-                {
-                    foreach (string searchField in fieldsToSearch)
-                    {
-                        if (searchField != null)
-                        {
-                            bool allMatch = true;
-                            foreach (string part in searchString.Split(' '))
-                            {
-                                string regexString = String.Format(@"\b{0}\b", part);
-                                Regex findRegex = new Regex(regexString, RegexOptions.Multiline | RegexOptions.IgnoreCase);
+            
 
-                                if (!findRegex.IsMatch((searchField)))
-                                {
-                                    allMatch = false;
-                                    break;
-                                }
-
-                            }
-                            if (allMatch)
-                            {
-                                foundSnippets.Add(item);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-            }
-
-            return foundSnippets;
-
+            return search.Take(maxResultCount);
         }
 
 
@@ -173,7 +144,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
             try
             {
-
                 lock (indexedSnippets)
                 {
                     if (File.Exists(filePath))
@@ -188,8 +158,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     //save index file changes to disk
                     SaveIndexFile();
                 }
-
-
             }
             catch (IOException e)
             {
@@ -210,7 +178,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             item.Keywords = String.Join(",", snippetData.Keywords.ToArray());
             item.Language = snippetData.CodeLanguageAttribute;
             item.Code = snippetData.Code;
-
         }
 
         /// <summary>
@@ -267,13 +234,11 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// </summary>
         public void RebuildSnippetIndex()
         {
-
             lock (indexedSnippets)
             {
                 indexedSnippets.Clear();
             }
             CreateOrUpdateIndexFile();
-
         }
 
         /// <summary>
@@ -303,15 +268,13 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
                 //write the snippetitemcolllection to disk
                 return SaveIndexFile();
-
             }
             catch (Exception e)
             {
-                logger.Log("Unable to read snippet index directories", "SnippetIndex",e);
+                logger.Log("Unable to read snippet index directories", "SnippetIndex", e);
             }
 
             return false;
-
         }
 
 
@@ -325,7 +288,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             FileStream stream = null;
             try
             {
-                
                 //load the index file into memory
                 stream = new FileStream(snippetIndexFilePath, FileMode.Open);
                 List<SnippetIndexItem> items = Load(stream);
@@ -337,7 +299,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 {
                     foreach (SnippetIndexItem item in items)
                     {
-
                         lock (indexedSnippets)
                         {
                             if (File.Exists(item.File))
@@ -350,8 +311,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     }
                     return true;
                 }
-
-
             }
             catch (Exception e)
             {
@@ -367,9 +326,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
                 IsIndexLoading = false;
             }
-
         }
-
 
 
         /// <summary>
@@ -431,7 +388,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 }
                 else
                 {
-
                     // Remove those keys
                     foreach (string key in keysToRemove)
                     {
@@ -450,7 +406,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             }
 
             return SaveIndexFile();
-
         }
 
 
@@ -477,14 +432,12 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             {
                 if (stream != null)
                 {
-
                     stream.Close();
                 }
             }
 
 
             return false;
-
         }
 
 
@@ -502,8 +455,8 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             List<SnippetIndexItem> retval = null;
 
             XmlSerializer ser = null;
-            ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
-            retval = (List<SnippetIndexItem>)ser.Deserialize(stream);
+            ser = new XmlSerializer(typeof (List<SnippetIndexItem>));
+            retval = (List<SnippetIndexItem>) ser.Deserialize(stream);
 
 
             return retval;
@@ -522,12 +475,11 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 return false;
             }
 
-            XmlSerializer ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
+            XmlSerializer ser = new XmlSerializer(typeof (List<SnippetIndexItem>));
             List<SnippetIndexItem> items = new List<SnippetIndexItem>(indexedSnippets.Values);
             ser.Serialize(stream, items);
 
             return true;
-
         }
 
 
@@ -551,7 +503,7 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         /// is actually a property on the object.
         /// </summary>
         /// <param name="propertyName">Name of the property</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)"), Conditional("DEBUG")]
+        [SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)"), Conditional("DEBUG")]
         private void VerifyProperty(string propertyName)
         {
             bool propertyExists = TypeDescriptor.GetProperties(this).Find(propertyName, false) != null;
@@ -560,6 +512,5 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 Debug.Fail(String.Format("The property {0} could not be found in {1}", propertyName, GetType().FullName));
             }
         }
-
     }
 }

@@ -1,7 +1,7 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace Microsoft.SnippetDesigner.ContentTypes
+namespace Microsoft.SnippetDesigner
 {
     /// <summary>
     /// Represents a snippet meta data in the index file

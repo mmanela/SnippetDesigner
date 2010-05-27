@@ -1,48 +1,49 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
-using System.IO.IsolatedStorage;
-using System.IO;
-using System.Globalization;
-using Microsoft.SnippetLibrary;
-using Microsoft.SnippetDesigner.SnippetExplorer;
-using System.Windows.Forms;
-using Microsoft.RegistryTools;
-using System.Text.RegularExpressions;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml.Serialization;
+using Microsoft.SnippetDesigner.ContentTypes;
+using Microsoft.SnippetDesigner.SnippetExplorer;
+using Microsoft.SnippetLibrary;
 
-namespace Microsoft.SnippetDesigner.ContentTypes
+namespace Microsoft.SnippetDesigner
 {
     /// <summary>
-    /// Represents the index file of snippets
+    ///     Represents the index file of snippets
     /// </summary>
     public class SnippetIndex : INotifyPropertyChanged
     {
-        private string snippetIndexFilePath;
+        private readonly string snippetIndexFilePath;
 
         // Maps SnippetFilePath|SnippetTitle to SnippetIndexItem
-        private Dictionary<String, SnippetIndexItem> indexedSnippets;
+        private readonly Dictionary<String, SnippetIndexItem> indexedSnippets;
         private bool isIndexLoading;
         private bool isIndexUpdating;
-        private ILogger logger;
+        private readonly ILogger logger;
+
+
+        private readonly List<Tuple<Func<SnippetIndexItem, string>, int>> fieldRankings = new List<Tuple<Func<SnippetIndexItem, string>, int>>
+                                    {
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Title, 10),
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Code, 5),
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Description, 3),
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Keywords, 2)
+                                    };
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is index updating.
+        ///     Gets or sets a value indicating whether this instance is index updating.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this instance is index updating; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is index updating; otherwise, <c>false</c>.
         /// </value>
         public bool IsIndexUpdating
         {
-            get
-            {
-                return isIndexUpdating;
-            }
+            get { return isIndexUpdating; }
             set
             {
                 if (isIndexUpdating != value)
@@ -55,17 +56,14 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
 
         /// <summary>
-        /// Gets or sets a value indicating whether this instance is index loading.
+        ///     Gets or sets a value indicating whether this instance is index loading.
         /// </summary>
         /// <value>
-        /// 	<c>true</c> if this instance is index loading; otherwise, <c>false</c>.
+        ///     <c>true</c> if this instance is index loading; otherwise, <c>false</c>.
         /// </value>
         public bool IsIndexLoading
         {
-            get
-            {
-                return isIndexLoading;
-            }
+            get { return isIndexLoading; }
             set
             {
                 if (isIndexLoading != value)
@@ -84,102 +82,71 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
         /// <summary>
-        /// Gets the dictionary key.
+        ///     Gets the dictionary key.
         /// </summary>
-        /// <param name="filePath">The file path.</param>
-        /// <param name="title">The title.</param>
+        /// <param name = "filePath">The file path.</param>
+        /// <param name = "title">The title.</param>
         /// <returns></returns>
         private string GetDictionaryKey(string filePath, string title)
         {
             return filePath.ToUpperInvariant().Trim() + "|" + title.ToUpperInvariant().Trim();
         }
 
-        /// <summary>
-        /// Performs a search on the  snippets on the computer and return an index item collection containing them
-        /// </summary>
-        /// <param name="searchString">string to search by, if null or empty get all</param>
-        /// <param name="languagesToGet">The languages to get.</param>
-        /// <param name="maxResultCount">The max result count.</param>
-        /// <returns>collection of found snippets</returns>
-        public List<SnippetIndexItem> PerformSnippetSearch(string searchString, List<string> languagesToGet, int maxResultCount)
+        private static Regex CreateRegex(string pattern, string arg)
         {
-      
-            List<SnippetIndexItem> foundSnippets = new List<SnippetIndexItem>();
-            foreach (KeyValuePair<string, SnippetIndexItem> pair in indexedSnippets)
-            {
-                if (foundSnippets.Count >= maxResultCount)
-                {
-                    break;
-                }
-
-                SnippetIndexItem item = pair.Value;
-
-                //filter out the languages we dont want to show
-                if (!languagesToGet.Contains(item.Language.ToLower()))
-                {
-                    continue;
-                }
-
-                List<string> fieldsToSearch = new List<string>();
-                fieldsToSearch.Add(item.Title);
-                fieldsToSearch.Add(item.Description);
-                fieldsToSearch.Add(item.Keywords);
-                fieldsToSearch.Add(item.Code);
-
-
-
-                if (String.IsNullOrEmpty(searchString))
-                {
-                    foundSnippets.Add(item);
-                }
-                else
-                {
-                    foreach (string searchField in fieldsToSearch)
-                    {
-                        if (searchField != null)
-                        {
-                            bool allMatch = true;
-                            foreach (string part in searchString.Split(' '))
-                            {
-                                string regexString = String.Format(@"\b{0}\b", part);
-                                Regex findRegex = new Regex(regexString, RegexOptions.Multiline | RegexOptions.IgnoreCase);
-
-                                if (!findRegex.IsMatch((searchField)))
-                                {
-                                    allMatch = false;
-                                    break;
-                                }
-
-                            }
-                            if (allMatch)
-                            {
-                                foundSnippets.Add(item);
-                                break;
-                            }
-                        }
-                    }
-                }
-
-            }
-
-            return foundSnippets;
-
+            return new Regex(string.Format(pattern, Regex.Escape(arg), RegexOptions.IgnoreCase));
         }
 
 
         /// <summary>
-        /// delete the content associated with this item
+        ///     Performs a search on the  snippets on the computer and return an index item collection containing them
         /// </summary>
-        /// <param name="filePath">The file path.</param>
-        /// <param name="title">The title.</param>
+        /// <param name = "searchString">string to search by, if null or empty get all</param>
+        /// <param name = "languagesToGet">The languages to get.</param>
+        /// <param name = "maxResultCount">The max result count.</param>
+        /// <returns>collection of found snippets</returns>
+        public IEnumerable<SnippetIndexItem> PerformSnippetSearch(string searchString, List<string> languagesToGet,
+                                                                  int maxResultCount)
+        {
+            var filterSnippets = indexedSnippets.Where(x => languagesToGet.Contains(x.Value.Language));
+            if (String.IsNullOrEmpty(searchString))
+                return filterSnippets.Select(x => x.Value).Take(maxResultCount);
+
+            var matchRankings = new List<Tuple<Regex, double>>
+                                    {
+                                        Tuple.Create(CreateRegex(@"\b{0}\b", searchString), 1.0),
+                                        Tuple.Create(CreateRegex(@"{0}", searchString), 0.1)
+                                    };
+
+
+            var search = from snippet in filterSnippets
+                         from fieldRanking in fieldRankings
+                         from matchRanking in matchRankings
+                         where matchRanking.Item1.IsMatch(fieldRanking.Item1(snippet.Value))
+                         let rank = fieldRanking.Item2*matchRanking.Item2
+                         group rank by snippet.Value
+                         into matchResults
+                         orderby matchResults.Sum(x => x) descending
+                         select matchResults.Key;
+
+
+            return search.Take(maxResultCount);
+        }
+
+
+        /// <summary>
+        ///     delete the content associated with this item
+        /// </summary>
+        /// <param name = "filePath">The file path.</param>
+        /// <param name = "title">The title.</param>
         public void DeleteSnippetFile(string filePath, string title)
         {
-            if (string.IsNullOrEmpty(filePath)) throw new ArgumentNullException("filePath", "filePath must not be null");
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentNullException("filePath", "filePath must not be null");
             if (string.IsNullOrEmpty(title)) throw new ArgumentNullException("title", "title must not be null");
 
             try
             {
-
                 lock (indexedSnippets)
                 {
                     if (File.Exists(filePath))
@@ -194,8 +161,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     //save index file changes to disk
                     SaveIndexFile();
                 }
-
-
             }
             catch (IOException e)
             {
@@ -204,10 +169,10 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
         /// <summary>
-        /// Update a snippet index item with new values
+        ///     Update a snippet index item with new values
         /// </summary>
-        /// <param name="item">item to update</param>
-        /// <param name="snippetData">snipept data to update it with</param>
+        /// <param name = "item">item to update</param>
+        /// <param name = "snippetData">snipept data to update it with</param>
         private void UpdateIndexItemData(SnippetIndexItem item, Snippet snippetData)
         {
             item.Title = snippetData.Title;
@@ -216,13 +181,12 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             item.Keywords = String.Join(",", snippetData.Keywords.ToArray());
             item.Language = snippetData.CodeLanguageAttribute;
             item.Code = snippetData.Code;
-
         }
 
         /// <summary>
-        /// Reads the snippet object and adds the right data to the index
+        ///     Reads the snippet object and adds the right data to the index
         /// </summary>
-        /// <param name="filePath">the path of the file</param>
+        /// <param name = "filePath">the path of the file</param>
         public void CreateIndexItemDataFromSnippet(Snippet currentSnippet, string filePath)
         {
             SnippetIndexItem item = new SnippetIndexItem();
@@ -236,9 +200,9 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
         /// <summary>
-        /// Loads the data for this index item from a snippet file
+        ///     Loads the data for this index item from a snippet file
         /// </summary>
-        /// <param name="filePath">the path of the file</param>
+        /// <param name = "filePath">the path of the file</param>
         private bool AddOrUpdateSnippetsToIndexFromSnippetFile(string filePath)
         {
             try
@@ -269,22 +233,20 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
         /// <summary>
-        /// Rebuilds the index of the snippet.
+        ///     Rebuilds the index of the snippet.
         /// </summary>
         public void RebuildSnippetIndex()
         {
-
             lock (indexedSnippets)
             {
                 indexedSnippets.Clear();
             }
             CreateOrUpdateIndexFile();
-
         }
 
         /// <summary>
-        /// Create a new index file by reading all snippet files 
-        /// and building them in internal memory then writing them to the index file
+        ///     Create a new index file by reading all snippet files 
+        ///     and building them in internal memory then writing them to the index file
         /// </summary>
         /// <returns></returns>
         public bool CreateOrUpdateIndexFile()
@@ -299,7 +261,8 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                         continue;
                     }
 
-                    string[] snippetFilePaths = Directory.GetFiles(path, SnippetSearch.AllSnippets, SearchOption.AllDirectories);
+                    string[] snippetFilePaths = Directory.GetFiles(path, SnippetSearch.AllSnippets,
+                                                                   SearchOption.AllDirectories);
                     foreach (string snippetPath in snippetFilePaths)
                     {
                         AddOrUpdateSnippetsToIndexFromSnippetFile(snippetPath);
@@ -309,20 +272,18 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
                 //write the snippetitemcolllection to disk
                 return SaveIndexFile();
-
             }
             catch (Exception e)
             {
-                logger.Log("Unable to read snippet index directories", "SnippetIndex",e);
+                logger.Log("Unable to read snippet index directories", "SnippetIndex", e);
             }
 
             return false;
-
         }
 
 
         /// <summary>
-        /// Read the index file from disk into memory
+        ///     Read the index file from disk into memory
         /// </summary>
         /// <returns></returns>
         public bool ReadIndexFile()
@@ -331,7 +292,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             FileStream stream = null;
             try
             {
-                
                 //load the index file into memory
                 stream = new FileStream(snippetIndexFilePath, FileMode.Open);
                 List<SnippetIndexItem> items = Load(stream);
@@ -343,7 +303,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 {
                     foreach (SnippetIndexItem item in items)
                     {
-
                         lock (indexedSnippets)
                         {
                             if (File.Exists(item.File))
@@ -356,8 +315,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                     }
                     return true;
                 }
-
-
             }
             catch (Exception e)
             {
@@ -373,16 +330,14 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
                 IsIndexLoading = false;
             }
-
         }
 
 
-
         /// <summary>
-        /// Update a  snippet item in the collection based upon the current filepath
-        /// then swap the item with the new one
+        ///     Update a  snippet item in the collection based upon the current filepath
+        ///     then swap the item with the new one
         /// </summary>
-        /// <param name="updatedSnippet">The updated snippet.</param>
+        /// <param name = "updatedSnippet">The updated snippet.</param>
         /// <returns></returns>
         public bool UpdateSnippetFile(SnippetFile updatedSnippetFile)
         {
@@ -437,7 +392,6 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 }
                 else
                 {
-
                     // Remove those keys
                     foreach (string key in keysToRemove)
                     {
@@ -456,12 +410,11 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             }
 
             return SaveIndexFile();
-
         }
 
 
         /// <summary>
-        /// Write the current SnippetIndexItemCOllection to the index file
+        ///     Write the current SnippetIndexItemCOllection to the index file
         /// </summary>
         /// <returns>true if success</returns>
         private bool SaveIndexFile()
@@ -483,21 +436,19 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             {
                 if (stream != null)
                 {
-
                     stream.Close();
                 }
             }
 
 
             return false;
-
         }
 
 
         /// <summary>
-        ///  Deserialize or Load this object member values from an XML file
+        ///     Deserialize or Load this object member values from an XML file
         /// </summary>
-        /// <param name="stream">Stream for the file to load</param>
+        /// <param name = "stream">Stream for the file to load</param>
         /// <returns>a List of snippetIndexItems or null if failure</returns>
         private List<SnippetIndexItem> Load(Stream stream)
         {
@@ -508,8 +459,8 @@ namespace Microsoft.SnippetDesigner.ContentTypes
             List<SnippetIndexItem> retval = null;
 
             XmlSerializer ser = null;
-            ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
-            retval = (List<SnippetIndexItem>)ser.Deserialize(stream);
+            ser = new XmlSerializer(typeof (List<SnippetIndexItem>));
+            retval = (List<SnippetIndexItem>) ser.Deserialize(stream);
 
 
             return retval;
@@ -517,9 +468,9 @@ namespace Microsoft.SnippetDesigner.ContentTypes
 
 
         /// <summary>
-        /// Serialize this object as an XML file to disk.
+        ///     Serialize this object as an XML file to disk.
         /// </summary>
-        /// <param name="stream">file stream</param>
+        /// <param name = "stream">file stream</param>
         /// <returns>Succeed or failure</returns>
         private bool Save(Stream stream)
         {
@@ -528,21 +479,20 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 return false;
             }
 
-            XmlSerializer ser = new XmlSerializer(typeof(List<SnippetIndexItem>));
+            XmlSerializer ser = new XmlSerializer(typeof (List<SnippetIndexItem>));
             List<SnippetIndexItem> items = new List<SnippetIndexItem>(indexedSnippets.Values);
             ser.Serialize(stream, items);
 
             return true;
-
         }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
-        /// Fire the property changed event for the given property name
+        ///     Fire the property changed event for the given property name
         /// </summary>
-        /// <param name="propertyName">Name of the property</param>
+        /// <param name = "propertyName">Name of the property</param>
         private void OnPropertyChanged(string propertyName)
         {
             VerifyProperty(propertyName);
@@ -553,11 +503,12 @@ namespace Microsoft.SnippetDesigner.ContentTypes
         }
 
         /// <summary>
-        /// Used in debug mode only.  Checks to make sure the property name string
-        /// is actually a property on the object.
+        ///     Used in debug mode only.  Checks to make sure the property name string
+        ///     is actually a property on the object.
         /// </summary>
-        /// <param name="propertyName">Name of the property</param>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider", MessageId = "System.String.Format(System.String,System.Object,System.Object)"), Conditional("DEBUG")]
+        /// <param name = "propertyName">Name of the property</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1305:SpecifyIFormatProvider",
+            MessageId = "System.String.Format(System.String,System.Object,System.Object)"), Conditional("DEBUG")]
         private void VerifyProperty(string propertyName)
         {
             bool propertyExists = TypeDescriptor.GetProperties(this).Find(propertyName, false) != null;
@@ -566,6 +517,5 @@ namespace Microsoft.SnippetDesigner.ContentTypes
                 Debug.Fail(String.Format("The property {0} could not be found in {1}", propertyName, GetType().FullName));
             }
         }
-
     }
 }

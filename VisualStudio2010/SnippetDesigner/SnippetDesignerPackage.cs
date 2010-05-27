@@ -9,7 +9,7 @@ using System.Threading;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.RegistryTools;
-using Microsoft.SnippetDesigner.ContentTypes;
+using Microsoft.SnippetDesigner;
 using Microsoft.SnippetDesigner.OptionPages;
 using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.VisualStudio;
@@ -478,10 +478,6 @@ namespace Microsoft.SnippetDesigner
                 ((IServiceContainer)this).AddService(MarkerService.GetType(), MarkerService, true);
 
 
-                //var componentModel = (IComponentModel)Package.GetGlobalService(typeof(SComponentModel));
-                //  var taggerProviders = componentModel.GetExtensions<IViewTaggerProvider>();
-                // var adorners = componentModel.GetExtensions<IWpfTextViewCreationListener>();
-                //var services = componentModel.GetService<IViewTaggerProvider>();
                 //initialize the snippet index
                 SnippetIndex = new SnippetIndex();
                 ThreadPool.QueueUserWorkItem(

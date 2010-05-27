@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using EnvDTE80;
-using Microsoft.SnippetDesigner.ContentTypes;
 using Microsoft.SnippetDesigner.OptionPages;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
@@ -25,7 +25,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private string codeLanguageCellName = "Language";
         private string pathCellName = "Path";
         private DTE2 dte2;
-        private readonly int maxResultCount = 50; //max number of snippets to return from a search\
+        private const int MaxResultCount = 25; //max number of snippets to return from a search\
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnippetExplorerForm"/> class.
@@ -165,7 +165,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// <param name="searchString">String to search by</param>
         public void PerformSearch(string searchString)
         {
-            List<SnippetIndexItem> foundSnippets = null;
+            IEnumerable<SnippetIndexItem> foundSnippets = null;
             List<string> langsToDisplay = new List<string>();
             foreach (CheckBox langBox in languageFilterBoxList)
             {
@@ -179,11 +179,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             searchResultView.Rows.Clear();
 
             int totalFoundCount = 0;
-            foundSnippets = snippetIndex.PerformSnippetSearch(searchString, langsToDisplay, maxResultCount);
-            if (foundSnippets != null && foundSnippets.Count > 0)
+            foundSnippets = snippetIndex.PerformSnippetSearch(searchString, langsToDisplay, MaxResultCount);
+            if (foundSnippets.Count() > 0)
             {
                 AddItemsToGridView(foundSnippets);
-                totalFoundCount += foundSnippets.Count;
+                totalFoundCount += foundSnippets.Count();
             }
 
 
@@ -200,9 +200,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// for each indexitem in the collection add it to the grid view
         /// </summary>
         /// <param name="items"></param>
-        public void AddItemsToGridView(List<SnippetIndexItem> items)
+        public void AddItemsToGridView(IEnumerable<SnippetIndexItem> items)
         {
-            if (items == null || items.Count == 0)
+            if (items == null || items.Count() == 0)
             {
                 return;
             }
