@@ -50,6 +50,7 @@ namespace Microsoft.SnippetDesigner
             this.replacementLabel = new System.Windows.Forms.Label();
             this.snippetCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
             this.topCommandBar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.codeReplacementsSplitter)).BeginInit();
             this.codeReplacementsSplitter.Panel1.SuspendLayout();
             this.codeReplacementsSplitter.Panel2.SuspendLayout();
             this.codeReplacementsSplitter.SuspendLayout();
@@ -94,9 +95,12 @@ namespace Microsoft.SnippetDesigner
             // 
             this.toolStripLanguageBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.toolStripLanguageBox.Items.AddRange(new object[] {
-            global::Microsoft.SnippetDesigner.Resources.DisplayNameCSharp,
-            global::Microsoft.SnippetDesigner.Resources.DisplayNameVisualBasic,
-            global::Microsoft.SnippetDesigner.Resources.DisplayNameXML});
+            resources.GetString("toolStripLanguageBox.Items"),
+            resources.GetString("toolStripLanguageBox.Items1"),
+            resources.GetString("toolStripLanguageBox.Items2"),
+            resources.GetString("toolStripLanguageBox.Items3"),
+            resources.GetString("toolStripLanguageBox.Items4"),
+            resources.GetString("toolStripLanguageBox.Items5")});
             this.toolStripLanguageBox.Name = "toolStripLanguageBox";
             resources.ApplyResources(this.toolStripLanguageBox, "toolStripLanguageBox");
             this.toolStripLanguageBox.SelectedIndexChanged += new System.EventHandler(this.languageComboBox_SelectedIndexChanged);
@@ -139,12 +143,12 @@ namespace Microsoft.SnippetDesigner
             this.replacementGridView.EditMode = System.Windows.Forms.DataGridViewEditMode.EditOnKeystroke;
             this.replacementGridView.MultiSelect = false;
             this.replacementGridView.Name = "replacementGridView";
-            this.replacementGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.replacementGridView_CellValueChanged);
-            this.replacementGridView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.snippetReplacementGrid_MouseDown);
-            this.replacementGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.replacementGridView_RowsRemoved);
             this.replacementGridView.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.replacementGridView_CellBeginEdit);
+            this.replacementGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.replacementGridView_CellValueChanged);
             this.replacementGridView.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.replacementGridView_RowEnter);
+            this.replacementGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.replacementGridView_RowsRemoved);
             this.replacementGridView.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
+            this.replacementGridView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.snippetReplacementGrid_MouseDown);
             // 
             // ID
             // 
@@ -216,6 +220,7 @@ namespace Microsoft.SnippetDesigner
             // snippetCodeWindow
             // 
             resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
+            this.snippetCodeWindow.CodeText = global::Microsoft.SnippetDesigner.Resources.Empty;
             this.snippetCodeWindow.MinimumSize = new System.Drawing.Size(250, 100);
             this.snippetCodeWindow.Name = "snippetCodeWindow";
             this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
@@ -232,6 +237,7 @@ namespace Microsoft.SnippetDesigner
             this.codeReplacementsSplitter.Panel1.ResumeLayout(false);
             this.codeReplacementsSplitter.Panel1.PerformLayout();
             this.codeReplacementsSplitter.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.codeReplacementsSplitter)).EndInit();
             this.codeReplacementsSplitter.ResumeLayout(false);
             this.replacementTable.ResumeLayout(false);
             this.replacementTable.PerformLayout();

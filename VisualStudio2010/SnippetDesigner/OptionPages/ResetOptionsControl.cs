@@ -43,7 +43,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
             if (!SnippetDesignerPackage.Instance.SnippetIndex.IsIndexLoading &&
                 !SnippetDesignerPackage.Instance.SnippetIndex.IsIndexUpdating)
             {
-                SnippetDesignerPackage.Instance.Settings.IndexedSnippetDirectories = new List<string>(SnippetDirectories.Instance.AllSnippetDirectories);
+                SnippetDesignerPackage.Instance.Settings.IndexedSnippetDirectories = new List<string>();
             }
         }
 

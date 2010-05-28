@@ -36,10 +36,18 @@ namespace Microsoft.SnippetDesigner
         public const string SchemaNameCSharp2 = "vcsharp";
         public const string SchemaNameVisualBasic = "vb";
         public const string SchemaNameXML = "xml";
+        public const string SchemaNameJavaScript = "jscript";
+        public const string SchemaNameSQL = "sql";
+        public const string SchemaNameHTML = "html";
+
         public const string SnippetDirectoryName = "Code Snippets";
         public const string SnippetDirNameCSharp = "Visual C#";
         public const string SnippetDirNameVisualBasic = "Visual Basic";
         public const string SnippetDirNameXML = "XML";
+        public const string SnippetDirNameSQL= "SQL";
+        public const string SnippetDirNameHTML = "My HTML Snippets";
+        public const string SnippetDirNameJavaScript = "My JScript Snippets";
+        public const string VisualWebDeveloper = "Visual Web Developer";
         public const string SnippetTypeExpansion = "Expansion";
         public const string SnippetTypeMethodBody = "method body";
         public const string SnippetTypeMethodDeclaration = "method decl";

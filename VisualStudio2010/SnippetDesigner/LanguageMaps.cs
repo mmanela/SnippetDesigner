@@ -7,7 +7,10 @@ namespace Microsoft.SnippetDesigner
     {
         CSharp,
         VisualBasic,
-        XML
+        XML,
+        JavaScript,
+        SQL,
+        HTML
     }
 
     /// <summary>
@@ -17,17 +20,11 @@ namespace Microsoft.SnippetDesigner
     {
         public static LanguageMaps LanguageMap = new LanguageMaps();
 
-        //hash that maps what the scnippet schema names of the programming languages are to the dispaly names we use
+        //hash that maps what the snippet schema names of the programming languages are to the display names we use
         private readonly Dictionary<string, string> snippetSchemaLanguageToDisplay = new Dictionary<string, string>();
+
         //hash that maps what the display names of the programming languages are to the xml names the snippet schema specifies
         private readonly Dictionary<string, string> displayLanguageToXML = new Dictionary<string, string>();
-
-        private readonly Dictionary<Language, Guid> languageGuids = new Dictionary<Language, Guid>();
-
-        public Dictionary<Language, Guid> LanguageGuids
-        {
-            get { return languageGuids; }
-        }
 
         public Dictionary<string, string> SnippetSchemaLanguageToDisplay
         {
@@ -54,6 +51,12 @@ namespace Microsoft.SnippetDesigner
                     return Resources.DisplayNameVisualBasic;
                 case Language.XML:
                     return Resources.DisplayNameXML;
+                case Language.JavaScript:
+                    return Resources.DisplayNameJavaScript;
+                case Language.SQL:
+                    return Resources.DisplayNameSQL;
+                case Language.HTML:
+                    return Resources.DisplayNameHTML;
                 default:
                     return String.Empty;
             }
@@ -73,7 +76,13 @@ namespace Microsoft.SnippetDesigner
                 case Language.VisualBasic:
                     return StringConstants.SchemaNameVisualBasic;
                 case Language.XML:
-                    return StringConstants.SchemaNameXML;
+                    return StringConstants.SchemaNameXML;                
+                case Language.JavaScript:
+                    return StringConstants.SchemaNameJavaScript;                
+                case Language.SQL:
+                    return StringConstants.SchemaNameSQL;                
+                case Language.HTML:
+                    return StringConstants.SchemaNameHTML;
                 default:
                     return String.Empty;
             }
@@ -89,17 +98,19 @@ namespace Microsoft.SnippetDesigner
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp] = Resources.DisplayNameCSharp;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp2] = Resources.DisplayNameCSharp;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameXML] = Resources.DisplayNameXML;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameJavaScript] = Resources.DisplayNameJavaScript;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameSQL] = Resources.DisplayNameSQL;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameHTML] = Resources.DisplayNameHTML;
             snippetSchemaLanguageToDisplay[String.Empty] = String.Empty;
 
             //has from display names to schema names
             displayLanguageToXML[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
             displayLanguageToXML[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
             displayLanguageToXML[Resources.DisplayNameXML] = StringConstants.SchemaNameXML;
+            displayLanguageToXML[Resources.DisplayNameJavaScript] = StringConstants.SchemaNameJavaScript;
+            displayLanguageToXML[Resources.DisplayNameSQL] = StringConstants.SchemaNameSQL;
+            displayLanguageToXML[Resources.DisplayNameHTML] = StringConstants.SchemaNameHTML;
             displayLanguageToXML[String.Empty] = String.Empty;
-
-            languageGuids[Language.CSharp] = GuidList.csLangSvc;
-            languageGuids[Language.VisualBasic] = GuidList.vbLangSvc;
-            languageGuids[Language.XML] = GuidList.xmlLangSvc;
         }
     }
 }

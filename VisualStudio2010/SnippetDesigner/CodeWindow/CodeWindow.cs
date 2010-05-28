@@ -43,6 +43,8 @@ namespace Microsoft.SnippetDesigner
         {
             InitializeComponent();
 
+            if (SnippetDesignerPackage.Instance == null) return;
+
             editorAdapterFactoryService =
                 SnippetDesignerPackage.Instance.ComponentModel.GetService<IVsEditorAdaptersFactoryService>();
             textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
@@ -190,7 +192,7 @@ namespace Microsoft.SnippetDesigner
             get
             {
                 if (VsCodeWindow != null)
-                {
+                {   
                     IVsTextView textView;
                     ErrorHandler.ThrowOnFailure(VsCodeWindow.GetPrimaryView(out textView));
                     return textView;

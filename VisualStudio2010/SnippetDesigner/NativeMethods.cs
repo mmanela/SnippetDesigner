@@ -15,11 +15,14 @@ namespace Microsoft.SnippetDesigner
         WM_SETFOCUS = 0x0007,
         WM_KILLFOCUS = 0x0008;
 
-        [DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         internal static extern bool IsChild(IntPtr hwndParent, IntPtr hwndChildTest);
 
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         internal static extern IntPtr GetFocus();
+
+        [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
+        internal static extern IntPtr SetFocus(IntPtr hWnd);
 
         [DllImport("user32.dll", ExactSpelling = true, CharSet = CharSet.Auto)]
         internal static extern bool SetWindowPos(IntPtr hwnd, IntPtr hwndBefore, int x, int y, int cx, int cy, int flags);

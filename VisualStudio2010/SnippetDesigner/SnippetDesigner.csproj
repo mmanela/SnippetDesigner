@@ -118,7 +118,11 @@
     <Compile Include="PkgCmdID.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyAttributes.cs" />
-    <Compile Include="Resources.Designer.cs" />
+    <Compile Include="Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SnippetDirectories.cs" />
     <Compile Include="SnippetEditor\CommandFilter.cs" />
     <Compile Include="SnippetEditor\EditorProperties.cs" />
@@ -194,7 +198,10 @@
     <EmbeddedResource Include="OptionPages\ResetOptionsControl.resx">
       <DependentUpon>ResetOptionsControl.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources.resx" />
+    <EmbeddedResource Include="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\SnippetEditor.resx" />
     <EmbeddedResource Include="SnippetEditor\SnippetEditorForm.resx">
       <DependentUpon>SnippetEditorForm.cs</DependentUpon>

@@ -105,7 +105,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>collection of found snippets</returns>
         public IEnumerable<SnippetIndexItem> PerformSnippetSearch(string searchString, List<string> languagesToGet, int maxResultCount)
         {
-            var filterSnippets = indexedSnippets.Where(x => languagesToGet.Contains(x.Value.Language));
+            var filterSnippets = indexedSnippets.Where(x => languagesToGet.Any(lang => lang.Equals(x.Value.Language,StringComparison.OrdinalIgnoreCase)));
             if (String.IsNullOrEmpty(searchString))
                 return filterSnippets.Select(x => x.Value).Take(maxResultCount);
 
@@ -251,7 +251,7 @@ namespace Microsoft.SnippetDesigner
             try
             {
                 IsIndexUpdating = true;
-                foreach (string path in SnippetDesignerPackage.Instance.Settings.IndexedSnippetDirectories)
+                foreach (string path in SnippetDesignerPackage.Instance.Settings.AllSnippetDirectories)
                 {
                     if (!Directory.Exists(path))
                     {

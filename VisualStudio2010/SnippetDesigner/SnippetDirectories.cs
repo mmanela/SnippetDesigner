@@ -24,7 +24,7 @@ namespace Microsoft.SnippetDesigner
 
         //snippet directories
         private readonly Dictionary<string, string> userSnippetDirectories = new Dictionary<string, string>();
-        private readonly List<string> allSnippetDirectories = new List<string>();
+        private readonly List<string> defaultSnippetDirectories = new List<string>();
 
         /// <summary>
         /// Getsthe user snippet directories. This is used to know where to save to
@@ -40,9 +40,9 @@ namespace Microsoft.SnippetDesigner
         /// Gets the paths to all snippets
         /// </summary>
         /// <value>The vs snippet directories.</value>
-        public List<string> AllSnippetDirectories
+        public List<string> DefaultSnippetDirectories
         {
-            get { return allSnippetDirectories; }
+            get { return defaultSnippetDirectories; }
         }
 
         /// <summary>
@@ -60,70 +60,83 @@ namespace Microsoft.SnippetDesigner
             replaceRegex = new Regex("(%InstallRoot%)|(%LCID%)|(%MyDocs%)", RegexOptions.Compiled);
 
             GetUserSnippetDirectories();
-            GetSnippetDirectoriesFromRegistry();
+            GetSnippetDirectoriesFromRegistry(Registry.LocalMachine,false);
+            GetSnippetDirectoriesFromRegistry(Registry.Users,true);
         }
 
-        private void GetSnippetDirectoriesFromRegistry()
+        private void AddPathsFromRegistryKey(RegistryKey key, string subKeyName)
         {
             try
             {
-                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(Registry.LocalMachine))
+                using (RegistryKey subKey = key.OpenSubKey(subKeyName))
+                {
+                    foreach (string name in subKey.GetValueNames())
+                    {
+                        string possiblePathString = subKey.GetValue(name) as string;
+                        ProcessPathString(possiblePathString);
+                    }
+                }
+            }
+            catch (NullReferenceException e)
+            {
+                SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values in {0} for {1}", key, subKeyName), "SnippetDirectories", e);
+            }
+            catch (ArgumentException e)
+            {
+                SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values in {0} for {1}", key,subKeyName), "SnippetDirectories", e);
+            }
+
+        }
+
+
+
+        private void GetSnippetDirectoriesFromRegistry(RegistryKey rootKey, bool configSection)
+        {
+            try
+            {
+                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey,configSection))
                 using (RegistryKey codeExpansionKey = vsKey.OpenSubKey("Languages\\CodeExpansions"))
                     foreach (string lang in codeExpansionKey.GetSubKeyNames())
                     {
-                        if (lang.Equals("CSharp", StringComparison.InvariantCulture) ||
-                            lang.Equals("Basic", StringComparison.InvariantCulture) ||
-                            lang.Equals("XML", StringComparison.InvariantCulture))
-                        {
-                            try
-                            {
-                                using (RegistryKey forceCreate = codeExpansionKey.OpenSubKey(lang + "\\ForceCreateDirs"))
-                                {
-                                    foreach (string value in forceCreate.GetValueNames())
-                                    {
-                                        string possiblePathString = forceCreate.GetValue(value) as string;
-                                        ProcessPathString(possiblePathString);
-                                    }
-                                }
-                            }
-                            catch (NullReferenceException)
-                            {
-                                Debug.WriteLine("Cannot find ForceCreateDirs for " + lang);
-                            }
-                            catch (ArgumentException)
-                            {
-                                Debug.WriteLine("Cannot find ForceCreateDirs for " + lang);
-                            }
 
-                            try
+                        try
+                        {
+                            if (lang.Equals("CSharp", StringComparison.OrdinalIgnoreCase) ||
+                                lang.Equals("Basic", StringComparison.OrdinalIgnoreCase) ||
+                                lang.Equals("JScript", StringComparison.OrdinalIgnoreCase) ||
+                                lang.Equals("HTML", StringComparison.OrdinalIgnoreCase) ||
+                                lang.Equals("SQL", StringComparison.OrdinalIgnoreCase) ||
+                                lang.Equals("XML", StringComparison.OrdinalIgnoreCase))
                             {
-                                using (RegistryKey paths = codeExpansionKey.OpenSubKey(lang + "\\Paths"))
+                                using (var langKey = codeExpansionKey.OpenSubKey(lang))
                                 {
-                                    foreach (string value in paths.GetValueNames())
-                                    {
-                                        string possiblePathString = paths.GetValue(value) as string;
-                                        ProcessPathString(possiblePathString);
-                                    }
+                                    AddPathsFromRegistryKey(langKey, "ForceCreateDirs");
+                                    AddPathsFromRegistryKey(langKey, "Paths");
                                 }
-                            }
-                            catch (NullReferenceException)
-                            {
-                                Debug.WriteLine("Cannot find Paths for " + lang);
-                            }
-                            catch (ArgumentException)
-                            {
-                                Debug.WriteLine("Cannot find ForceCreateDirs for " + lang);
                             }
                         }
+                        catch (NullReferenceException e)
+                        {
+                            SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values for {0}", lang), "SnippetDirectories", e);
+                        }
+                        catch (ArgumentException e)
+                        {
+                            SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values for {0}", lang), "SnippetDirectories", e);
+                        }
                     }
+
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                Debug.WriteLine("Cannot acces registry");
+                SnippetDesignerPackage.Instance.Logger.Log("Cannot acces registry", "SnippetDirectories", e);
+            }            
+            catch (NullReferenceException e)
+            {
+                SnippetDesignerPackage.Instance.Logger.Log("Cannot acces registry", "SnippetDirectories", e);
             }
-            catch (SecurityException)
+            catch (SecurityException e)
             {
-                Debug.WriteLine("Cannot acces registry");
+                SnippetDesignerPackage.Instance.Logger.Log("Cannot acces registry", "SnippetDirectories", e);
             }
         }
 
@@ -140,7 +153,7 @@ namespace Microsoft.SnippetDesigner
 
                 foreach (string pathToAdd in pathArray)
                 {
-                    if (allSnippetDirectories.Contains(pathToAdd)) continue;
+                    if (defaultSnippetDirectories.Contains(pathToAdd)) continue;
 
                     if (Directory.Exists(pathToAdd))
                     {
@@ -148,7 +161,7 @@ namespace Microsoft.SnippetDesigner
 
                         // Check if pathToAdd is a more general version of a path we already found
                         // if so we use that since when we get snippets we do it recursivly from a root
-                        foreach (string existingPath in allSnippetDirectories)
+                        foreach (string existingPath in defaultSnippetDirectories)
                         {
                             if (pathToAdd.Contains(existingPath) && !pathToAdd.Equals(existingPath, StringComparison.InvariantCultureIgnoreCase))
                             {
@@ -158,12 +171,12 @@ namespace Microsoft.SnippetDesigner
 
                         foreach (string remove in pathsToRemove)
                         {
-                            allSnippetDirectories.Remove(remove);
+                            defaultSnippetDirectories.Remove(remove);
                         }
 
                         bool shouldAdd = true;
                         // Check if there is a path more general than pathToAdd, if so dont add pathToAdd
-                        foreach (string existingPath in allSnippetDirectories)
+                        foreach (string existingPath in defaultSnippetDirectories)
                         {
                             if (existingPath.Contains(pathToAdd))
                             {
@@ -174,7 +187,7 @@ namespace Microsoft.SnippetDesigner
 
                         if (shouldAdd)
                         {
-                            allSnippetDirectories.Add(pathToAdd);
+                            defaultSnippetDirectories.Add(pathToAdd);
                         }
                     }
                 }
@@ -209,7 +222,7 @@ namespace Microsoft.SnippetDesigner
         /// Gets the install root.
         /// </summary>
         /// <returns></returns>
-        private string GetInstallRoot()
+        private static string GetInstallRoot()
         {
             string fullName = SnippetDesignerPackage.Instance.Dte.Application.FullName;
             string pathRoot = Path.GetPathRoot(fullName);
@@ -237,7 +250,12 @@ namespace Microsoft.SnippetDesigner
             userSnippetDirectories[Resources.DisplayNameCSharp] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameCSharp, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameVisualBasic] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameVisualBasic, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameXML] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameXML, StringConstants.MyXmlSnippetsDir));
-            ;
+            userSnippetDirectories[Resources.DisplayNameSQL] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameSQL, StringConstants.MySnippetsDir));
+
+            var webDevSnippetDir = Path.Combine(snippetDir, StringConstants.VisualWebDeveloper);
+            userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameJavaScript);
+            userSnippetDirectories[Resources.DisplayNameHTML] = Path.Combine(webDevSnippetDir,StringConstants.SnippetDirNameHTML);
+
             userSnippetDirectories[String.Empty] = snippetDir;
         }
     }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
+using System.Linq;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio.Shell;
 
@@ -15,13 +16,8 @@ namespace Microsoft.SnippetDesigner.OptionPages
     [Guid("2863817E-CD3A-45b9-A0D3-7A8547563CFB")]
     public class SnippetDesignerOptions : DialogPage
     {
-        private Language language;
-        bool hideCSharp;
-        bool hideVisualBasic;
-        bool hideXML;
-        string indexedSnippetDirectoriesString;
-        string snippetIndexLocation;
-        List<string> indexedSnippetDirectories;
+        private string indexedSnippetDirectoriesString;
+        private List<string> indexedSnippetDirectories;
 
 
         /// <summary>
@@ -35,33 +31,20 @@ namespace Microsoft.SnippetDesigner.OptionPages
         {
             // Initialize indexedSnippetDirectories to all snippet directories
             // if the user already modified this it will be overwritten
-            SnippetDirectories s = SnippetDirectories.Instance;
-            indexedSnippetDirectories = new List<string>(s.AllSnippetDirectories);
-            snippetIndexLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnippetDesigner\\SnippetIndex.xml";
-        
+            indexedSnippetDirectories = new List<string>();
+            SnippetIndexLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnippetDesigner\\SnippetIndex.xml";
         }
 
-        /// <summary>
-        /// Joins the specified seperator with the list.
-        /// </summary>
-        /// <param name="seperator">The seperator.</param>
-        /// <param name="list">The list.</param>
-        /// <returns></returns>
-        private string Join(string seperator, List<string> list)
+        [Browsable(false)]
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public IEnumerable<string> AllSnippetDirectories
         {
-            string result = string.Empty;
-            foreach (string st in list)
+            get
             {
-                result += st + seperator;
+                return indexedSnippetDirectories.Union(SnippetDirectories.Instance.DefaultSnippetDirectories);
             }
-
-            if (result.Length > 0)
-            {
-                result = result.Remove(result.Length - 1);
-            }
-
-            return result;
         }
+
 
         /// <summary>
         /// Gets or sets the indexed snippet directories string.
@@ -73,10 +56,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
         [Browsable(false)]
         public string IndexedSnippetDirectoriesString
         {
-            get
-            {
-                return indexedSnippetDirectories != null ? Join(";", indexedSnippetDirectories) : string.Empty;
-            }
+            get { return indexedSnippetDirectories != null ? String.Join(";", indexedSnippetDirectories) : string.Empty; }
             set
             {
                 if (value != null && !value.Equals(indexedSnippetDirectoriesString, StringComparison.OrdinalIgnoreCase))
@@ -84,101 +64,60 @@ namespace Microsoft.SnippetDesigner.OptionPages
                     indexedSnippetDirectoriesString = value;
                     indexedSnippetDirectories = new List<string>(indexedSnippetDirectoriesString.Split(';'));
                 }
-
             }
         }
 
         [Category("Search")]
-        [Description("The directories where you want snippets to be index.  The indexer will index all sub-durectories from each of these directories.")]
-        [EditorAttribute(typeof(MyStringCollectionEditor), typeof(UITypeEditor))]
+        [Description("Additional directories where you want snippets to be index.  The indexer will index all sub-durectories from each of these directories.")]
+        [EditorAttribute(typeof (MyStringCollectionEditor), typeof (UITypeEditor))]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<string> IndexedSnippetDirectories
         {
-            get
-            {
-                return indexedSnippetDirectories;
-            }
-            set
-            {
-                indexedSnippetDirectories = value;
-            }
+            get { return indexedSnippetDirectories; }
+            set { indexedSnippetDirectories = value; }
         }
 
         [Category("Editor")]
         [Description("The default language the Snippet Editor starts in.")]
-        public Language DefaultLanguage
-        {
-            get
-            {
-                return language;
-            }
-            set
-            {
-                language = value;
-            }
-        }
+        public Language DefaultLanguage { get; set; }
 
         [Category("Search")]
         [DisplayName("Hide C# Snippets")]
         [Description("Should search results for C# snippets be hidden?")]
-        public bool HideCSharp
-        {
-            get
-            {
-                return hideCSharp;
-            }
-            set
-            {
-                hideCSharp = value;
-            }
-        }
+        public bool HideCSharp { get; set; }
 
         [Category("Search")]
         [DisplayName("Hide VB Snippets")]
         [Description("Should search results for Visual Basic snippets be hidden?")]
-        public bool HideVisualBasic
-        {
-            get
-            {
-                return hideVisualBasic;
-            }
-            set
-            {
-                hideVisualBasic = value;
-            }
-        }
+        public bool HideVisualBasic { get; set; }
 
         [Category("Search")]
         [DisplayName("Hide XML Snippets")]
         [Description("Should search results for XML snippets be hidden?")]
-        public bool HideXML
-        {
-            get
-            {
-                return hideXML;
-            }
-            set
-            {
-                hideXML = value;
-            }
-        }
+        public bool HideXML { get; set; }
+
+
+        [Category("Search")]
+        [DisplayName("Hide JavaScript Snippets")]
+        [Description("Should search results for JavaScript snippets be hidden?")]
+        public bool HideJavaScript { get; set; }
+
+
+        [Category("Search")]
+        [DisplayName("Hide SQL Snippets")]
+        [Description("Should search results for SQL snippets be hidden?")]
+        public bool HideSQL { get; set; }
+
+        [Category("Search")]
+        [DisplayName("Hide HTML Snippets")]
+        [Description("Should search results for HTML snippets be hidden?")]
+        public bool HideHTML { get; set; }
 
         [Category("Index")]
         [DisplayName("Snippet Index Location")]
         [Description("Where wold you like to have the snippet index stored?")]
-        [EditorAttribute(typeof(CustomFileNameEditor), typeof(UITypeEditor))]
-        public string SnippetIndexLocation
-        {
-            get
-            {
-                return snippetIndexLocation;
-            }
-            set
-            {
-                snippetIndexLocation = value;
-            }
-        }
-
+        [EditorAttribute(typeof (CustomFileNameEditor), typeof (UITypeEditor))]
+        public string SnippetIndexLocation { get; set; }
 
 
         //TIP 1: If you want to get access this option page from a VS Package use this snippet on the VsPackage class:
@@ -189,4 +128,3 @@ namespace Microsoft.SnippetDesigner.OptionPages
         //EnvDTE.Properties props = dte.get_Properties("Snippet Designer", "Snippet Editor");	
     }
 }
-

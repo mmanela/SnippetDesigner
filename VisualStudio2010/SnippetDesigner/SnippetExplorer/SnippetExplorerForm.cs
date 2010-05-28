@@ -34,9 +34,12 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             InitializeComponent();
             previewCodeWindow.CodeWindowHost = this;
-            languageFilterBoxList.Add(CSharpFilterBox);
+            languageFilterBoxList.Add(csharpFilterBox);
             languageFilterBoxList.Add(vbFilterBox);
             languageFilterBoxList.Add(xmlFilterBox);
+            languageFilterBoxList.Add(htmlFilterBox);
+            languageFilterBoxList.Add(javasScriptFilterBox);
+            languageFilterBoxList.Add(sqlFilterBox);
         }
 
         /// <summary>
@@ -153,9 +156,12 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             snippetIndex.PropertyChanged += SnippetIndexChanged;
 
             SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
-            CSharpFilterBox.Checked = !options.HideCSharp;
+            csharpFilterBox.Checked = !options.HideCSharp;
             vbFilterBox.Checked = !options.HideVisualBasic;
             xmlFilterBox.Checked = !options.HideXML;
+            htmlFilterBox.Checked = !options.HideHTML;
+            javasScriptFilterBox.Checked = !options.HideJavaScript;
+            sqlFilterBox.Checked = !options.HideSQL;
         }
 
 

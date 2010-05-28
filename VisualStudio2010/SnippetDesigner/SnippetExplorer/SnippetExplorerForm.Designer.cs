@@ -41,10 +41,15 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.languageLabel = new System.Windows.Forms.Label();
             this.xmlFilterBox = new System.Windows.Forms.CheckBox();
             this.vbFilterBox = new System.Windows.Forms.CheckBox();
-            this.CSharpFilterBox = new System.Windows.Forms.CheckBox();
+            this.csharpFilterBox = new System.Windows.Forms.CheckBox();
             this.searchOptionBar = new System.Windows.Forms.ToolStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripLabel();
             this.searchResultView = new System.Windows.Forms.DataGridView();
+            this.Icon = new System.Windows.Forms.DataGridViewImageColumn();
+            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Language = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.snippetExplorerContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -53,11 +58,10 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchBox = new System.Windows.Forms.TextBox();
             this.searchButton = new System.Windows.Forms.Button();
             this.previewCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
-            this.Icon = new System.Windows.Forms.DataGridViewImageColumn();
-            this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Language = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.sqlFilterBox = new System.Windows.Forms.CheckBox();
+            this.javasScriptFilterBox = new System.Windows.Forms.CheckBox();
+            this.htmlFilterBox = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.snippetExplorerSplitter)).BeginInit();
             this.snippetExplorerSplitter.Panel1.SuspendLayout();
             this.snippetExplorerSplitter.Panel2.SuspendLayout();
             this.snippetExplorerSplitter.SuspendLayout();
@@ -97,10 +101,13 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // 
             this.panel1.BackColor = System.Drawing.Color.White;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.htmlFilterBox);
+            this.panel1.Controls.Add(this.javasScriptFilterBox);
+            this.panel1.Controls.Add(this.sqlFilterBox);
             this.panel1.Controls.Add(this.languageLabel);
             this.panel1.Controls.Add(this.xmlFilterBox);
             this.panel1.Controls.Add(this.vbFilterBox);
-            this.panel1.Controls.Add(this.CSharpFilterBox);
+            this.panel1.Controls.Add(this.csharpFilterBox);
             resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
             // 
@@ -127,14 +134,14 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.vbFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameVisualBasic;
             this.vbFilterBox.UseVisualStyleBackColor = true;
             // 
-            // CSharpFilterBox
+            // csharpFilterBox
             // 
-            resources.ApplyResources(this.CSharpFilterBox, "CSharpFilterBox");
-            this.CSharpFilterBox.Checked = true;
-            this.CSharpFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.CSharpFilterBox.Name = "CSharpFilterBox";
-            this.CSharpFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameCSharp;
-            this.CSharpFilterBox.UseVisualStyleBackColor = true;
+            resources.ApplyResources(this.csharpFilterBox, "csharpFilterBox");
+            this.csharpFilterBox.Checked = true;
+            this.csharpFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.csharpFilterBox.Name = "csharpFilterBox";
+            this.csharpFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameCSharp;
+            this.csharpFilterBox.UseVisualStyleBackColor = true;
             // 
             // searchOptionBar
             // 
@@ -194,10 +201,48 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchResultView.ShowCellErrors = false;
             this.searchResultView.ShowEditingIcon = false;
             this.searchResultView.ShowRowErrors = false;
-            this.searchResultView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.searchResultView_MouseDown);
             this.searchResultView.CellMouseEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.searchResultView_CellMouseEnter);
-            this.searchResultView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.searchResultView_KeyDown);
             this.searchResultView.SelectionChanged += new System.EventHandler(this.searchResultView_SelectionChanged);
+            this.searchResultView.KeyDown += new System.Windows.Forms.KeyEventHandler(this.searchResultView_KeyDown);
+            this.searchResultView.MouseDown += new System.Windows.Forms.MouseEventHandler(this.searchResultView_MouseDown);
+            // 
+            // Icon
+            // 
+            this.Icon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
+            this.Icon.HeaderText = global::Microsoft.SnippetDesigner.Resources.Empty;
+            this.Icon.Name = "Icon";
+            this.Icon.ReadOnly = true;
+            this.Icon.Resizable = System.Windows.Forms.DataGridViewTriState.False;
+            this.Icon.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            resources.ApplyResources(this.Icon, "Icon");
+            // 
+            // Title
+            // 
+            this.Title.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            this.Title.DividerWidth = 1;
+            resources.ApplyResources(this.Title, "Title");
+            this.Title.Name = "Title";
+            this.Title.ReadOnly = true;
+            // 
+            // Description
+            // 
+            resources.ApplyResources(this.Description, "Description");
+            this.Description.Name = "Description";
+            this.Description.ReadOnly = true;
+            // 
+            // Language
+            // 
+            this.Language.DividerWidth = 1;
+            resources.ApplyResources(this.Language, "Language");
+            this.Language.Name = "Language";
+            this.Language.ReadOnly = true;
+            // 
+            // Path
+            // 
+            this.Path.DividerWidth = 1;
+            resources.ApplyResources(this.Path, "Path");
+            this.Path.Name = "Path";
+            this.Path.ReadOnly = true;
             // 
             // snippetExplorerContextMenu
             // 
@@ -251,43 +296,29 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             resources.ApplyResources(this.previewCodeWindow, "previewCodeWindow");
             this.previewCodeWindow.Name = "previewCodeWindow";
             // 
-            // Icon
+            // sqlFilterBox
             // 
-            this.Icon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.Icon.HeaderText = global::Microsoft.SnippetDesigner.Resources.Empty;
-            this.Icon.Name = "Icon";
-            this.Icon.ReadOnly = true;
-            this.Icon.Resizable = System.Windows.Forms.DataGridViewTriState.False;
-            this.Icon.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            resources.ApplyResources(this.Icon, "Icon");
+            resources.ApplyResources(this.sqlFilterBox, "sqlFilterBox");
+            this.sqlFilterBox.Checked = true;
+            this.sqlFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.sqlFilterBox.Name = "sqlFilterBox";
+            this.sqlFilterBox.UseVisualStyleBackColor = true;
             // 
-            // Title
+            // javasScriptFilterBox
             // 
-            this.Title.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
-            this.Title.DividerWidth = 1;
-            resources.ApplyResources(this.Title, "Title");
-            this.Title.Name = "Title";
-            this.Title.ReadOnly = true;
+            resources.ApplyResources(this.javasScriptFilterBox, "javasScriptFilterBox");
+            this.javasScriptFilterBox.Checked = true;
+            this.javasScriptFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.javasScriptFilterBox.Name = "javasScriptFilterBox";
+            this.javasScriptFilterBox.UseVisualStyleBackColor = true;
             // 
-            // Description
+            // htmlFilterBox
             // 
-            resources.ApplyResources(this.Description, "Description");
-            this.Description.Name = "Description";
-            this.Description.ReadOnly = true;
-            // 
-            // Language
-            // 
-            this.Language.DividerWidth = 1;
-            resources.ApplyResources(this.Language, "Language");
-            this.Language.Name = "Language";
-            this.Language.ReadOnly = true;
-            // 
-            // Path
-            // 
-            this.Path.DividerWidth = 1;
-            resources.ApplyResources(this.Path, "Path");
-            this.Path.Name = "Path";
-            this.Path.ReadOnly = true;
+            resources.ApplyResources(this.htmlFilterBox, "htmlFilterBox");
+            this.htmlFilterBox.Checked = true;
+            this.htmlFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.htmlFilterBox.Name = "htmlFilterBox";
+            this.htmlFilterBox.UseVisualStyleBackColor = true;
             // 
             // SnippetExplorerForm
             // 
@@ -299,6 +330,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.Load += new System.EventHandler(this.SnippetExplorerForm_Load);
             this.snippetExplorerSplitter.Panel1.ResumeLayout(false);
             this.snippetExplorerSplitter.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.snippetExplorerSplitter)).EndInit();
             this.snippetExplorerSplitter.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -325,7 +357,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private System.Windows.Forms.Label languageLabel;
         private System.Windows.Forms.CheckBox xmlFilterBox;
         private System.Windows.Forms.CheckBox vbFilterBox;
-        private System.Windows.Forms.CheckBox CSharpFilterBox;
+        private System.Windows.Forms.CheckBox csharpFilterBox;
         private System.Windows.Forms.ContextMenuStrip snippetExplorerContextMenu;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -338,6 +370,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private System.Windows.Forms.DataGridViewTextBoxColumn Description;
         private System.Windows.Forms.DataGridViewTextBoxColumn Language;
         private System.Windows.Forms.DataGridViewTextBoxColumn Path;
+        private System.Windows.Forms.CheckBox htmlFilterBox;
+        private System.Windows.Forms.CheckBox javasScriptFilterBox;
+        private System.Windows.Forms.CheckBox sqlFilterBox;
 
     }
 }
