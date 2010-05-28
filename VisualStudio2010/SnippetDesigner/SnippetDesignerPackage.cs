@@ -541,12 +541,13 @@ namespace Microsoft.SnippetDesigner
                     currentWindow = Dte.ActiveWindow;
                 }
 
-                string lang = CurrentWindowLanguage.ToLower(); //turn to lower case for comparisons
-                //TODO: move these into a config file
-                if (lang == StringConstants.ExportNameCSharp
-                    || lang == StringConstants.ExportNameVisualBasic
-                    || lang == StringConstants.ExportNameXML
-                    )
+                string lang = CurrentWindowLanguage;
+                if (StringConstants.ExportNameCSharp.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                    || StringConstants.ExportNameVisualBasic.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                    || StringConstants.ExportNameXML.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                    || StringConstants.ExportNameSQL.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                    || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                    || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase))
                 {
                     //make the export context menu item visible
                     snippetExportCommand.Visible = true;

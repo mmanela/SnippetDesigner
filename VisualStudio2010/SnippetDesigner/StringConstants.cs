@@ -30,6 +30,9 @@ namespace Microsoft.SnippetDesigner
         public const string ExportNameCSharp = "csharp";
         public const string ExportNameVisualBasic = "basic";
         public const string ExportNameXML = "xml";
+        public const string ExportNameJavaScript = "jscript";
+        public const string ExportNameHTML = "html";
+        public const string ExportNameSQL = "sql";
         public const string MySnippetsDir = "My Code Snippets";
         public const string MyXmlSnippetsDir = "My Xml Snippets";
         public const string SchemaNameCSharp = "csharp";
