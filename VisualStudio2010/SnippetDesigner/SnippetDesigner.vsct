@@ -73,6 +73,10 @@
             <Group guid="guidSnippetDesignerCmdSet" id="SnippetCustGrp" priority="0x100">
                 <Parent guid="guidSnippetDesignerCmdSet" id="SnippetCtx"/>
             </Group>
+
+            <Group guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x100">
+                <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+            </Group>
             <!--  -->
             <!--  -->
         </Groups>
@@ -118,7 +122,8 @@
             <!--  -->
             <!--   //command that appears in editors context menu letting you export a snippet code to the snippet designer -->
             <Button guid="guidSnippetDesignerCmdSet" id="cmdidExportToSnippet" priority="0x0100" type="Button">
-                <Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>
+                <!--<Parent guid="guidSHLMainMenu" id="IDM_VS_CTXT_CODEWIN"/>--> 
+                <Parent guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp"/>
                 <!--<Icon guid="guidImages" id="bmpPic1"/>-->
                 <CommandFlag>DynamicVisibility</CommandFlag>
                 <Strings>
@@ -201,8 +206,18 @@
             <Parent guid="guidSnippetDesignerCmdSet" id="SnippetEditGrp"/>
         </CommandPlacement>
         <!--  -->
-        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="cmdidExportToSnippet" priority="0x100">
+        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
             <Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_SNIPPETS"/>
+        </CommandPlacement>        
+        
+        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
+            <Parent guid="guidHtmlEditorMenu" id="IDM_HTML_SOURCE"/>
+        </CommandPlacement>
+        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
+            <Parent guid="guidJsEditorMenu" id="IDM_JS_SOURCE"/>
+        </CommandPlacement>
+        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
+            <Parent guid="guidSqlEditorMenu" id="IDM_SQL_SOURCE"/>
         </CommandPlacement>
         <!--  -->
     </CommandPlacements>
@@ -252,7 +267,7 @@
             <!-- Groups -->
             <IDSymbol name="SnippetEditGrp" value="0x1030" />
             <IDSymbol name="SnippetCustGrp" value="0x1040" />
-            <IDSymbol name="SnippetExportGroup" value="0x1050" />
+            <IDSymbol name="SnippetExportGrp" value="0x1050" />
 
             <!-- Commands-->
             <IDSymbol name="cmdidSnippetExplorer" value="0x101" />
