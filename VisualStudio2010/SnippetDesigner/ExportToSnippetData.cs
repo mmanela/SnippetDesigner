@@ -9,8 +9,6 @@ namespace Microsoft.SnippetDesigner
     public class ExportToSnippetData
     {
         //member variables
-        private readonly string snippetCode;
-        private readonly string snippetLanguage;
         private readonly Dictionary<string, string> exportNameToSchemaName = new Dictionary<string, string>();
 
 
@@ -18,19 +16,13 @@ namespace Microsoft.SnippetDesigner
         /// Gets the code.
         /// </summary>
         /// <value>The code.</value>
-        internal string Code
-        {
-            get { return snippetCode; }
-        }
+        internal string Code { get; private set; }
 
         /// <summary>
         /// Gets the language.
         /// </summary>
         /// <value>The language.</value>
-        internal string Language
-        {
-            get { return snippetLanguage; }
-        }
+        internal string Language { get; private set; }
 
         internal ExportToSnippetData(string code, string language)
         {
@@ -41,27 +33,15 @@ namespace Microsoft.SnippetDesigner
             exportNameToSchemaName[StringConstants.ExportNameHTML] = StringConstants.SchemaNameHTML;
             exportNameToSchemaName[StringConstants.ExportNameSQL] = StringConstants.SchemaNameSQL;
 
-
-            //exportNameToSchemaName[StringConstants.SchemaNameCSharp] = StringConstants.SchemaNameCSharp;
-           // exportNameToSchemaName[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
-
-
-            //exportNameToSchemaName[StringConstants.SchemaNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
-           // exportNameToSchemaName[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
-
-
-            //exportNameToSchemaName[StringConstants.SchemaNameXML] = StringConstants.SchemaNameXML;
-           // exportNameToSchemaName[Resources.DisplayNameXML] = StringConstants.SchemaNameXML;
-
-            snippetCode = code;
+            Code = code;
             if (exportNameToSchemaName.ContainsKey(language))
             {
-                snippetLanguage = exportNameToSchemaName[language];
+                Language = exportNameToSchemaName[language];
             }
             else
             {
                 //pass empty string if we dont know the language passed in
-                snippetLanguage = String.Empty;
+                Language = String.Empty;
             }
         }
     }

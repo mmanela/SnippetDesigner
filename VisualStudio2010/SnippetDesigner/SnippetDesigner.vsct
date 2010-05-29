@@ -210,13 +210,16 @@
             <Parent guid="guidSHLMainMenu" id="IDG_VS_CODEWIN_SNIPPETS"/>
         </CommandPlacement>        
         
+         <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
+            <Parent guid="guidAspEditorMenu" id="IDM_ASP_SOURCE"/>
+        </CommandPlacement>
         <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
             <Parent guid="guidHtmlEditorMenu" id="IDM_HTML_SOURCE"/>
         </CommandPlacement>
         <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
             <Parent guid="guidJsEditorMenu" id="IDM_JS_SOURCE"/>
         </CommandPlacement>
-        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
+        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x008">
             <Parent guid="guidSqlEditorMenu" id="IDM_SQL_SOURCE"/>
         </CommandPlacement>
         <!--  -->
