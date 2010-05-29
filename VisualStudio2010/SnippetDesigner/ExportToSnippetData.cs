@@ -35,16 +35,23 @@ namespace Microsoft.SnippetDesigner
         internal ExportToSnippetData(string code, string language)
         {
             exportNameToSchemaName[StringConstants.ExportNameCSharp] = StringConstants.SchemaNameCSharp;
-            exportNameToSchemaName[StringConstants.SchemaNameCSharp] = StringConstants.SchemaNameCSharp;
-            exportNameToSchemaName[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
-
             exportNameToSchemaName[StringConstants.ExportNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
-            exportNameToSchemaName[StringConstants.SchemaNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
-            exportNameToSchemaName[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
-
             exportNameToSchemaName[StringConstants.ExportNameXML] = StringConstants.SchemaNameXML;
-            exportNameToSchemaName[StringConstants.SchemaNameXML] = StringConstants.SchemaNameXML;
-            exportNameToSchemaName[Resources.DisplayNameXML] = StringConstants.SchemaNameXML;
+            exportNameToSchemaName[StringConstants.ExportNameJavaScript] = StringConstants.SchemaNameJavaScript;
+            exportNameToSchemaName[StringConstants.ExportNameHTML] = StringConstants.SchemaNameHTML;
+            exportNameToSchemaName[StringConstants.ExportNameSQL] = StringConstants.SchemaNameSQL;
+
+
+            //exportNameToSchemaName[StringConstants.SchemaNameCSharp] = StringConstants.SchemaNameCSharp;
+           // exportNameToSchemaName[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
+
+
+            //exportNameToSchemaName[StringConstants.SchemaNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
+           // exportNameToSchemaName[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
+
+
+            //exportNameToSchemaName[StringConstants.SchemaNameXML] = StringConstants.SchemaNameXML;
+           // exportNameToSchemaName[Resources.DisplayNameXML] = StringConstants.SchemaNameXML;
 
             snippetCode = code;
             if (exportNameToSchemaName.ContainsKey(language))
