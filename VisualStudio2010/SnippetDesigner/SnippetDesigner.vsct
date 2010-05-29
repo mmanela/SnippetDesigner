@@ -219,7 +219,7 @@
         <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
             <Parent guid="guidJsEditorMenu" id="IDM_JS_SOURCE"/>
         </CommandPlacement>
-        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x008">
+        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x010">
             <Parent guid="guidSqlEditorMenu" id="IDM_SQL_SOURCE"/>
         </CommandPlacement>
         <!--  -->
