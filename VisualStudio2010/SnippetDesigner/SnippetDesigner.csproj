@@ -98,9 +98,6 @@
     <Compile Include="ILogger.cs" />
     <Compile Include="LanguageMaps.cs" />
     <Compile Include="Logger.cs" />
-    <Compile Include="Markers\HighlightMarkers.cs" />
-    <Compile Include="Markers\HighlightMarkerService.cs" />
-    <Compile Include="Markers\MarkerAttributes.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="OptionPages\CustomFileNameEditor.cs" />
     <Compile Include="OptionPages\ResetOptions.cs">
@@ -205,6 +202,7 @@
     <EmbeddedResource Include="Resources\SnippetEditor.resx" />
     <EmbeddedResource Include="SnippetEditor\SnippetEditorForm.resx">
       <DependentUpon>SnippetEditorForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="SnippetExplorer\SnippetExplorerForm.resx">
       <DependentUpon>SnippetExplorerForm.cs</DependentUpon>

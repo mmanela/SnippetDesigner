@@ -1,19 +1,13 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
 using System.Collections.Generic;
 using System.Xml;
 
 namespace Microsoft.SnippetLibrary
 {
-    /// <summary>
-    /// A snippet
-    /// </summary>
-	public class Snippet
-	{
+    public class Snippet
+    {
         private XmlNode codeSnippetNode;
 
-        // Snippet data fields
         private string title;
         private string shortcut;
         private string description;
@@ -24,116 +18,71 @@ namespace Microsoft.SnippetLibrary
         private string author;
 
 
-
-        private List<SnippetType> snippetTypes = new List<SnippetType>();
-        private List<string> imports = new List<string>();
-        private List<string> references = new List<string>();
-        private List<Literal> literals = new List<Literal>();
-        private List<string> keywords = new List<string>();
-        private XmlNamespaceManager nsMgr;
+        private readonly List<SnippetType> snippetTypes = new List<SnippetType>();
+        private readonly List<string> imports = new List<string>();
+        private readonly List<string> references = new List<string>();
+        private readonly List<Literal> literals = new List<Literal>();
+        private readonly List<string> keywords = new List<string>();
+        private readonly XmlNamespaceManager nsMgr;
+        private readonly List<AlternativeShortcut> alternativeShortcuts = new List<AlternativeShortcut>();
 
         #region Properties
 
-        /// <summary>
-        /// Gets the code snippet node.
-        /// </summary>
-        /// <value>The code snippet node.</value>
         public XmlNode CodeSnippetNode
         {
-            get
-            {
-                return codeSnippetNode;
-            }
-
+            get { return codeSnippetNode; }
         }
 
-
-        /// <summary>
-        /// Gets or sets the author.
-        /// </summary>
-        /// <value>The author.</value>
         public string Author
         {
             get { return author; }
-            set 
-            { 
+            set
+            {
                 author = value;
-                Utility.SetTextInElement((XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Author", author, nsMgr);
+                Utility.SetTextInDescendantElement((XmlElement) codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Author", author, nsMgr);
             }
         }
 
-
-
-
-        /// <summary>
-        /// Gets or sets the title.
-        /// </summary>
-        /// <value>The title.</value>
         public string Title
         {
             get { return title; }
             set
             {
                 title = value;
-                Utility.SetTextInElement((XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Title", title, nsMgr);
+                Utility.SetTextInDescendantElement((XmlElement) codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Title", title, nsMgr);
             }
         }
 
-        /// <summary>
-        /// Gets or sets the shortcut.
-        /// </summary>
-        /// <value>The shortcut.</value>
-        public string Shortcut 
-        { 
-            get 
-            { 
-                return shortcut; 
-            }
+        public string Shortcut
+        {
+            get { return shortcut; }
             set
             {
                 shortcut = value;
-                Utility.SetTextInElement((XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Shortcut", shortcut, nsMgr);
+                Utility.SetTextInChildElement((XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Shortcut", shortcut, nsMgr);
             }
         }
 
-        /// <summary>
-        /// Gets or sets the description.
-        /// </summary>
-        /// <value>The description.</value>
-        public string Description 
-        { 
-            get 
-            {
-                return description;
-            }
+        public string Description
+        {
+            get { return description; }
             set
             {
                 description = value;
-                Utility.SetTextInElement((XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Description", description, nsMgr);
+                Utility.SetTextInDescendantElement((XmlElement) codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "Description", description, nsMgr);
             }
         }
 
-        /// <summary>
-        /// Gets or sets the help URL.
-        /// </summary>
-        /// <value>The help URL.</value>
         public string HelpUrl
         {
-            get
-            {
-                return helpUrl;
-            }
+            get { return helpUrl; }
             set
             {
                 helpUrl = value;
-                Utility.SetTextInElement((XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "HelpUrl", helpUrl, nsMgr);
+                Utility.SetTextInDescendantElement((XmlElement) codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "HelpUrl", helpUrl, nsMgr);
             }
         }
 
-        /// <summary>
-        /// Gets or sets the code kind attribute.
-        /// </summary>
-        /// <value>The code kind attribute.</value>
         public string CodeKindAttribute
         {
             get { return codeKindAttribute; }
@@ -160,20 +109,12 @@ namespace Microsoft.SnippetLibrary
                     if (codeNode.Attributes.Count > 0 && codeNode.Attributes["Kind"] != null)
                         codeNode.Attributes.Remove(codeNode.Attributes["Kind"]);
                 }
-
             }
         }
 
-        /// <summary>
-        /// Gets or sets the code language attribute.
-        /// </summary>
-        /// <value>The code language attribute.</value>
         public string CodeLanguageAttribute
         {
-            get
-            {
-                return codeLanguageAttribute;
-            }
+            get { return codeLanguageAttribute; }
             set
             {
                 codeLanguageAttribute = value;
@@ -183,24 +124,16 @@ namespace Microsoft.SnippetLibrary
                 {
                     return;
                 }
-                                
+
                 XmlNode langAttribute = codeSnippetNode.OwnerDocument.CreateAttribute("Language");
                 langAttribute.Value = codeLanguageAttribute;
                 codeNode.Attributes.SetNamedItem(langAttribute);
             }
         }
 
-
-        /// <summary>
-        /// Gets or sets the code.
-        /// </summary>
-        /// <value>The code.</value>
-        public string Code 
-        { 
-            get 
-            { 
-                return code;                 
-            } 
+        public string Code
+        {
+            get { return code; }
             set
             {
                 code = value;
@@ -209,43 +142,34 @@ namespace Microsoft.SnippetLibrary
 
                 if (codeNode == null)
                 {
-                    codeNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet", nsMgr).AppendChild(codeSnippetNode.OwnerDocument.CreateElement("Code", nsMgr.LookupNamespace("ns1")));
+                    codeNode =
+                        codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet", nsMgr).AppendChild(codeSnippetNode.OwnerDocument.CreateElement("Code", nsMgr.LookupNamespace("ns1")));
                 }
                 XmlCDataSection cdataCode = codeNode.OwnerDocument.CreateCDataSection(code);
-                
+
                 if (codeNode.ChildNodes.Count > 0)
                 {
                     for (int i = 0; i < codeNode.ChildNodes.Count; i++)
                         codeNode.RemoveChild(codeNode.ChildNodes[i]);
                 }
 
-                codeNode.AppendChild(cdataCode);                
+                codeNode.AppendChild(cdataCode);
             }
         }
 
-        /// <summary>
-        /// Gets or sets the snippet types.
-        /// </summary>
-        /// <value>The snippet types.</value>
-        public List<SnippetType> SnippetTypes 
-        { 
+        public List<SnippetType> SnippetTypes
+        {
             get { return snippetTypes; }
             set
             {
-
                 ClearSnippetTypes();
                 foreach (SnippetType types in value)
                 {
                     AddSnippetType(types.Value);
-
                 }
             }
         }
 
-        /// <summary>
-        /// Gets or sets the literals.
-        /// </summary>
-        /// <value>The literals.</value>
         public List<Literal> Literals
         {
             get { return literals; }
@@ -256,24 +180,27 @@ namespace Microsoft.SnippetLibrary
                 foreach (Literal lit in value)
                 {
                     AddLiteral(lit.ID, lit.ToolTip, lit.DefaultValue, lit.Function, lit.Editable, lit.Object, lit.Type);
-
                 }
-
             }
         }
 
-        /// <summary>
-        /// Gets or sets the keywords.
-        /// </summary>
-        /// <value>The keywords.</value>
+        public List<AlternativeShortcut> AlternativeShortcuts
+        {
+            get { return alternativeShortcuts; }
+
+            set
+            {
+                ClearAlternativeShortcuts();
+                foreach (AlternativeShortcut alternativeShortcut in value)
+                {
+                    AddAlternativeShortcut(alternativeShortcut.Name, alternativeShortcut.Value);
+                }
+            }
+        }
+
         public List<String> Keywords
         {
-            get 
-            { 
-                
-                return keywords; 
-            
-            }
+            get { return keywords; }
             set
             {
                 ClearKeywords();
@@ -284,18 +211,9 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
-        /// <summary>
-        /// Gets or sets the imports.
-        /// </summary>
-        /// <value>The imports.</value>
         public List<String> Imports
         {
-            get
-            {
-
-                return imports;
-
-            }
+            get { return imports; }
 
             set
             {
@@ -303,22 +221,13 @@ namespace Microsoft.SnippetLibrary
                 foreach (string import in value)
                 {
                     AddImport(import);
-
                 }
             }
         }
 
-        /// <summary>
-        /// Gets or sets the references.
-        /// </summary>
-        /// <value>The references.</value>
         public List<String> References
         {
-            get
-            {
-
-                return references;
-            }
+            get { return references; }
 
             set
             {
@@ -326,11 +235,9 @@ namespace Microsoft.SnippetLibrary
                 foreach (string reference in value)
                 {
                     AddReference(reference);
-
                 }
             }
         }
-
 
         #endregion Properties
 
@@ -339,11 +246,11 @@ namespace Microsoft.SnippetLibrary
         /// </summary>
         /// <param name="node">The node.</param>
         /// <param name="nsMgr">The ns MGR.</param>
-		public Snippet(XmlNode node, XmlNamespaceManager nsMgr)
-		{
+        public Snippet(XmlNode node, XmlNamespaceManager nsMgr)
+        {
             this.nsMgr = nsMgr;
             codeSnippetNode = node;
-            loadData(codeSnippetNode);
+            LoadData(codeSnippetNode);
         }
 
         /// <summary>
@@ -351,7 +258,6 @@ namespace Microsoft.SnippetLibrary
         /// </summary>
         public Snippet()
         {
-
         }
 
         /// <summary>
@@ -404,13 +310,14 @@ namespace Microsoft.SnippetLibrary
         {
             // Remove all existing literal elements
             XmlNode literalsNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet//ns1:Declarations", nsMgr);
-            
+
             if (literalsNode != null)
                 literalsNode.RemoveAll();
 
             // Clear out the in-memory literals
             literals.Clear();
         }
+
         public void ClearImports()
         {
             // Remove all existing literal elements
@@ -434,66 +341,83 @@ namespace Microsoft.SnippetLibrary
             // Clear out the in-memory literals
             references.Clear();
         }
-        /// <summary>
-        /// Adds a snippet type to the underlying in-memory XML doc as 
-        /// well as to the _snippetTypes array list.
-        /// </summary>
+
+        private void ClearAlternativeShortcuts()
+        {
+            XmlNode alternativeShortcutsNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Header//ns1:AlternativeShortcuts", nsMgr);
+
+            if (alternativeShortcutsNode != null)
+                alternativeShortcutsNode.RemoveAll();
+
+            alternativeShortcuts.Clear();
+        }
+
+        private void AddAlternativeShortcut(string name, string value)
+        {
+            if (string.IsNullOrEmpty(name))
+                return;
+            XmlDocument doc = codeSnippetNode.OwnerDocument;
+            XmlNode headerNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr);
+            XmlElement shortcutNode = doc.CreateElement("Shortcut", nsMgr.LookupNamespace("ns1"));
+            shortcutNode.InnerText = name;
+            if(!string.IsNullOrEmpty(value))
+                shortcutNode.SetAttribute("Value", value);
+
+            XmlNode alternativeShortcutsElement = headerNode.SelectSingleNode("descendant::ns1:AlternativeShortcuts", nsMgr);
+            if (alternativeShortcutsElement == null)
+            {
+                alternativeShortcutsElement = doc.CreateElement("AlternativeShortcuts", nsMgr.LookupNamespace("ns1"));
+                alternativeShortcutsElement = headerNode.AppendChild(alternativeShortcutsElement);
+            }
+            alternativeShortcutsElement.AppendChild(shortcutNode);
+            alternativeShortcuts.Add(new AlternativeShortcut(shortcutNode, nsMgr));
+
+        }
+
         public void AddSnippetType(string snippetTypeString)
         {
-            XmlElement parent = (XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header//ns1:SnippetTypes", nsMgr);
+            XmlElement parent = (XmlElement) codeSnippetNode.SelectSingleNode("descendant::ns1:Header//ns1:SnippetTypes", nsMgr);
             if (parent == null)
             {
-                parent = Utility.CreateElement((XmlElement)codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "SnippetTypes", string.Empty, nsMgr);
+                parent = Utility.CreateElement((XmlElement) codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr), "SnippetTypes", string.Empty, nsMgr);
             }
 
             XmlElement element = Utility.CreateElement(parent, "SnippetType", snippetTypeString, nsMgr);
             snippetTypes.Add(new SnippetType(element));
         }
 
-        /// <summary>
-        /// Adds a keyword to the underlying in-memory XML doc as 
-        /// well as to the _keywords array list.
-        /// </summary>
         public void AddKeyword(string keywordString)
-        
+
         {
             XmlDocument doc = codeSnippetNode.OwnerDocument;
             XmlNode headerNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Header", nsMgr);
-            // Create a new Keyword element
             XmlElement keywordElement = doc.CreateElement("Keyword", nsMgr.LookupNamespace("ns1"));
             keywordElement.InnerText = keywordString;
 
-            // Find or create the Imports element
             XmlNode keywordsElement = headerNode.SelectSingleNode("descendant::ns1:Keywords", nsMgr);
             if (keywordsElement == null)
             {
-                //XmlNode headerNode = headerNode.SelectSingleNode("descendant::ns1:Header", _nsMgr);
                 keywordsElement = doc.CreateElement("Keywords", nsMgr.LookupNamespace("ns1"));
-                //imports are always at the top of the snippet section
                 keywordsElement = headerNode.PrependChild(keywordsElement);
             }
             keywordsElement.AppendChild(keywordElement);
             keywords.Add(keywordString);
         }
 
-
         public void AddImport(string importString)
         {
             XmlDocument doc = codeSnippetNode.OwnerDocument;
 
-            // Create a new Import element
             XmlElement importElement = doc.CreateElement("Import", nsMgr.LookupNamespace("ns1"));
             XmlElement namespaceElement = doc.CreateElement("Namespace", nsMgr.LookupNamespace("ns1"));
             namespaceElement.InnerText = importString;
             importElement.PrependChild(namespaceElement);
 
-            // Find or create the Imports element
             XmlNode importsElement = codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet//ns1:Imports", nsMgr);
             if (importsElement == null)
             {
                 XmlNode snippetNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet", nsMgr);
                 importsElement = doc.CreateElement("Imports", nsMgr.LookupNamespace("ns1"));
-                //imports are always at the top of the snippet section
                 importsElement = snippetNode.PrependChild(importsElement);
             }
             importsElement.AppendChild(importElement);
@@ -504,34 +428,29 @@ namespace Microsoft.SnippetLibrary
         {
             XmlDocument doc = codeSnippetNode.OwnerDocument;
 
-            // Create a new Import element
             XmlElement referenceElement = doc.CreateElement("Reference", nsMgr.LookupNamespace("ns1"));
             XmlElement assemblyElement = doc.CreateElement("Assembly", nsMgr.LookupNamespace("ns1"));
             assemblyElement.InnerText = referenceString;
             referenceElement.PrependChild(assemblyElement);
 
-            // Find or create the Imports element
             XmlNode referencesElement = codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet//ns1:References", nsMgr);
             if (referencesElement == null)
             {
                 XmlNode snippetNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet", nsMgr);
                 referencesElement = doc.CreateElement("References", nsMgr.LookupNamespace("ns1"));
-                //imports are always at the top of the snippet section
                 referencesElement = snippetNode.PrependChild(referencesElement);
             }
             referencesElement.AppendChild(referenceElement);
             references.Add(referenceString);
         }
-        /// <summary>
-        /// Adds a literal to the underlying in-memory XML doc
-        /// </summary>
+
         public void AddLiteral(string id, string toolTip, string defaultVal, string function, bool editable, bool isObject, string type)
         {
             XmlDocument doc = codeSnippetNode.OwnerDocument;
-            
+
             // Create a new Literal element
-            XmlElement literalElement = null;
-            if(isObject == false)
+            XmlElement literalElement;
+            if (isObject == false)
                 literalElement = doc.CreateElement("Literal", nsMgr.LookupNamespace("ns1"));
             else
                 literalElement = doc.CreateElement("Object", nsMgr.LookupNamespace("ns1"));
@@ -566,9 +485,9 @@ namespace Microsoft.SnippetLibrary
                 else
                     declarationsNode = snippetNode.AppendChild(declarationsNode);
             }
-            
+
             // Hook them all up together accordingly
-            XmlElement literalNode = (XmlElement)declarationsNode.AppendChild(literalElement);
+            XmlElement literalNode = (XmlElement) declarationsNode.AppendChild(literalElement);
             literalNode.AppendChild(idElement);
             literalNode.AppendChild(toolTipElement);
             literalNode.AppendChild(defaultElement);
@@ -585,7 +504,7 @@ namespace Microsoft.SnippetLibrary
         }
 
         // Read in the xml document and extract relevant data
-        private void loadData(XmlNode node)
+        private void LoadData(XmlNode node)
         {
             extractHeader(node.SelectSingleNode("descendant::ns1:Header", nsMgr));
             extractSnippet(node.SelectSingleNode("descendant::ns1:Snippet", nsMgr));
@@ -605,13 +524,14 @@ namespace Microsoft.SnippetLibrary
                 return;
             }
 
-            title = Utility.GetTextFromElement((XmlElement)node.SelectSingleNode("descendant::ns1:Title", nsMgr));
-            shortcut = Utility.GetTextFromElement((XmlElement)node.SelectSingleNode("descendant::ns1:Shortcut", nsMgr));
-            description = Utility.GetTextFromElement((XmlElement)node.SelectSingleNode("descendant::ns1:Description", nsMgr));
-            helpUrl = Utility.GetTextFromElement((XmlElement)node.SelectSingleNode("descendant::ns1:HelpUrl", nsMgr));
-            author = Utility.GetTextFromElement((XmlElement)node.SelectSingleNode("descendant::ns1:Author", nsMgr));
+            title = Utility.GetTextFromElement((XmlElement) node.SelectSingleNode("descendant::ns1:Title", nsMgr));
+            shortcut = Utility.GetTextFromElement((XmlElement) node.SelectSingleNode("descendant::ns1:Shortcut", nsMgr));
+            description = Utility.GetTextFromElement((XmlElement) node.SelectSingleNode("descendant::ns1:Description", nsMgr));
+            helpUrl = Utility.GetTextFromElement((XmlElement) node.SelectSingleNode("descendant::ns1:HelpUrl", nsMgr));
+            author = Utility.GetTextFromElement((XmlElement) node.SelectSingleNode("descendant::ns1:Author", nsMgr));
             extractSnippetTypes(node.SelectSingleNode("descendant::ns1:SnippetTypes", nsMgr));
             extractKeywords(node.SelectSingleNode("descendant::ns1:Keywords", nsMgr));
+            extractAlternativeShortcuts(node.SelectSingleNode("descendant::ns1:AlternativeShortcuts", nsMgr));
         }
 
         // Process the data in the SnippetTypes elements
@@ -638,6 +558,17 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
+        private void extractAlternativeShortcuts(XmlNode node)
+        {
+            if (node == null)
+                return;
+
+            foreach (XmlElement alternativeShortcutElement in node.SelectNodes("descendant::ns1:Shortcut", nsMgr))
+            {
+                alternativeShortcuts.Add(new AlternativeShortcut(alternativeShortcutElement,nsMgr));
+            }
+        }
+
         // Process the data in the Snippet elements
         private void extractSnippet(XmlNode node)
         {
@@ -647,18 +578,19 @@ namespace Microsoft.SnippetLibrary
                 return;
             }
             XmlNode codeNode = node.SelectSingleNode("descendant::ns1:Code", nsMgr);
-            code = Utility.GetTextFromElement((XmlElement)codeNode);
+            code = Utility.GetTextFromElement((XmlElement) codeNode);
             if (codeNode != null && codeNode.Attributes.Count > 0)
             {
                 if (codeNode.Attributes["Language"] != null)
-                    CodeLanguageAttribute = codeNode.Attributes["Language"].Value.ToString();
+                    CodeLanguageAttribute = codeNode.Attributes["Language"].Value;
                 if (codeNode.Attributes["Kind"] != null)
-                    CodeKindAttribute = codeNode.Attributes["Kind"].Value.ToString();
+                    CodeKindAttribute = codeNode.Attributes["Kind"].Value;
             }
             extractDeclarations(node.SelectSingleNode("descendant::ns1:Declarations", nsMgr));
             extractImports(node.SelectSingleNode("descendant::ns1:Imports", nsMgr));
             extractReferences(node.SelectSingleNode("descendant::ns1:References", nsMgr));
         }
+
         private void extractImports(XmlNode node)
         {
             if (node == null)
@@ -672,7 +604,7 @@ namespace Microsoft.SnippetLibrary
             // Add each literal node to the snippet
             foreach (XmlElement importElement in xnl)
             {
-                imports.Add(importElement.InnerText);               
+                imports.Add(importElement.InnerText);
             }
         }
 
@@ -692,6 +624,7 @@ namespace Microsoft.SnippetLibrary
                 references.Add(referenceElement.InnerText);
             }
         }
+
         // Process the data in the Declarations elements
         private void extractDeclarations(XmlNode node)
         {
@@ -721,5 +654,5 @@ namespace Microsoft.SnippetLibrary
         }
 
         #endregion
-	}
+    }
 }

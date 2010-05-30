@@ -1,104 +1,81 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System.Runtime.InteropServices;
 using System.Xml;
+
 namespace Microsoft.SnippetLibrary
 {
     [ComVisible(true)]
-	public class Literal
-	{
-        XmlElement _element;
+    public class Literal
+    {
+        private XmlElement element;
+        private string id;
+        private string toolTip;
+        private string function;
+        private string defaultValue;
+        private string type;
+        private bool editable;
 
-		protected string _id;
-        protected string _toolTip;
-        protected string _function;
-        protected string _defaultValue;
-        protected string _type;
-        protected bool _editable;
-        protected bool _object;
-
-        
         #region Properties
-        public bool Object
-        {
-            get { return _object; }
-            set { _object = value; }
-        }
+
+        public bool Object { get; set; }
+
         public string ID
         {
-            get 
-            { 
-                return _id; 
-            }
-            set 
+            get { return id; }
+            set
             {
-                _id = value;
-                Utility.SetTextInElement(_element, "ID", _id,null);
+                id = value;
+                Utility.SetTextInDescendantElement(element, "ID", id, null);
             }
         }
 
         public string ToolTip
         {
-            get 
-            { 
-                return _toolTip; 
-            }
-            set 
+            get { return toolTip; }
+            set
             {
-                _toolTip = value;
-                Utility.SetTextInElement(_element, "ToolTip", _toolTip, null);
+                toolTip = value;
+                Utility.SetTextInDescendantElement(element, "ToolTip", toolTip, null);
             }
         }
 
         public string Function
         {
-            get 
-            { 
-                return _function; 
-            }
+            get { return function; }
             set
             {
-                _function = value;
-                Utility.SetTextInElement(_element, "Function", _function, null);
+                function = value;
+                Utility.SetTextInDescendantElement(element, "Function", function, null);
             }
         }
+
         public string Type
         {
-            get
-            {
-                return _type;
-            }
+            get { return type; }
             set
             {
-                _type = value;
-                Utility.SetTextInElement(_element, "Type", _type, null);
+                type = value;
+                Utility.SetTextInDescendantElement(element, "Type", type, null);
             }
         }
 
 
         public string DefaultValue
         {
-            get 
-            { 
-                return _defaultValue; 
-            }
+            get { return defaultValue; }
             set
             {
-                _defaultValue = value;
-                Utility.SetTextInElement(_element, "Default", _defaultValue, null);
+                defaultValue = value;
+                Utility.SetTextInDescendantElement(element, "Default", defaultValue, null);
             }
         }
 
         public bool Editable
         {
-            get 
-            { 
-                return _editable; 
-            }
-            set 
-            { 
-                _editable = value; 
-                _element.SetAttribute("Editable", _editable.ToString());                
+            get { return editable; }
+            set
+            {
+                editable = value;
+                element.SetAttribute("Editable", editable.ToString());
             }
         }
 
@@ -106,46 +83,39 @@ namespace Microsoft.SnippetLibrary
 
         public Literal(XmlElement element, XmlNamespaceManager nsMgr, bool Object)
         {
-            SetLiteral(element, nsMgr, Object);
+            BuildLiteral(element, nsMgr, Object);
         }
 
         public Literal(string id, string tip, string defaults, string function, bool isObj, bool isEdit, string type)
         {
-            SetLiteral(id, tip, defaults, function, isObj, isEdit, type);
+            BuildLiteral(id, tip, defaults, function, isObj, isEdit, type);
         }
 
-        public Literal()
+        public void BuildLiteral(XmlElement element, XmlNamespaceManager nsMgr, bool @object)
         {
-
-        }
-
-
-
-        public void SetLiteral(XmlElement element, XmlNamespaceManager nsMgr, bool Object)
-        {
-            _element = element;
-            _object = Object;
-            _id = Utility.GetTextFromElement((XmlElement)_element.SelectSingleNode("descendant::ns1:ID", nsMgr));
-            _toolTip = Utility.GetTextFromElement((XmlElement)_element.SelectSingleNode("descendant::ns1:ToolTip", nsMgr));
-            _function = Utility.GetTextFromElement((XmlElement)_element.SelectSingleNode("descendant::ns1:Function", nsMgr));
-            _defaultValue = Utility.GetTextFromElement((XmlElement)_element.SelectSingleNode("descendant::ns1:Default", nsMgr));
-            _type = Utility.GetTextFromElement((XmlElement)_element.SelectSingleNode("descendant::ns1:Type", nsMgr));
-            string boolStr = _element.GetAttribute("Editable");
+            this.element = element;
+            Object = @object;
+            id = Utility.GetTextFromElement((XmlElement) this.element.SelectSingleNode("descendant::ns1:ID", nsMgr));
+            toolTip = Utility.GetTextFromElement((XmlElement) this.element.SelectSingleNode("descendant::ns1:ToolTip", nsMgr));
+            function = Utility.GetTextFromElement((XmlElement) this.element.SelectSingleNode("descendant::ns1:Function", nsMgr));
+            defaultValue = Utility.GetTextFromElement((XmlElement) this.element.SelectSingleNode("descendant::ns1:Default", nsMgr));
+            type = Utility.GetTextFromElement((XmlElement) this.element.SelectSingleNode("descendant::ns1:Type", nsMgr));
+            string boolStr = this.element.GetAttribute("Editable");
             if (boolStr != string.Empty)
-                _editable = bool.Parse(boolStr);
+                editable = bool.Parse(boolStr);
             else
-                _editable = true;
+                editable = true;
         }
 
-        public void SetLiteral(string id, string tip, string defaults, string function, bool isObj, bool isEdit, string type)
+        public void BuildLiteral(string id, string tip, string defaults, string function, bool isObj, bool isEdit, string type)
         {
-            _object = isObj;
-            _id = id;
-            _toolTip = tip;
-            _function = function;
-            _defaultValue = defaults;
-            _editable = isEdit;
-            _type = type;
+            Object = isObj;
+            this.id = id;
+            toolTip = tip;
+            this.function = function;
+            defaultValue = defaults;
+            editable = isEdit;
+            this.type = type;
         }
     }
 }

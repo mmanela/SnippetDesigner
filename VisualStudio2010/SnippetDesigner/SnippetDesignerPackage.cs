@@ -35,7 +35,7 @@ namespace Microsoft.SnippetDesigner
     // [DefaultRegistryRoot(@"Software\Microsoft\VisualStudio\10.0Exp")]
     // This attribute is used to register the informations needed to show the this package
     // in the Help/About dialog of Visual Studio.
-    [InstalledProductRegistration("#100", "#102", "1.2.3", IconResourceID = 404)]
+    [InstalledProductRegistration("#100", "#102", "1.3.0", IconResourceID = 404)]
     // In order be loaded inside Visual Studio in a machine that has not the VS SDK installed, 
     // package needs to have a valid load key (it can be requested at 
     // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
@@ -47,10 +47,6 @@ namespace Microsoft.SnippetDesigner
     // Options pages
     [ProvideOptionPage(typeof (SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
     [ProvideOptionPage(typeof (ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
-    // These attributes registers the HighLightMarker service and two custom markers 
-    [ProvideService(typeof (HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
-    [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker),
-        typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
     //cause the package to autoload - Only when a solution exists
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
     [ProvideEditorExtension(typeof (EditorFactory), StringConstants.SnippetExtension, 70,
@@ -117,12 +113,6 @@ namespace Microsoft.SnippetDesigner
         /// Return the snippet index for this package
         /// </summary>
         public SnippetIndex SnippetIndex { get; private set; }
-
-
-        /// <summary>
-        /// Get the service which you can aquire highlight markers from
-        /// </summary>
-        public HighlightMarkerService MarkerService { get; private set; }
 
         /// <summary>
         /// Return the active snippet title so that the type desccriptor can  display it
@@ -462,12 +452,6 @@ namespace Microsoft.SnippetDesigner
                                                       (int) PkgCmdIDList.cmdidCreateSnippet);
                 OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
                 createCommand.ParametersDescription = StringConstants.ArgumentStartMarker;
-                //a space means arguments are coming
-
-                // Create and proffer the marker service
-                MarkerService = new HighlightMarkerService(this);
-                ((IServiceContainer) this).AddService(MarkerService.GetType(), MarkerService, true);
-
 
                 //initialize the snippet index
                 SnippetIndex = new SnippetIndex();

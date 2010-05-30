@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Design;
@@ -69,7 +69,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
 
         [Category("Search")]
         [Description("Additional directories where you want snippets to be index.  The indexer will index all sub-durectories from each of these directories.")]
-        [EditorAttribute(typeof (MyStringCollectionEditor), typeof (UITypeEditor))]
+        [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<string> IndexedSnippetDirectories
         {

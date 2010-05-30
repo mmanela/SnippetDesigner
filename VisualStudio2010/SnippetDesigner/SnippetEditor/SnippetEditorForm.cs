@@ -59,6 +59,7 @@ namespace Microsoft.SnippetDesigner
         private readonly List<string> snippetImports = new List<string>();
         private readonly List<string> snippetReferences = new List<string>();
         private readonly List<SnippetType> snippetTypes = new List<SnippetType>();
+        private readonly List<AlternativeShortcut>  snippetAlternativeShortcuts = new List<AlternativeShortcut>();
         public static readonly Regex ValidPotentialReplacementRegex = new Regex(StringConstants.ValidPotentialReplacementString, RegexOptions.Compiled);
         public static readonly Regex ValidExistingReplacementRegex = new Regex(StringConstants.ValidExistingReplacementString, RegexOptions.Compiled);
 
@@ -230,6 +231,19 @@ namespace Microsoft.SnippetDesigner
 
                 snippetTypes.Clear();
                 snippetTypes.AddRange(value);
+            }
+        }
+
+        public List<AlternativeShortcut> SnippetAlternativeShortcuts
+        {
+            get
+            {
+                return snippetAlternativeShortcuts;
+            }
+            set
+            {
+                snippetAlternativeShortcuts.Clear();
+                snippetAlternativeShortcuts.AddRange(value);
             }
         }
 
@@ -457,14 +471,13 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public void PullFieldsFromActiveSnippet()
         {
-            //snippet information
             SnippetTitle = ActiveSnippet.Title;
             SnippetAuthor = ActiveSnippet.Author;
             SnippetDescription = ActiveSnippet.Description;
             SnippetHelpUrl = ActiveSnippet.HelpUrl;
             SnippetShortcut = ActiveSnippet.Shortcut;
             SnippetKeywords = ActiveSnippet.Keywords;
-
+            SnippetAlternativeShortcuts = ActiveSnippet.AlternativeShortcuts;
 
             SnippetTitles = GetSnippetTitles();
 
@@ -478,25 +491,18 @@ namespace Microsoft.SnippetDesigner
                 SnippetTypes = ActiveSnippet.SnippetTypes;
             }
 
-
-            //literals and objects
             SnippetReplacements = ActiveSnippet.Literals;
 
             //code - for some unknown reason this must be done before language is set to stop some inconsitency
             //including highlighting and color coding 
             SnippetCode = ActiveSnippet.Code;
 
-            //kind and language values
             SnippetKind = ActiveSnippet.CodeKindAttribute;
-
             SnippetLanguage = ActiveSnippet.CodeLanguageAttribute;
-
-            //imports and references
             SnippetImports = ActiveSnippet.Imports;
-
             SnippetReferences = ActiveSnippet.References;
-        }
 
+        }
 
         /// <summary>
         /// Takes the data from the form and adds it to the in memory xml document
@@ -509,33 +515,19 @@ namespace Microsoft.SnippetDesigner
             ActiveSnippet.Description = SnippetDescription;
             ActiveSnippet.HelpUrl = SnippetHelpUrl;
             ActiveSnippet.Shortcut = SnippetShortcut;
+            ActiveSnippet.AlternativeShortcuts = SnippetAlternativeShortcuts;
 
-            //update keywords
             ActiveSnippet.Keywords = SnippetKeywords;
-
-
-            //add snippet types
             ActiveSnippet.SnippetTypes = SnippetTypes;
-
-
-            //add code
             ActiveSnippet.Code = SnippetCode;
-
 
             //must be after code node is declared
             //kind and language values
             ActiveSnippet.CodeKindAttribute = SnippetKind;
-
-
             ActiveSnippet.CodeLanguageAttribute = SnippetLanguage;
 
-
-            //imports and references
             ActiveSnippet.Imports = SnippetImports;
-
             ActiveSnippet.References = SnippetReferences;
-
-            //literals and objects
             ActiveSnippet.Literals = SnippetReplacements;
         }
 

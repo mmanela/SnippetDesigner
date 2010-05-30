@@ -33,9 +33,9 @@ namespace Microsoft.SnippetDesigner
     /// <summary>
     /// Create my own version of CollectionEditor that will use strings as its data item
     /// </summary>
-    public class MyStringCollectionEditor : CollectionEditor
+    public class StringCollectionEditor : CollectionEditor
     {
-        public MyStringCollectionEditor(Type type)
+        public StringCollectionEditor(Type type)
             : base(typeof(List<String>))
         {
 
@@ -55,6 +55,37 @@ namespace Microsoft.SnippetDesigner
             string newString = String.Empty;
             return newString;
 		}
+
+        protected override string GetDisplayText(object value)
+        {
+            return value.ToString();
+        }
+    }
+
+    /// <summary>
+    /// Create my own version of CollectionEditor that will use AlternativeShortcut as its data item
+    /// </summary>
+    public class AlternativeShortcutsEditor : CollectionEditor
+    {
+        public AlternativeShortcutsEditor(Type type)
+            : base(typeof(List<AlternativeShortcut>))
+        {
+
+        }
+
+        /// <summary>
+        /// Hardcode that this collectioneditor deals with AlternativeShortcuts
+        /// </summary>
+        /// <returns></returns>
+        protected override Type CreateCollectionItemType()
+        {
+            return typeof(AlternativeShortcut);
+        }
+
+        protected override object CreateInstance(Type itemType)
+        {
+            return new AlternativeShortcut();
+        }
 
         protected override string GetDisplayText(object value)
         {
@@ -193,12 +224,25 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
+        [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetAlternativeShortcuts)]
+        [LocalizableDisplayName(SR.PropNameSnippetAlternativeShortcuts)]
+        [EditorAttribute(typeof(AlternativeShortcutsEditor), typeof(UITypeEditor))]
+        public List<AlternativeShortcut> AlternativeShortcuts
+        {
+            get
+            {
+                return snippetEditor.SnippetAlternativeShortcuts;
+            }
+        }
+
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetImports)]
         [LocalizableDisplayName(SR.PropNameSnippetImports)]
-        [EditorAttribute(typeof(MyStringCollectionEditor), typeof(UITypeEditor))]
+        [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
         public List<string> Imports
         {
             get
@@ -212,7 +256,7 @@ namespace Microsoft.SnippetDesigner
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetReferences)]
         [LocalizableDisplayName(SR.PropNameSnippetReferences)]
-        [EditorAttribute(typeof(MyStringCollectionEditor), typeof(UITypeEditor))]
+        [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
         public List<string> References
         {
             get

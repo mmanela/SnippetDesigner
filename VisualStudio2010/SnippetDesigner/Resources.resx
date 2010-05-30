@@ -346,4 +346,10 @@
   <data name="DisplayNameSQL" xml:space="preserve">
     <value>SQL</value>
   </data>
+  <data name="PropDescriptionSnippetAlternativeShortcuts" xml:space="preserve">
+    <value>Collection of alternative shortcuts used for executing the snippet</value>
+  </data>
+  <data name="PropNameSnippetAlternativeShortcuts" xml:space="preserve">
+    <value>Alternative Shortcuts</value>
+  </data>
 </root>

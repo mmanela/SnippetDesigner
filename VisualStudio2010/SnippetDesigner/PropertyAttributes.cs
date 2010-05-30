@@ -124,6 +124,7 @@ namespace Microsoft.SnippetDesigner
         internal const string PropNameSnippetPath = "PropNameSnippetPath";
         internal const string PropNameSnippetKind = "PropNameSnippetKind";
         internal const string PropNameSnippetType = "PropNameSnippetType";
+        internal const string PropNameSnippetAlternativeShortcuts = "PropNameSnippetAlternativeShortcuts";
 
         internal const string PropDescriptionSnippetShortcut = "PropDescriptionSnippetShortcut";
         internal const string PropDescriptionSnippetReferences = "PropDescriptionSnippetReferences";
@@ -135,6 +136,7 @@ namespace Microsoft.SnippetDesigner
         internal const string PropDescriptionSnippetAuthor = "PropDescriptionSnippetAuthor";
         internal const string PropDescriptionSnippetKind = "PropDescriptionSnippetKind";
         internal const string PropDescriptionSnippetType = "PropDescriptionSnippetType";
+        internal const string PropDescriptionSnippetAlternativeShortcuts = "PropDescriptionSnippetAlternativeShortcuts";
 
         internal const string PropCategorySnippData = "PropCategorySnippData";
         internal const string PropCategoryFileInfo = "PropCategoryFileInfo";
@@ -143,7 +145,7 @@ namespace Microsoft.SnippetDesigner
         private ResourceManager resources;
 
         private static Object s_InternalSyncObject;
-
+        
         private static Object InternalSyncObject
         {
             get

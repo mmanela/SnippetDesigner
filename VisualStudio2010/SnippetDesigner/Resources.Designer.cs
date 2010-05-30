@@ -269,6 +269,15 @@ namespace Microsoft.SnippetDesigner {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Collection of alternative shortcuts used for executing the snippet.
+        /// </summary>
+        internal static string PropDescriptionSnippetAlternativeShortcuts {
+            get {
+                return ResourceManager.GetString("PropDescriptionSnippetAlternativeShortcuts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Author of this snippet.
         /// </summary>
         internal static string PropDescriptionSnippetAuthor {
@@ -373,6 +382,15 @@ namespace Microsoft.SnippetDesigner {
         internal static string PropDescriptionSnippetType {
             get {
                 return ResourceManager.GetString("PropDescriptionSnippetType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Alternative Shortcuts.
+        /// </summary>
+        internal static string PropNameSnippetAlternativeShortcuts {
+            get {
+                return ResourceManager.GetString("PropNameSnippetAlternativeShortcuts", resourceCulture);
             }
         }
         

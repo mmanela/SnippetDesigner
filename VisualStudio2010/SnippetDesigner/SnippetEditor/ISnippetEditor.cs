@@ -1,7 +1,6 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System.Collections.Generic;
 using Microsoft.SnippetLibrary;
+
 namespace Microsoft.SnippetDesigner
 {
     /// <summary>
@@ -11,98 +10,99 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     public interface ISnippetEditor
     {
-
         #region Properties
 
         /// <summary>
         /// File name of the snippet
         /// </summary>
-        string SnippetFileName { get;}
+        string SnippetFileName { get; }
 
         /// <summary>
         /// Get the list of snippet titles form the codeWindowHost
         /// Set the list of items in the codeWindowHost
         /// </summary>
-        List<string> SnippetTitles { get; set;}
+        List<string> SnippetTitles { get; set; }
 
 
         /// <summary>
         /// Return the title of the snippet from the gui
         /// Set the title of the snippet in the gui
         /// </summary>
-        string SnippetTitle{get; set;}
+        string SnippetTitle { get; set; }
 
         /// <summary>
         /// Return the description of the snippet from the gui
         /// Set the description of the snippet in the gui
         /// </summary>
-        string SnippetDescription{get; set;}
+        string SnippetDescription { get; set; }
 
         /// <summary>
         /// Return the author of the snippet from the gui
         /// Set the author of the snippet in the gui
         /// </summary>
-        string SnippetAuthor{get; set;}
+        string SnippetAuthor { get; set; }
 
         /// <summary>
         /// Return the help url of the snippet from the gui
         /// Set the help url of the snippet in the gui
         /// </summary>
-        string SnippetHelpUrl{get; set;}
+        string SnippetHelpUrl { get; set; }
 
         /// <summary>
         /// Return the shortcut for the snippet from the gui
         /// Set the shortcut of the snippet in the gui
         /// </summary>
-        string SnippetShortcut{get; set;}
+        string SnippetShortcut { get; set; }
 
         /// <summary>
         /// Return the cope of the snippet from the gui
         /// Set the code of the snippet in the gui
         /// </summary>
-        string SnippetCode{get; set;}
+        string SnippetCode { get; set; }
 
         /// <summary>
         /// Return the list of keywords of the snippet from the gui
         /// Set the keywords of the snippet in the gui
         /// </summary>
-        List<string> SnippetKeywords{get; set;}
+        List<string> SnippetKeywords { get; set; }
 
         /// <summary>
         /// Return the list of types of the snippet from the gui
         /// Set the types of the snippet in the gui
         /// </summary>
-        List<SnippetType> SnippetTypes{get; set;}
+        List<SnippetType> SnippetTypes { get; set; }
+
+        List<AlternativeShortcut> SnippetAlternativeShortcuts { get; set; }
 
         /// <summary>
         /// Return the kind of the snippet from the gui
         /// Set the kind of the snippet in the gui
         /// </summary>
-        string SnippetKind{get; set;}
+        string SnippetKind { get; set; }
 
         /// <summary>
         /// Return the language of the snippet from the gui
         /// Set the language of the snippet in the gui
         /// </summary>
-        string SnippetLanguage{get; set;}
+        string SnippetLanguage { get; set; }
 
         /// <summary>
         /// Return the list of imports of the snippet from the gui
         /// Set the imports of the snippet in the gui
         /// </summary>
-        List<string> SnippetImports{get; set;}
+        List<string> SnippetImports { get; set; }
 
         /// <summary>
         /// Return the list of references of the snippet from the gui
         /// Set the references of the snippet in the gui
         /// </summary>
-        List<string> SnippetReferences{get; set;}
+        List<string> SnippetReferences { get; set; }
 
         /// <summary>
         /// Return the list of replacements of the snippet from the gui
         /// Set the replacements of the snippet in the gui
         /// </summary>
-        List<Literal> SnippetReplacements{get; set;}
+        List<Literal> SnippetReplacements { get; set; }
 
         #endregion
 
@@ -134,12 +134,11 @@ namespace Microsoft.SnippetDesigner
         void PullFieldsFromActiveSnippet();
 
 
-         /// <summary>
+        /// <summary>
         /// Takes the data from the form and adds it to the in memory xml document
         /// </summary>
         void PushFieldsIntoActiveSnippet();
 
         #endregion
-
     }
 }

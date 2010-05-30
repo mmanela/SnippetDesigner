@@ -1,22 +1,22 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
 using System.Xml;
 
 namespace Microsoft.SnippetLibrary
 {
-	/// <summary>
-	/// Summary description for Util.
-	/// </summary>
-	public class Utility
-	{
-		private Utility() {}
+    /// <summary>
+    /// Summary description for Util.
+    /// </summary>
+    public class Utility
+    {
+        private Utility()
+        {
+        }
 
         /// <summary>
         /// Returns the InnerText value from a node 
         /// or string.Empty if the node is null.
         /// </summary>
-        /// <param name="node"></param>
+        /// <param name="element"></param>
         /// <returns></returns>
         public static string GetTextFromElement(XmlElement element)
         {
@@ -35,12 +35,27 @@ namespace Microsoft.SnippetLibrary
         /// <param name="text">The text.</param>
         /// <param name="nsMgr">The ns MGR.</param>
         /// <returns></returns>
-        public static XmlNode SetTextInElement(XmlElement element, string name, string text, XmlNamespaceManager nsMgr)
+        public static XmlNode SetTextInDescendantElement(XmlElement element, string name, string text, XmlNamespaceManager nsMgr)
+        {
+            return SetTextInElement(element,name,text,nsMgr,false);
+        }
+
+        public static XmlNode SetTextInChildElement(XmlElement element, string name, string text, XmlNamespaceManager nsMgr)
+        {
+            return SetTextInElement(element, name, text, nsMgr, true);
+        }
+
+
+        private static XmlNode SetTextInElement(XmlElement element, string name, string text, XmlNamespaceManager nsMgr, bool isChild)
         {
             if (element == null)
                 throw new Exception("Passed in a null node, which should never happen.");
 
-            XmlElement newElement = (XmlElement)element.SelectSingleNode("descendant::ns1:" + name, nsMgr);
+            var selector = "descendant";
+            if (isChild)
+                selector = "child";
+
+            XmlElement newElement = (XmlElement)element.SelectSingleNode(selector + "::ns1:" + name, nsMgr);
 
             if (newElement == null)
             {
@@ -65,10 +80,10 @@ namespace Microsoft.SnippetLibrary
                 throw new Exception("Passed in a null node, which should never happen.");
 
             XmlElement element = parent.OwnerDocument.CreateElement(name, nsMgr.LookupNamespace("ns1"));
-            XmlElement newElement = (XmlElement)parent.AppendChild(element);
+            XmlElement newElement = (XmlElement) parent.AppendChild(element);
             newElement.InnerText = innerText;
-            
-            return (XmlElement)parent.AppendChild(newElement);
+
+            return (XmlElement) parent.AppendChild(newElement);
         }
     }
 }

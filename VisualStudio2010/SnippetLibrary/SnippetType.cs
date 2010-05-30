@@ -1,32 +1,23 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System.Xml;
-
 
 namespace Microsoft.SnippetLibrary
 {
-	public class SnippetType
-	{
-        XmlElement _element;
+    public class SnippetType
+    {
+        private XmlElement element;
 
-		protected string _value;
-        
-        #region Properties
-    
+        private string value;
+
         public string Value
         {
-            get 
-            { 
-                return _value; 
-            }
-            set 
+            get { return value; }
+            set
             {
-                _value = value;
-                _element.InnerText = _value;
+                this.value = value;
+                element.InnerText = this.value;
             }
         }
 
-        #endregion
 
         public SnippetType()
         {
@@ -34,20 +25,19 @@ namespace Microsoft.SnippetLibrary
 
         public SnippetType(XmlElement element)
         {
-            SetTypeElement(element);
+            BuildTypeElement(element);
         }
 
         public SnippetType(string stype)
         {
-            _value = stype;
+            value = stype;
         }
 
 
-
-        public void SetTypeElement(XmlElement element)
+        public void BuildTypeElement(XmlElement element)
         {
-            _element = element;
-            _value = Utility.GetTextFromElement(_element);
+            this.element = element;
+            value = Utility.GetTextFromElement(this.element);
         }
     }
 }
