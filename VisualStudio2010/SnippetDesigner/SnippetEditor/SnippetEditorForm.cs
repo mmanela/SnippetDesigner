@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -55,17 +56,24 @@ namespace Microsoft.SnippetDesigner
         private string snippetShortcut = String.Empty;
         private string snippetHelpUrl = String.Empty;
         private string snippetKind = String.Empty;
-        private readonly List<string> snippetKeywords = new List<string>();
-        private readonly List<string> snippetImports = new List<string>();
-        private readonly List<string> snippetReferences = new List<string>();
-        private readonly List<SnippetType> snippetTypes = new List<SnippetType>();
-        private readonly List<AlternativeShortcut>  snippetAlternativeShortcuts = new List<AlternativeShortcut>();
+        private readonly CollectionWithEvents<string> snippetKeywords = new CollectionWithEvents<string>();
+        private readonly CollectionWithEvents<SnippetType> snippetTypes = new CollectionWithEvents<SnippetType>();
+        private readonly CollectionWithEvents<string> snippetImports = new CollectionWithEvents<string>();
+        private readonly CollectionWithEvents<string> snippetReferences = new CollectionWithEvents<string>();
+        private readonly CollectionWithEvents<AlternativeShortcut> snippetAlternativeShortcuts = new CollectionWithEvents<AlternativeShortcut>();
         public static readonly Regex ValidPotentialReplacementRegex = new Regex(StringConstants.ValidPotentialReplacementString, RegexOptions.Compiled);
         public static readonly Regex ValidExistingReplacementRegex = new Regex(StringConstants.ValidExistingReplacementString, RegexOptions.Compiled);
 
-
-        protected override void OnLoad(EventArgs e)
+        public SnippetEditorForm()
         {
+            snippetImports.CollectionChanged += snippet_CollectionChanged;
+            snippetReferences.CollectionChanged += snippet_CollectionChanged;
+            snippetAlternativeShortcuts.CollectionChanged += snippet_CollectionChanged;
+        }
+
+        private void snippet_CollectionChanged<T>(object sender, CollectionEventArgs<T> e)
+        {
+            IsFormDirty = true;
         }
 
 
@@ -111,13 +119,13 @@ namespace Microsoft.SnippetDesigner
         /// Get the list of snippet titles form the codeWindowHost
         /// Set the list of items in the codeWindowHost
         /// </summary>
-        public List<string> SnippetTitles
+        public CollectionWithEvents<string> SnippetTitles
         {
             get
             {
                 string[] titleArray = new string[toolStripSnippetTitles.Items.Count];
                 toolStripSnippetTitles.Items.CopyTo(titleArray, 0);
-                return new List<string>(titleArray);
+                return new CollectionWithEvents<string>(titleArray);
             }
             set
             {
@@ -197,7 +205,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        public List<string> SnippetKeywords
+        public CollectionWithEvents<string> SnippetKeywords
         {
             get { return snippetKeywords; }
 
@@ -205,7 +213,6 @@ namespace Microsoft.SnippetDesigner
             {
                 //TODO: check if the keywords have changed
                 IsFormDirty = true;
-
 
                 snippetKeywords.Clear();
                 snippetKeywords.AddRange(value);
@@ -219,7 +226,7 @@ namespace Microsoft.SnippetDesigner
             set { snippetCodeWindow.CodeText = value; }
         }
 
-        public List<SnippetType> SnippetTypes
+        public CollectionWithEvents<SnippetType> SnippetTypes
         {
             get { return snippetTypes; }
 
@@ -234,12 +241,9 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        public List<AlternativeShortcut> SnippetAlternativeShortcuts
+        public CollectionWithEvents<AlternativeShortcut> SnippetAlternativeShortcuts
         {
-            get
-            {
-                return snippetAlternativeShortcuts;
-            }
+            get { return snippetAlternativeShortcuts; }
             set
             {
                 snippetAlternativeShortcuts.Clear();
@@ -251,7 +255,11 @@ namespace Microsoft.SnippetDesigner
         {
             get { return snippetKind; }
 
-            set { snippetKind = value; }
+            set
+            {
+                IsFormDirty = true;
+                snippetKind = value;
+            }
         }
 
         /// <summary>
@@ -304,7 +312,7 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        public List<string> SnippetImports
+        public CollectionWithEvents<string> SnippetImports
         {
             get { return snippetImports; }
 
@@ -312,13 +320,12 @@ namespace Microsoft.SnippetDesigner
             {
                 //This wont be called from the editor properties window 
                 //so we need to figure out a different way to tell if it is in a dirty state
-
                 snippetImports.Clear();
                 snippetImports.AddRange(value);
             }
         }
 
-        public List<string> SnippetReferences
+        public CollectionWithEvents<string> SnippetReferences
         {
             get { return snippetReferences; }
 
@@ -332,11 +339,11 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        public List<Literal> SnippetReplacements
+        public CollectionWithEvents<Literal> SnippetReplacements
         {
             get
             {
-                List<Literal> replacements = new List<Literal>();
+                var replacements = new CollectionWithEvents<Literal>();
                 foreach (DataGridViewRow row in replacementGridView.Rows)
                 {
                     if (row.IsNewRow) continue;
@@ -476,22 +483,22 @@ namespace Microsoft.SnippetDesigner
             SnippetDescription = ActiveSnippet.Description;
             SnippetHelpUrl = ActiveSnippet.HelpUrl;
             SnippetShortcut = ActiveSnippet.Shortcut;
-            SnippetKeywords = ActiveSnippet.Keywords;
-            SnippetAlternativeShortcuts = ActiveSnippet.AlternativeShortcuts;
+            SnippetKeywords = new CollectionWithEvents<string>(ActiveSnippet.Keywords);
+            SnippetAlternativeShortcuts = new CollectionWithEvents<AlternativeShortcut>(ActiveSnippet.AlternativeShortcuts);
 
-            SnippetTitles = GetSnippetTitles();
+            SnippetTitles = new CollectionWithEvents<string>(GetSnippetTitles());
 
-            if (ActiveSnippet.SnippetTypes.Count <= 0)
+            if (ActiveSnippet.SnippetTypes.Count() <= 0)
             {
                 //if no type specified then make it expansion by default
                 snippetTypes.Add(new SnippetType(StringConstants.SnippetTypeExpansion));
             }
             else
             {
-                SnippetTypes = ActiveSnippet.SnippetTypes;
+                SnippetTypes = new CollectionWithEvents<SnippetType>(ActiveSnippet.SnippetTypes);
             }
 
-            SnippetReplacements = ActiveSnippet.Literals;
+            SnippetReplacements = new CollectionWithEvents<Literal>(ActiveSnippet.Literals);
 
             //code - for some unknown reason this must be done before language is set to stop some inconsitency
             //including highlighting and color coding 
@@ -499,9 +506,8 @@ namespace Microsoft.SnippetDesigner
 
             SnippetKind = ActiveSnippet.CodeKindAttribute;
             SnippetLanguage = ActiveSnippet.CodeLanguageAttribute;
-            SnippetImports = ActiveSnippet.Imports;
-            SnippetReferences = ActiveSnippet.References;
-
+            SnippetImports = new CollectionWithEvents<string>(ActiveSnippet.Imports);
+            SnippetReferences = new CollectionWithEvents<string>(ActiveSnippet.References);
         }
 
         /// <summary>

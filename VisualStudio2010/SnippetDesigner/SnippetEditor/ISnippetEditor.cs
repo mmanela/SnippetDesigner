@@ -21,7 +21,7 @@ namespace Microsoft.SnippetDesigner
         /// Get the list of snippet titles form the codeWindowHost
         /// Set the list of items in the codeWindowHost
         /// </summary>
-        List<string> SnippetTitles { get; set; }
+        CollectionWithEvents<string> SnippetTitles { get; set; }
 
 
         /// <summary>
@@ -64,15 +64,15 @@ namespace Microsoft.SnippetDesigner
         /// Return the list of keywords of the snippet from the gui
         /// Set the keywords of the snippet in the gui
         /// </summary>
-        List<string> SnippetKeywords { get; set; }
+        CollectionWithEvents<string> SnippetKeywords { get; set; }
 
         /// <summary>
         /// Return the list of types of the snippet from the gui
         /// Set the types of the snippet in the gui
         /// </summary>
-        List<SnippetType> SnippetTypes { get; set; }
+        CollectionWithEvents<SnippetType> SnippetTypes { get; set; }
 
-        List<AlternativeShortcut> SnippetAlternativeShortcuts { get; set; }
+        CollectionWithEvents<AlternativeShortcut> SnippetAlternativeShortcuts { get; set; }
 
         /// <summary>
         /// Return the kind of the snippet from the gui
@@ -90,19 +90,19 @@ namespace Microsoft.SnippetDesigner
         /// Return the list of imports of the snippet from the gui
         /// Set the imports of the snippet in the gui
         /// </summary>
-        List<string> SnippetImports { get; set; }
+        CollectionWithEvents<string> SnippetImports { get; set; }
 
         /// <summary>
         /// Return the list of references of the snippet from the gui
         /// Set the references of the snippet in the gui
         /// </summary>
-        List<string> SnippetReferences { get; set; }
+        CollectionWithEvents<string> SnippetReferences { get; set; }
 
         /// <summary>
         /// Return the list of replacements of the snippet from the gui
         /// Set the replacements of the snippet in the gui
         /// </summary>
-        List<Literal> SnippetReplacements { get; set; }
+        CollectionWithEvents<Literal> SnippetReplacements { get; set; }
 
         #endregion
 

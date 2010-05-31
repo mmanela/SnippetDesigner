@@ -263,7 +263,7 @@ namespace Microsoft.SnippetDesigner
             ActiveSnippet.Title = SnippetTitle = Path.GetFileNameWithoutExtension(captionValue.ToString());
 
             //add titles to snippet titles property
-            List<string> titles = new List<string>();
+            var titles = new CollectionWithEvents<string>();
             titles.Add(SnippetTitle);
             SnippetTitles = titles;
             SnippetAuthor = SnippetDesignerPackage.VSRegisteredName;

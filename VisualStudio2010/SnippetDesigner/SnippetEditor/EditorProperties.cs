@@ -36,7 +36,7 @@ namespace Microsoft.SnippetDesigner
     public class StringCollectionEditor : CollectionEditor
     {
         public StringCollectionEditor(Type type)
-            : base(typeof(List<String>))
+            : base(typeof(CollectionWithEvents<String>))
         {
 
         }
@@ -68,7 +68,7 @@ namespace Microsoft.SnippetDesigner
     public class AlternativeShortcutsEditor : CollectionEditor
     {
         public AlternativeShortcutsEditor(Type type)
-            : base(typeof(List<AlternativeShortcut>))
+            : base(typeof(CollectionWithEvents<AlternativeShortcut>))
         {
 
         }
@@ -180,12 +180,12 @@ namespace Microsoft.SnippetDesigner
 
              get
             {
-                return String.Join(",",snippetEditor.SnippetKeywords.ToArray());
+                return String.Join(",",snippetEditor.SnippetKeywords);
             }
 
             set
             {
-                snippetEditor.SnippetKeywords = new List<string>(value.Split(','));
+                snippetEditor.SnippetKeywords = new CollectionWithEvents<string>(value.Split(','));
             }
 
         }
@@ -229,7 +229,7 @@ namespace Microsoft.SnippetDesigner
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetAlternativeShortcuts)]
         [LocalizableDisplayName(SR.PropNameSnippetAlternativeShortcuts)]
         [EditorAttribute(typeof(AlternativeShortcutsEditor), typeof(UITypeEditor))]
-        public List<AlternativeShortcut> AlternativeShortcuts
+        public CollectionWithEvents<AlternativeShortcut> AlternativeShortcuts
         {
             get
             {
@@ -243,7 +243,7 @@ namespace Microsoft.SnippetDesigner
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetImports)]
         [LocalizableDisplayName(SR.PropNameSnippetImports)]
         [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
-        public List<string> Imports
+        public CollectionWithEvents<string> Imports
         {
             get
             {
@@ -257,7 +257,7 @@ namespace Microsoft.SnippetDesigner
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetReferences)]
         [LocalizableDisplayName(SR.PropNameSnippetReferences)]
         [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
-        public List<string> References
+        public CollectionWithEvents<string> References
         {
             get
             {
@@ -299,7 +299,7 @@ namespace Microsoft.SnippetDesigner
             }
             set
             {
-                List<SnippetType> types = new List<SnippetType>();
+                var types = new CollectionWithEvents<SnippetType>();
                 types.Add(new SnippetType(value.ToString()));
                 snippetEditor.SnippetTypes = types;
             }

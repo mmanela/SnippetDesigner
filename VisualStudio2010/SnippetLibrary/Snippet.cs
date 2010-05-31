@@ -157,7 +157,7 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
-        public List<SnippetType> SnippetTypes
+        public IEnumerable<SnippetType> SnippetTypes
         {
             get { return snippetTypes; }
             set
@@ -170,7 +170,7 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
-        public List<Literal> Literals
+        public IEnumerable<Literal> Literals
         {
             get { return literals; }
 
@@ -184,7 +184,7 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
-        public List<AlternativeShortcut> AlternativeShortcuts
+        public IEnumerable<AlternativeShortcut> AlternativeShortcuts
         {
             get { return alternativeShortcuts; }
 
@@ -198,7 +198,7 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
-        public List<String> Keywords
+        public IEnumerable<String> Keywords
         {
             get { return keywords; }
             set
@@ -211,7 +211,7 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
-        public List<String> Imports
+        public IEnumerable<String> Imports
         {
             get { return imports; }
 
@@ -225,7 +225,7 @@ namespace Microsoft.SnippetLibrary
             }
         }
 
-        public List<String> References
+        public IEnumerable<String> References
         {
             get { return references; }
 

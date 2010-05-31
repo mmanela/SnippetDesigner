@@ -121,6 +121,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="SnippetDirectories.cs" />
+    <Compile Include="CollectionWithEvents.cs" />
     <Compile Include="SnippetEditor\CommandFilter.cs" />
     <Compile Include="SnippetEditor\EditorProperties.cs" />
     <Compile Include="SnippetEditor\FilteredPropertiesTypeDescriptor.cs" />
