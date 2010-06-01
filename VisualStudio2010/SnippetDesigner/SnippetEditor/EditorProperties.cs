@@ -1,9 +1,8 @@
-// Copyright (C) Microsoft Corporation. All rights reserved.
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing.Design;
 using Microsoft.SnippetLibrary;
 
@@ -29,16 +28,14 @@ namespace Microsoft.SnippetDesigner
     }
 
 
-
     /// <summary>
     /// Create my own version of CollectionEditor that will use strings as its data item
     /// </summary>
     public class StringCollectionEditor : CollectionEditor
     {
         public StringCollectionEditor(Type type)
-            : base(typeof(CollectionWithEvents<String>))
+            : base(typeof (CollectionWithEvents<String>))
         {
-
         }
 
         /// <summary>
@@ -47,14 +44,14 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         protected override Type CreateCollectionItemType()
         {
-            return typeof(String);
+            return typeof (String);
         }
 
         protected override object CreateInstance(Type itemType)
-		{
+        {
             string newString = String.Empty;
             return newString;
-		}
+        }
 
         protected override string GetDisplayText(object value)
         {
@@ -68,9 +65,8 @@ namespace Microsoft.SnippetDesigner
     public class AlternativeShortcutsEditor : CollectionEditor
     {
         public AlternativeShortcutsEditor(Type type)
-            : base(typeof(CollectionWithEvents<AlternativeShortcut>))
+            : base(typeof (CollectionWithEvents<AlternativeShortcut>))
         {
-
         }
 
         /// <summary>
@@ -79,7 +75,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         protected override Type CreateCollectionItemType()
         {
-            return typeof(AlternativeShortcut);
+            return typeof (AlternativeShortcut);
         }
 
         protected override object CreateInstance(Type itemType)
@@ -104,15 +100,12 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     public class EditorProperties
     {
-       
-
-        private ISnippetEditor snippetEditor;
-        private Dictionary<KindOfSnippet, String> kindEnumToString = new Dictionary<KindOfSnippet, string>();
-        private Dictionary<String, KindOfSnippet> stringToKindEnum = new Dictionary<String, KindOfSnippet>();
+        private readonly ISnippetEditor snippetEditor;
+        private readonly Dictionary<KindOfSnippet, String> kindEnumToString = new Dictionary<KindOfSnippet, string>();
+        private readonly Dictionary<String, KindOfSnippet> stringToKindEnum = new Dictionary<String, KindOfSnippet>();
 
         public EditorProperties(ISnippetEditor snipEditor)
         {
-            
             snippetEditor = snipEditor;
             kindEnumToString.Add(KindOfSnippet.MethodBody, StringConstants.SnippetTypeMethodBody);
             kindEnumToString.Add(KindOfSnippet.MethodDecl, StringConstants.SnippetTypeMethodDeclaration);
@@ -121,152 +114,105 @@ namespace Microsoft.SnippetDesigner
             stringToKindEnum.Add(StringConstants.SnippetTypeMethodBody, KindOfSnippet.MethodBody);
             stringToKindEnum.Add(StringConstants.SnippetTypeMethodDeclaration, KindOfSnippet.MethodDecl);
             stringToKindEnum.Add(StringConstants.SnippetTypeTypeDeclaration, KindOfSnippet.TypeDecl);
-
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategoryFileInfo)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetPath)]
         [LocalizableDisplayName(SR.PropNameSnippetPath)]
         public string FilePath
         {
-            get 
-            { 
-                return snippetEditor.SnippetFileName; 
-            }
-
+            get { return snippetEditor.SnippetFileName; }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetDescription)]
         [LocalizableDisplayName(SR.PropNameSnippetDescription)]
         public string Description
         {
-            get 
-            { 
-                return snippetEditor.SnippetDescription;
-            }
-            set
-            {
-                snippetEditor.SnippetDescription = value;
-            }
+            get { return snippetEditor.SnippetDescription; }
+            set { snippetEditor.SnippetDescription = value; }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetAuthor)]
         [LocalizableDisplayName(SR.PropNameSnippetAuthor)]
         public string Author
         {
-            get
-            {
-                return snippetEditor.SnippetAuthor;
-            }
-            set
-            {
-                snippetEditor.SnippetAuthor = value;
-            }
+            get { return snippetEditor.SnippetAuthor; }
+            set { snippetEditor.SnippetAuthor = value; }
         }
 
-        
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetKeywords)]
         [LocalizableDisplayName(SR.PropNameSnippetKeywords)]
         public string Keywords
         {
+            get { return String.Join(",", snippetEditor.SnippetKeywords); }
 
-             get
-            {
-                return String.Join(",",snippetEditor.SnippetKeywords);
-            }
-
-            set
-            {
-                snippetEditor.SnippetKeywords = new CollectionWithEvents<string>(value.Split(','));
-            }
-
+            set { snippetEditor.SnippetKeywords = new CollectionWithEvents<string>(value.Split(',')); }
         }
-        
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetHelpUrl)]
         [LocalizableDisplayName(SR.PropNameSnippetHelpUrl)]
         public string HelpUrl
         {
-            get
-            {
-                return snippetEditor.SnippetHelpUrl;
-            }
-            set
-            {
-                snippetEditor.SnippetHelpUrl = value;
-            }
+            get { return snippetEditor.SnippetHelpUrl; }
+            set { snippetEditor.SnippetHelpUrl = value; }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetShortcut)]
         [LocalizableDisplayName(SR.PropNameSnippetShortcut)]
         public string Shortcut
         {
-            get
-            {
-                return snippetEditor.SnippetShortcut;
-            }
-            set
-            {
-                snippetEditor.SnippetShortcut = value;
-            }
+            get { return snippetEditor.SnippetShortcut; }
+            set { snippetEditor.SnippetShortcut = value; }
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetAlternativeShortcuts)]
         [LocalizableDisplayName(SR.PropNameSnippetAlternativeShortcuts)]
-        [EditorAttribute(typeof(AlternativeShortcutsEditor), typeof(UITypeEditor))]
+        [Editor(typeof (AlternativeShortcutsEditor), typeof (UITypeEditor))]
         public CollectionWithEvents<AlternativeShortcut> AlternativeShortcuts
         {
-            get
-            {
-                return snippetEditor.SnippetAlternativeShortcuts;
-            }
+            get { return snippetEditor.SnippetAlternativeShortcuts; }
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetImports)]
         [LocalizableDisplayName(SR.PropNameSnippetImports)]
-        [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
+        [EditorAttribute(typeof (StringCollectionEditor), typeof (UITypeEditor))]
         public CollectionWithEvents<string> Imports
         {
-            get
-            {
-                return snippetEditor.SnippetImports;
-            }
+            get { return snippetEditor.SnippetImports; }
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetReferences)]
         [LocalizableDisplayName(SR.PropNameSnippetReferences)]
-        [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
+        [EditorAttribute(typeof (StringCollectionEditor), typeof (UITypeEditor))]
         public CollectionWithEvents<string> References
         {
-            get
-            {
-                return snippetEditor.SnippetReferences;
-            }
+            get { return snippetEditor.SnippetReferences; }
         }
 
-        
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetType)]
         [LocalizableDisplayName(SR.PropNameSnippetType)]
@@ -287,7 +233,7 @@ namespace Microsoft.SnippetDesigner
                     }
                 }
                 if (containsSurroundWith && //does it have the surround with tag
-                    snippetEditor.SnippetCode.Contains(StringConstants.SymbolSelected)//does it have correct selected symbol
+                    snippetEditor.SnippetCode.Contains(StringConstants.SymbolSelected) //does it have correct selected symbol
                     )
                 {
                     return TypeOfSnippet.SurroundsWith;
@@ -306,7 +252,7 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
         [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetKind)]
         [LocalizableDisplayName(SR.PropNameSnippetKind)]
@@ -315,7 +261,7 @@ namespace Microsoft.SnippetDesigner
             get
             {
                 KindOfSnippet retValue;
-                if(!String.IsNullOrEmpty(snippetEditor.SnippetKind) && stringToKindEnum.ContainsKey(snippetEditor.SnippetKind))
+                if (!String.IsNullOrEmpty(snippetEditor.SnippetKind) && stringToKindEnum.ContainsKey(snippetEditor.SnippetKind))
                 {
                     retValue = stringToKindEnum[snippetEditor.SnippetKind];
                 }

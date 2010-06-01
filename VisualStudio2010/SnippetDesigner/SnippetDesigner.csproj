@@ -130,7 +130,6 @@
     <Compile Include="SnippetEditor\SnippetEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="SnippetEditor\SnippetEditorConfiguration.cs" />
     <Compile Include="SnippetEditor\SnippetEditorForm.cs">
       <SubType>UserControl</SubType>
     </Compile>

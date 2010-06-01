@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.SnippetLibrary;
 
 namespace Microsoft.SnippetDesigner

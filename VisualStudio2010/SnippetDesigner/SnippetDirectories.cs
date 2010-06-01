@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Security;
@@ -60,8 +59,8 @@ namespace Microsoft.SnippetDesigner
             replaceRegex = new Regex("(%InstallRoot%)|(%LCID%)|(%MyDocs%)", RegexOptions.Compiled);
 
             GetUserSnippetDirectories();
-            GetSnippetDirectoriesFromRegistry(Registry.LocalMachine,false);
-            GetSnippetDirectoriesFromRegistry(Registry.Users,true);
+            GetSnippetDirectoriesFromRegistry(Registry.LocalMachine, false);
+            GetSnippetDirectoriesFromRegistry(Registry.Users, true);
         }
 
         private void AddPathsFromRegistryKey(RegistryKey key, string subKeyName)
@@ -83,22 +82,19 @@ namespace Microsoft.SnippetDesigner
             }
             catch (ArgumentException e)
             {
-                SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values in {0} for {1}", key,subKeyName), "SnippetDirectories", e);
+                SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values in {0} for {1}", key, subKeyName), "SnippetDirectories", e);
             }
-
         }
-
 
 
         private void GetSnippetDirectoriesFromRegistry(RegistryKey rootKey, bool configSection)
         {
             try
             {
-                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey,configSection))
+                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey, configSection))
                 using (RegistryKey codeExpansionKey = vsKey.OpenSubKey("Languages\\CodeExpansions"))
                     foreach (string lang in codeExpansionKey.GetSubKeyNames())
                     {
-
                         try
                         {
                             if (lang.Equals("CSharp", StringComparison.OrdinalIgnoreCase) ||
@@ -124,12 +120,11 @@ namespace Microsoft.SnippetDesigner
                             SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values for {0}", lang), "SnippetDirectories", e);
                         }
                     }
-
             }
             catch (ArgumentException e)
             {
                 SnippetDesignerPackage.Instance.Logger.Log("Cannot acces registry", "SnippetDirectories", e);
-            }            
+            }
             catch (NullReferenceException e)
             {
                 SnippetDesignerPackage.Instance.Logger.Log("Cannot acces registry", "SnippetDirectories", e);
@@ -254,7 +249,7 @@ namespace Microsoft.SnippetDesigner
 
             var webDevSnippetDir = Path.Combine(snippetDir, StringConstants.VisualWebDeveloper);
             userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameJavaScript);
-            userSnippetDirectories[Resources.DisplayNameHTML] = Path.Combine(webDevSnippetDir,StringConstants.SnippetDirNameHTML);
+            userSnippetDirectories[Resources.DisplayNameHTML] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameHTML);
 
             userSnippetDirectories[String.Empty] = snippetDir;
         }

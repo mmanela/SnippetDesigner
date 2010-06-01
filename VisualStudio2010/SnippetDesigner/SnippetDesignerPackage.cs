@@ -32,15 +32,7 @@ namespace Microsoft.SnippetDesigner
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    // [DefaultRegistryRoot(@"Software\Microsoft\VisualStudio\10.0Exp")]
-    // This attribute is used to register the informations needed to show the this package
-    // in the Help/About dialog of Visual Studio.
     [InstalledProductRegistration("#100", "#102", "1.3.0", IconResourceID = 404)]
-    // In order be loaded inside Visual Studio in a machine that has not the VS SDK installed, 
-    // package needs to have a valid load key (it can be requested at 
-    // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
-    // package has a load key embedded in its resources.
-    // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof (SnippetExplorerToolWindow))]
@@ -74,11 +66,7 @@ namespace Microsoft.SnippetDesigner
         private string activeSnippetLanguage = String.Empty;
         private IComponentModel componentModel;
         internal ILogger Logger { get; private set; }
-
-        //index of snippets
-
-        // options pages
-
+        
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -167,7 +155,6 @@ namespace Microsoft.SnippetDesigner
         {
             return GetResourceString(string.Format("@{0}", resourceID));
         }
-
 
         public string GetVisualStudioResourceString(uint resourceId)
         {
@@ -514,7 +501,6 @@ namespace Microsoft.SnippetDesigner
         {
             try
             {
-                TextDocument textDoc = CurrentTextDocument;
                 if (currentWindow == null)
                 {
                     currentWindow = Dte.ActiveWindow;

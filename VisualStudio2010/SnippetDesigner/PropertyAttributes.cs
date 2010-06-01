@@ -13,7 +13,7 @@ namespace Microsoft.SnippetDesigner
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field, Inherited = false, AllowMultiple = false)]
     internal sealed class LocalizableDisplayNameAttribute : DisplayNameAttribute
     {
-        private string name;
+        private readonly string name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LocalizableDisplayNameAttribute"/> class.
@@ -142,10 +142,10 @@ namespace Microsoft.SnippetDesigner
         internal const string PropCategoryFileInfo = "PropCategoryFileInfo";
 
         private static SR loader;
-        private ResourceManager resources;
+        private readonly ResourceManager resources;
 
         private static Object s_InternalSyncObject;
-        
+
         private static Object InternalSyncObject
         {
             get
