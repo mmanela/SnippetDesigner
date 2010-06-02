@@ -6,9 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
 using EnvDTE;
-using EnvDTE80;
 using Microsoft.RegistryTools;
-using Microsoft.SnippetDesigner.ContentTypes;
 using Microsoft.SnippetDesigner.OptionPages;
 using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.VisualStudio;
@@ -20,16 +18,16 @@ using MsOle = Microsoft.VisualStudio.OLE.Interop;
 
 namespace Microsoft.SnippetDesigner
 {
-    /// <summary>
-    /// This is the class that implements the package exposed by this assembly.
+    ///<summary>
+    ///    This is the class that implements the package exposed by this assembly.
     ///
-    /// The minimum requirement for a class to be considered a valid package for Visual Studio
-    /// is to implement the IVsPackage interface and register itself with the shell.
-    /// This package uses the helper classes defined inside the Managed Package Framework (MPF)
-    /// to do it: it derives from the Package class that provides the implementation of the 
-    /// IVsPackage interface and uses the registration attributes defined in the framework to 
-    /// register itself and its components with the shell.
-    /// </summary>
+    ///    The minimum requirement for a class to be considered a valid package for Visual Studio
+    ///    is to implement the IVsPackage interface and register itself with the shell.
+    ///    This package uses the helper classes defined inside the Managed Package Framework (MPF)
+    ///    to do it: it derives from the Package class that provides the implementation of the 
+    ///    IVsPackage interface and uses the registration attributes defined in the framework to 
+    ///    register itself and its components with the shell.
+    ///</summary>
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
@@ -46,7 +44,7 @@ namespace Microsoft.SnippetDesigner
     // package needs to have a valid load key (it can be requested at 
     // http://msdn.microsoft.com/vstudio/extend/). This attributes tells the shell that this 
     // package has a load key embedded in its resources.
-    [ProvideLoadKey("Standard", "1.2", "Snippet Designer", "Matthew Manela", 1)]
+    [ProvideLoadKey("Standard", "1.3", "Snippet Designer", "Matthew Manela", 1)]
     // This attribute is needed to let the shell know that this package exposes some menus.
     [ProvideMenuResource(1000, 1)]
     // This attribute registers a tool window exposed by this package.
@@ -64,8 +62,10 @@ namespace Microsoft.SnippetDesigner
     [ProvideLanguageService(typeof (XMLSnippetLanguageService), "XML Snippets", 204)]
     // These attributes registers the HighLightMarker service and two custom markers 
     [ProvideService(typeof (HighlightMarkerService), ServiceName = StringConstants.MarkerServiceName)]
-    [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
-    [ProvideCustomMarker(StringConstants.ActiveSnippetReplacementMarker, 201, typeof (ActiveSnippetReplacementMarker), typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
+    [ProvideCustomMarker(StringConstants.SnippetReplacementMarker, 200, typeof (SnippetReplacementMarker),
+        typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
+    [ProvideCustomMarker(StringConstants.ActiveSnippetReplacementMarker, 201, typeof (ActiveSnippetReplacementMarker),
+        typeof (SnippetDesignerPackage), typeof (HighlightMarkerService))]
     //cause the package to autoload - Only when a solution exists
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
     [ProvideEditorExtension(typeof (EditorFactory), StringConstants.SnippetExtension, 32,
@@ -101,11 +101,11 @@ namespace Microsoft.SnippetDesigner
         // options pages
 
         /// <summary>
-        /// Default constructor of the package.
-        /// Inside this method you can place any initialization code that does not require 
-        /// any Visual Studio service because at this point the package object is created but 
-        /// not sited yet inside Visual Studio environment. The place to do all the other 
-        /// initialization is the Initialize method.
+        ///     Default constructor of the package.
+        ///     Inside this method you can place any initialization code that does not require 
+        ///     any Visual Studio service because at this point the package object is created but 
+        ///     not sited yet inside Visual Studio environment. The place to do all the other 
+        ///     initialization is the Initialize method.
         /// </summary>
         public SnippetDesignerPackage()
         {
@@ -114,24 +114,24 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// Gets the settings.
+        ///     Gets the settings.
         /// </summary>
         /// <value>The settings.</value>
         public SnippetDesignerOptions Settings { get; private set; }
 
         /// <summary>
-        /// Return the snippet index for this package
+        ///     Return the snippet index for this package
         /// </summary>
         public SnippetIndex SnippetIndex { get; private set; }
 
 
         /// <summary>
-        /// Get the service which you can aquire highlight markers from
+        ///     Get the service which you can aquire highlight markers from
         /// </summary>
         public HighlightMarkerService MarkerService { get; private set; }
 
         /// <summary>
-        /// Return the active snippet title so that the type desccriptor can  display it
+        ///     Return the active snippet title so that the type desccriptor can  display it
         /// </summary>
         public string ActiveSnippetTitle
         {
@@ -140,7 +140,7 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// Return the active snippet title so that the type desccriptor can 
+        ///     Return the active snippet title so that the type desccriptor can
         /// </summary>
         public string ActiveSnippetLanguage
         {
@@ -149,13 +149,13 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// the one instance of the dte object created by this package
+        ///     the one instance of the dte object created by this package
         /// </summary>
         public DTE DTE { get; private set; }
 
         /// <summary>
-        /// Get the export snippet data
-        /// contains language and code of the snippet
+        ///     Get the export snippet data
+        ///     contains language and code of the snippet
         /// </summary>
         public ExportToSnippetData ExportSnippetData { get; private set; }
 
@@ -169,7 +169,8 @@ namespace Microsoft.SnippetDesigner
             string resourceValue;
             IVsResourceManager resourceManager = (IVsResourceManager) GetGlobalService(typeof (SVsResourceManager));
             if (resourceManager == null)
-                throw new InvalidOperationException("Could not get SVsResourceManager service. Make sure the package is Sited before calling this method.");
+                throw new InvalidOperationException(
+                    "Could not get SVsResourceManager service. Make sure the package is Sited before calling this method.");
 
             Guid packageGuid = typeof (SnippetDesignerPackage).GUID;
             int hr = resourceManager.LoadResourceString(ref packageGuid, -1, resourceName, out resourceValue);
@@ -186,7 +187,7 @@ namespace Microsoft.SnippetDesigner
 
         public string GetVisualStudioResourceString(uint resourceId)
         {
-            IVsShell shell = (IVsShell)GetService(typeof(SVsShell));
+            IVsShell shell = (IVsShell) GetService(typeof (SVsShell));
             string localizedResource = null;
             if (shell != null)
                 shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
@@ -195,7 +196,7 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// Get the name Visual Studio is registered to
+        ///     Get the name Visual Studio is registered to
         /// </summary>
         internal static string VSRegisteredName
         {
@@ -237,9 +238,9 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// This function is called when the user clicks the menu item that shows the 
-        /// tool window. See the Initialize method to see how the menu item is associated to 
-        /// this function using the OleMenuCommandService service and the MenuCommand class.
+        ///     This function is called when the user clicks the menu item that shows the 
+        ///     tool window. See the Initialize method to see how the menu item is associated to 
+        ///     this function using the OleMenuCommandService service and the MenuCommand class.
         /// </summary>
         private void ShowSnippetExplorer(object sender, EventArgs e)
         {
@@ -260,12 +261,12 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// Called by the export command.  This fucntion will determin the exported language
-        /// and the exported code and build a ExportToSnippetData object.  It then creates a new snippet
-        /// which will read this export to snippet object
+        ///     Called by the export command.  This fucntion will determin the exported language
+        ///     and the exported code and build a ExportToSnippetData object.  It then creates a new snippet
+        ///     which will read this export to snippet object
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name = "sender"></param>
+        /// <param name = "e"></param>
         private void ExportToSnippet(object sender, EventArgs e)
         {
             // The selected item is the active window pane
@@ -283,7 +284,8 @@ namespace Microsoft.SnippetDesigner
                 try
                 {
                     //build export object
-                    ExportSnippetData = new ExportToSnippetData(codeDoc.Selection.Text.Normalize(), codeDoc.Language.ToLower());
+                    ExportSnippetData = new ExportToSnippetData(codeDoc.Selection.Text.Normalize(),
+                                                                codeDoc.Language.ToLower());
                     //launch new file
                     CreateNewSnippetFile();
                 }
@@ -296,7 +298,7 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// Get the language of the active window
+        ///     Get the language of the active window
         /// </summary>
         /// <returns></returns>
         private string CurrentWindowLanguage
@@ -315,8 +317,8 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        ///  get the current text document
-        /// if current documents isnt a text doc return null
+        ///     get the current text document
+        ///     if current documents isnt a text doc return null
         /// </summary>
         internal TextDocument CurrentTextDocument
         {
@@ -347,11 +349,11 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// The vs command line argument parser.  When you do File.NewSnippet and then args of
-        /// /lang langyage and/or /code myCode it will create new snippet with those options
+        ///     The vs command line argument parser.  When you do File.NewSnippet and then args of
+        ///     /lang langyage and/or /code myCode it will create new snippet with those options
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /// <param name = "sender"></param>
+        /// <param name = "e"></param>
         private void CreateSnippet(object sender, EventArgs e)
         {
             OleMenuCmdEventArgs eventArgs = e as OleMenuCmdEventArgs;
@@ -366,13 +368,14 @@ namespace Microsoft.SnippetDesigner
         }
 
         /// <summary>
-        /// Open a new snippet file, if any export data is wanted it must be set before hand
+        ///     Open a new snippet file, if any export data is wanted it must be set before hand
         /// </summary>
         internal void CreateNewSnippetFile()
         {
             if (DTE != null)
             {
-                DTE.ItemOperations.NewFile(StringConstants.NewFileFormat, GetNextAvailableNewSnippetTitle(),"{" + Guid.Empty + "}");
+                DTE.ItemOperations.NewFile(StringConstants.NewFileFormat, GetNextAvailableNewSnippetTitle(),
+                                           "{" + Guid.Empty + "}");
             }
         }
 
@@ -392,16 +395,16 @@ namespace Microsoft.SnippetDesigner
 
         private bool DoesWindowWithCaptionExist(string caption)
         {
-            foreach(Window window in DTE.Windows)
-                if(window.Caption.Equals(caption))
+            foreach (Window window in DTE.Windows)
+                if (window.Caption.Equals(caption))
                     return true;
             return false;
         }
 
 
         /// <summary>
-        /// Initialization of the package; this method is called right after the package is sited, so this is the place
-        /// where you can put all the initilaization code that rely on services provided by VisualStudio.
+        ///     Initialization of the package; this method is called right after the package is sited, so this is the place
+        ///     where you can put all the initilaization code that rely on services provided by VisualStudio.
         /// </summary>
         protected override void Initialize()
         {
@@ -437,7 +440,8 @@ namespace Microsoft.SnippetDesigner
                 xmlSnippetLangService.SetSite(this);
 
                 // Add our language service objects to packages services container
-                ((IServiceContainer) this).AddService(typeof (CSharpSnippetLanguageService), csharpSnippetLangService, true);
+                ((IServiceContainer) this).AddService(typeof (CSharpSnippetLanguageService), csharpSnippetLangService,
+                                                      true);
                 ((IServiceContainer) this).AddService(typeof (VBSnippetLanguageService), vbSnippetLangService, true);
                 ((IServiceContainer) this).AddService(typeof (XMLSnippetLanguageService), xmlSnippetLangService, true);
 
@@ -457,26 +461,32 @@ namespace Microsoft.SnippetDesigner
                 // Add our command handlers for menu (commands must exist in the .vstc file)
 
                 // Create the command for the tool window
-                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidSnippetExplorer);
+                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                                   (int) PkgCmdIDList.cmdidSnippetExplorer);
                 DefineCommandHandler(ShowSnippetExplorer, snippetExplorerCommandID);
 
 
                 //DefineCommandHandler not used for these since extra properties need to be set
                 // Create the command for the context menu export snippet
-                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidExportToSnippet);
+                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                       (int) PkgCmdIDList.cmdidExportToSnippet);
                 snippetExportCommand = DefineCommandHandler(ExportToSnippet, contextcmdID);
                 snippetExportCommand.Visible = false;
 
                 // commandline command for exporting as snippet
-                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
+                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                          (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
                 OleMenuCommand snippetExportCommandLine = DefineCommandHandler(ExportToSnippet, exportCmdLineID);
-                snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker; //a space means arguments are coming
+                snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker;
+                    //a space means arguments are coming
 
 
                 // Create the command for CreateSnippet
-                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet, (int) PkgCmdIDList.cmdidCreateSnippet);
+                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                      (int) PkgCmdIDList.cmdidCreateSnippet);
                 OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
-                createCommand.ParametersDescription = StringConstants.ArgumentStartMarker; //a space means arguments are coming
+                createCommand.ParametersDescription = StringConstants.ArgumentStartMarker;
+                    //a space means arguments are coming
 
                 // Create and proffer the marker service
                 MarkerService = new HighlightMarkerService(this);
@@ -501,12 +511,12 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// Define a command handler.
-        /// When the user press the button corresponding to the CommandID
-        /// the EventHandler will be called.
+        ///     Define a command handler.
+        ///     When the user press the button corresponding to the CommandID
+        ///     the EventHandler will be called.
         /// </summary>
-        /// <param name="id">The CommandID (Guid/ID pair) as defined in the .ctc file</param>
-        /// <param name="handler">Method that should be called to implement the command</param>
+        /// <param name = "id">The CommandID (Guid/ID pair) as defined in the .ctc file</param>
+        /// <param name = "handler">Method that should be called to implement the command</param>
         /// <returns>The menu command. This can be used to set parameter such as the default visibility once the package is loaded</returns>
         internal OleMenuCommand DefineCommandHandler(EventHandler handler, CommandID id)
         {
@@ -533,11 +543,11 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// Called when the UI Context changes.  This will be called when the user opens a new item (window) is active.
-        /// This allows me to see what type of item (window) it is and decide to disable or enable the ceartin commands
+        ///     Called when the UI Context changes.  This will be called when the user opens a new item (window) is active.
+        ///     This allows me to see what type of item (window) it is and decide to disable or enable the ceartin commands
         /// </summary>
-        /// <param name="dwCmdUICookie"></param>
-        /// <param name="fActive"></param>
+        /// <param name = "dwCmdUICookie"></param>
+        /// <param name = "fActive"></param>
         /// <returns></returns>
         public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive)
         {

@@ -18,14 +18,14 @@
         <Registry Name="UseInterface" Value="1" Type="integer" />
     </Registry>
 
-    <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Packages\{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Value="Microsoft.SnippetDesigner.SnippetDesignerPackage, SnippetDesigner, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null" Type="string">
+    <Registry Root="HKLM" Key="SOFTWARE\Microsoft\VisualStudio\9.0\Packages\{5a3ff802-5398-465e-8cc6-882fd3cbae55}" Value="Microsoft.SnippetDesigner.SnippetDesignerPackage, SnippetDesigner, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null" Type="string">
         <Registry Name="InprocServer32" Value="[SystemFolder]mscoree.dll" Type="string" />
         <Registry Name="Class" Value="Microsoft.SnippetDesigner.SnippetDesignerPackage" Type="string" />
-        <Registry Name="Assembly" Value="SnippetDesigner, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null" Type="string" />
+        <Registry Name="Assembly" Value="SnippetDesigner, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null" Type="string" />
         <Registry Name="ID" Value="1" Type="integer" />
         <Registry Name="CodeBase" Value="[#PackageDll]" Type="string" />
         <Registry Name="MinEdition" Value="Standard" Type="string" />
-        <Registry Name="ProductVersion" Value="1.2" Type="string" />
+        <Registry Name="ProductVersion" Value="1.3" Type="string" />
         <Registry Name="ProductName" Value="Snippet Designer" Type="string" />
         <Registry Name="CompanyName" Value="Matthew Manela" Type="string" />
     </Registry>
