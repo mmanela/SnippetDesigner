@@ -22,9 +22,10 @@ namespace Microsoft.SnippetDesigner
     /// and the rest of the interface are needed by VSIP to allow this to be both the DocData and DocView
     /// </summary>
     [ComVisible(true)]
-    public sealed class SnippetEditor :
-        WindowPane,
+    public sealed class SnippetEditorOld :
+        //SnippetEditorForm, // SnippetEditor GUI form
         ICodeWindowHost,
+        IVsWindowPane, // To make this a doc window
         IOleCommandTarget, // To handle any commands that are passed by VS
         IOleServiceProvider,
         IVsPersistDocData,
@@ -36,7 +37,7 @@ namespace Microsoft.SnippetDesigner
         IVsFileBackup //to support backup of files. Visual Studio File Recovery 
     {
 
-        public readonly SnippetEditorWPF snippetEditorForm;
+        public readonly SnippetEditorForm snippetEditorForm;
 
         private readonly SnippetDesignerPackage snippetDesignerPackage;
         private IVsTextView activeTextView;
@@ -121,7 +122,7 @@ namespace Microsoft.SnippetDesigner
         /// tell the codewindow that we are its parent so he can site us
         /// </summary>
         /// <param name="sacPackage"></param>
-        public SnippetEditor(SnippetDesignerPackage package)
+        public SnippetEditorOld(SnippetDesignerPackage package)
         {
             snippetDesignerPackage = package;
             vsFileChangeCookie = VSConstants.VSCOOKIE_NIL; //initialize the file change cookie to null
@@ -131,12 +132,10 @@ namespace Microsoft.SnippetDesigner
             InitializePropertiesWindow(); //set up the properties window
 
 
-            snippetEditorForm = new SnippetEditorWPF();
+            snippetEditorForm = new SnippetEditorForm();
             snippetEditorForm.InitializeComponent(); //initialize gui components
-            //snippetEditorForm.snippetCodeWindow.CodeWindowHost = this; //tell the code window this is its parent codeWindowHost
+            snippetEditorForm.snippetCodeWindow.CodeWindowHost = this; //tell the code window this is its parent codeWindowHost
 
-
-            Content = snippetEditorForm;
             logger = package.Logger;
         }
 
@@ -181,9 +180,8 @@ namespace Microsoft.SnippetDesigner
 
             // Create the object that will show the document's properties
             // on the properties window.
-            //TODO: FIX FOR WPF
-            // EditorProperties prop = new EditorProperties(snippetEditorForm);
-            //listObjects.Add(prop);
+            EditorProperties prop = new EditorProperties(snippetEditorForm);
+            listObjects.Add(prop);
 
             // Create the SelectionContainer object.
             selContainer = new SelectionContainer(true, false);
@@ -235,18 +233,16 @@ namespace Microsoft.SnippetDesigner
             object captionValue;
             //get caption and make it title without its extension
             EditorFrame.GetProperty((int) __VSFPROPID.VSFPROPID_OwnerCaption, out captionValue);
+            snippetEditorForm.ActiveSnippet.Title = snippetEditorForm.SnippetTitle = Path.GetFileNameWithoutExtension(captionValue.ToString());
 
-            //TODO:  PUT THIS BACK IN
-            //snippetEditorForm.ActiveSnippet.Title = snippetEditorForm.SnippetTitle = Path.GetFileNameWithoutExtension(captionValue.ToString());
+            //add titles to snippet titles property
+            var titles = new CollectionWithEvents<string>();
+            titles.Add(snippetEditorForm.SnippetTitle);
+            snippetEditorForm.SnippetTitles = titles;
+            snippetEditorForm.SnippetAuthor = SnippetDesignerPackage.VSRegisteredName;
 
-            ////add titles to snippet titles property
-            //var titles = new CollectionWithEvents<string>();
-            //titles.Add(snippetEditorForm.SnippetTitle);
-            //snippetEditorForm.SnippetTitles = titles;
-            //snippetEditorForm.SnippetAuthor = SnippetDesignerPackage.VSRegisteredName;
-
-            ////make sure title is in snippets data memory
-            //snippetEditorForm.PushFieldsIntoActiveSnippet();
+            //make sure title is in snippets data memory
+            snippetEditorForm.PushFieldsIntoActiveSnippet();
         }
 
         /// <summary>
@@ -258,9 +254,8 @@ namespace Microsoft.SnippetDesigner
             ExportToSnippetData exportData = snippetDesignerPackage.ExportSnippetData;
             if (exportData != null) //if this object isnt null
             {
-                //TODO:  PUT THIS BACK IN
-                //snippetEditorForm.SnippetCode = exportData.Code; //read the code
-                //snippetEditorForm.SnippetLanguage = exportData.Language; //read the language
+                snippetEditorForm.SnippetCode = exportData.Code; //read the code
+                snippetEditorForm.SnippetLanguage = exportData.Language; //read the language
                 snippetDesignerPackage.ClearSnippetExportData(); //clear the export data
             }
         }
@@ -271,7 +266,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public void SetupContextMenus()
         {
-            //TODO:  Do this a more wpf way 
+            //TODO: FIX FOR WPF
             //CommandFilter filter = new CommandFilter(this);
             //IOleCommandTarget originalFilter;
             //ErrorHandler.ThrowOnFailure(snippetEditorForm.CodeWindow.OldTextView.AddCommandFilter(filter, out originalFilter));
@@ -284,24 +279,23 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public void ShowContextMenu()
         {
-            //TODO: FIX FOR WPF
             // Get a reference to the UIShell.
-            //IVsUIShell uiShell = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
-            //if (null == uiShell)
-            //{
-            //    return;
-            //}
+            IVsUIShell uiShell = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
+            if (null == uiShell)
+            {
+                return;
+            }
 
-            //// Get the position of the cursor.
-            //Point currentCursorPosition = Cursor.Position;
-            //POINTS[] pnts = new POINTS[1];
-            //pnts[0].x = (short) currentCursorPosition.X;
-            //pnts[0].y = (short) currentCursorPosition.Y;
+            // Get the position of the cursor.
+            Point currentCursorPosition = Cursor.Position;
+            POINTS[] pnts = new POINTS[1];
+            pnts[0].x = (short) currentCursorPosition.X;
+            pnts[0].y = (short) currentCursorPosition.Y;
 
-            //// Show the menu.
-            //Guid menuGuid = GuidList.SnippetDesignerCmdSet;
-            ////tell the ui shell to show the context menu
-            //uiShell.ShowContextMenu(0, ref menuGuid, (int)PkgCmdIDList.SnippetContextMenu, pnts, snippetEditorForm.snippetCodeWindow.OldTextView as IOleCommandTarget);
+            // Show the menu.
+            Guid menuGuid = GuidList.SnippetDesignerCmdSet;
+            //tell the ui shell to show the context menu
+            uiShell.ShowContextMenu(0, ref menuGuid, (int)PkgCmdIDList.SnippetContextMenu, pnts, snippetEditorForm.snippetCodeWindow.OldTextView as IOleCommandTarget);
         }
 
         /// <summary>
@@ -309,38 +303,37 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void CreateSaveAsDialog()
         {
-            //TODO: FIX FOR WPF
-            //string currLang = String.Empty;
-            //if (snippetEditorForm.toolStripLanguageBox.SelectedIndex > -1)
-            //{
-            //    currLang = snippetEditorForm.toolStripLanguageBox.SelectedItem.ToString();
-            //}
+            string currLang = String.Empty;
+            if (snippetEditorForm.toolStripLanguageBox.SelectedIndex > -1)
+            {
+                currLang = snippetEditorForm.toolStripLanguageBox.SelectedItem.ToString();
+            }
 
-            //currLang = currLang.Trim();
-            //string initialFileName = string.Empty;
-            //if (snippetEditorForm.snippetDirectories.ContainsKey(currLang))
-            //{
-            //    initialFileName = snippetEditorForm.snippetDirectories[currLang];
-            //}
-            //else
-            //{
-            //    initialFileName = snippetEditorForm.snippetDirectories[String.Empty];
-            //}
+            currLang = currLang.Trim();
+            string initialFileName = string.Empty;
+            if (snippetEditorForm.snippetDirectories.ContainsKey(currLang))
+            {
+                initialFileName = snippetEditorForm.snippetDirectories[currLang];
+            }
+            else
+            {
+                initialFileName = snippetEditorForm.snippetDirectories[String.Empty];
+            }
 
-            //if (isFileNew)
-            //{
-            //    initialFileName = Path.Combine(initialFileName, snippetEditorForm.SnippetTitle);
-            //}
-            //else
-            //{
-            //    initialFileName += Path.Combine(initialFileName, Path.GetFileName(fileName));
-            //}
+            if (isFileNew)
+            {
+                initialFileName = Path.Combine(initialFileName, snippetEditorForm.SnippetTitle);
+            }
+            else
+            {
+                initialFileName += Path.Combine(initialFileName, Path.GetFileName(fileName));
+            }
 
 
-            //int can;
-            //string fileaNameNew;
-            //IVsUIShell uiShell = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
-            //int hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, this, initialFileName, out fileaNameNew, out can);
+            int can;
+            string fileaNameNew;
+            IVsUIShell uiShell = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
+            int hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, this, initialFileName, out fileaNameNew, out can);
         }
 
         /// <summary>
@@ -438,9 +431,8 @@ namespace Microsoft.SnippetDesigner
                 }
                 isDirty = false;
                 snippetEditorForm.IsFormDirty = false;
-                //TODO: FIX FOR WPF
-                //IVsTextBuffer buffer = snippetEditorForm.snippetCodeWindow.OldTextLines;
-                //buffer.SetStateFlags(0);
+                IVsTextBuffer buffer = snippetEditorForm.snippetCodeWindow.OldTextLines;
+                buffer.SetStateFlags(0);
             }
 
             // Since all changes are now saved properly to disk, there's no need for a backup.
@@ -448,107 +440,108 @@ namespace Microsoft.SnippetDesigner
             return hr;
         }
 
-        //#region IVsWindowPane Members 
-        //public int ClosePane()
-        //{
-        //    return VSConstants.S_OK;
-        //}
+        #region IVsWindowPane Members
 
-        //public int CreatePaneWindow(IntPtr hwndParent, int x, int y, int cx, int cy, out IntPtr hwnd)
-        //{
-        //    NativeMethods.SetParent(snippetEditorForm.Handle, hwndParent);
-        //    hwnd = snippetEditorForm.Handle;
-        //    snippetEditorForm.Size = new Size(cx - x, cy - y);
+        public int ClosePane()
+        {
+            return VSConstants.S_OK;
+        }
 
-        //    return VSConstants.S_OK;
-        //}
+        public int CreatePaneWindow(IntPtr hwndParent, int x, int y, int cx, int cy, out IntPtr hwnd)
+        {
+            NativeMethods.SetParent(snippetEditorForm.Handle, hwndParent);
+            hwnd = snippetEditorForm.Handle;
+            snippetEditorForm.Size = new Size(cx - x, cy - y);
 
-        //public int GetDefaultSize(SIZE[] defaultSize)
-        //{
-        //    if (defaultSize.Length >= 1)
-        //    {
-        //        defaultSize[0].cx = 300;
-        //        defaultSize[0].cy = 200;
-        //    }
-        //    return VSConstants.S_OK;
-        //}
+            return VSConstants.S_OK;
+        }
 
-        //public int LoadViewState(IStream loadStream)
-        //{
-        //    return VSConstants.S_OK;
-        //}
+        public int GetDefaultSize(SIZE[] defaultSize)
+        {
+            if (defaultSize.Length >= 1)
+            {
+                defaultSize[0].cx = 300;
+                defaultSize[0].cy = 200;
+            }
+            return VSConstants.S_OK;
+        }
 
-        //public int SaveViewState(IStream saveStream)
-        //{
-        //    return VSConstants.S_OK;
-        //}
+        public int LoadViewState(IStream loadStream)
+        {
+            return VSConstants.S_OK;
+        }
 
-        ///// <summary>
-        ///// Called by the enviorment to provide us with our site
-        ///// This lets us call services that are important to the codeWindowHost
-        ///// </summary>
-        ///// <param name="psp"></param>
-        ///// <returns></returns>
-        //public int SetSite(IOleServiceProvider psp)
-        //{
-        //    ServiceProvider = psp;
-        //    //Guid to be used in SetGuidProperty as a ref parameter to tell frame that we want texteditor key bindings
-        //    Guid cmdUI_TextEditor = GuidList.textEditorFactory;
-        //    int hr = EditorFrame.SetGuidProperty((int) __VSFPROPID.VSFPROPID_InheritKeyBindings, ref cmdUI_TextEditor);
+        public int SaveViewState(IStream saveStream)
+        {
+            return VSConstants.S_OK;
+        }
 
-        //    return hr;
-        //}
+        /// <summary>
+        /// Called by the enviorment to provide us with our site
+        /// This lets us call services that are important to the codeWindowHost
+        /// </summary>
+        /// <param name="psp"></param>
+        /// <returns></returns>
+        public int SetSite(IOleServiceProvider psp)
+        {
+            ServiceProvider = psp;
+            //Guid to be used in SetGuidProperty as a ref parameter to tell frame that we want texteditor key bindings
+            Guid cmdUI_TextEditor = GuidList.textEditorFactory;
+            int hr = EditorFrame.SetGuidProperty((int) __VSFPROPID.VSFPROPID_InheritKeyBindings, ref cmdUI_TextEditor);
 
-        ///// <summary>
-        ///// Send key commands to text view if it has focus
-        ///// </summary>
-        ///// <param name="msg"></param>
-        ///// <returns></returns>
-        //public int TranslateAccelerator(MSG[] messagesToTranslate)
-        //{
-        //    int hr = VSConstants.S_FALSE;
-        //    if (messagesToTranslate == null)
-        //    {
-        //        return hr;
-        //    }
+            return hr;
+        }
 
-        //    // defer to active code window
-        //    if (activeTextView != null)
-        //    {
-        //        IVsWindowPane vsWindowPane = (IVsWindowPane) activeTextView;
-        //        hr = vsWindowPane.TranslateAccelerator(messagesToTranslate);
-        //    }
-        //    else
-        //    {
-        //        switch (messagesToTranslate[0].message)
-        //        {
-        //            case NativeMethods.WM_KEYDOWN:
-        //            case NativeMethods.WM_SYSKEYDOWN:
-        //            case NativeMethods.WM_CHAR:
-        //            case NativeMethods.WM_SYSCHAR:
-        //                {
-        //                    Message msg = new Message();
-        //                    msg.HWnd = messagesToTranslate[0].hwnd;
-        //                    msg.Msg = (int) messagesToTranslate[0].message;
-        //                    msg.LParam = messagesToTranslate[0].lParam;
-        //                    msg.WParam = messagesToTranslate[0].wParam;
+        /// <summary>
+        /// Send key commands to text view if it has focus
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
+        public int TranslateAccelerator(MSG[] messagesToTranslate)
+        {
+            int hr = VSConstants.S_FALSE;
+            if (messagesToTranslate == null)
+            {
+                return hr;
+            }
 
-        //                    Control ctrl = SnippetEditorForm.FromChildHandle(msg.HWnd);
-        //                    if (ctrl != null && ctrl.PreProcessMessage(ref msg))
-        //                        hr = VSConstants.S_OK;
-        //                }
-        //                break;
+            // defer to active code window
+            if (activeTextView != null)
+            {
+                IVsWindowPane vsWindowPane = (IVsWindowPane) activeTextView;
+                hr = vsWindowPane.TranslateAccelerator(messagesToTranslate);
+            }
+            else
+            {
+                switch (messagesToTranslate[0].message)
+                {
+                    case NativeMethods.WM_KEYDOWN:
+                    case NativeMethods.WM_SYSKEYDOWN:
+                    case NativeMethods.WM_CHAR:
+                    case NativeMethods.WM_SYSCHAR:
+                        {
+                            Message msg = new Message();
+                            msg.HWnd = messagesToTranslate[0].hwnd;
+                            msg.Msg = (int) messagesToTranslate[0].message;
+                            msg.LParam = messagesToTranslate[0].lParam;
+                            msg.WParam = messagesToTranslate[0].wParam;
 
-        //            default:
-        //                break;
-        //        }
-        //    }
+                            Control ctrl = SnippetEditorForm.FromChildHandle(msg.HWnd);
+                            if (ctrl != null && ctrl.PreProcessMessage(ref msg))
+                                hr = VSConstants.S_OK;
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
+            }
 
 
-        //    return hr;
-        //}
+            return hr;
+        }
 
-        //#endregion
+        #endregion
 
         #region File Change Notification Helpers
 
@@ -899,59 +892,56 @@ namespace Microsoft.SnippetDesigner
             }
 
             int hr = VSConstants.S_OK;
-            //try
-            //{
-            //    // Show the wait cursor while loading the file
-            //    IVsUIShell VsUiShell = (IVsUIShell) GetVsService(typeof (SVsUIShell));
-            //    if (VsUiShell != null)
-            //    {
-            //        // Note: we don't want to throw or exit if this call fails, so
-            //        // don't check the return code.
-            //        hr = VsUiShell.SetWaitCursor();
-            //    }
+            try
+            {
+                // Show the wait cursor while loading the file
+                IVsUIShell VsUiShell = (IVsUIShell) GetVsService(typeof (SVsUIShell));
+                if (VsUiShell != null)
+                {
+                    // Note: we don't want to throw or exit if this call fails, so
+                    // don't check the return code.
+                    hr = VsUiShell.SetWaitCursor();
+                }
 
-            //    // Load the file
-            //    try
-            //    {
-            //        snippetEditorForm.LoadSnippet(fileToLoad);
-            //    }
-            //    catch (IOException)
-            //    {
-            //        Trace.WriteLine(Resources.ErrorFileIO);
-            //        throw; //throw the excpetion so vs handles it
-            //    }
-
-
-            //    //clear and show all markers
-            //    snippetEditorForm.RefreshReplacementMarkers();
-
-            //    isDirty = false; //the file is not dirty since we just loaded it
-            //    //clear the buffer dirty flag, this stops the * from appearing after we load
-            //    //it doesnt make sense to call a file dirty when you first load it 
-            //    //TODO: FIX FOR WPF
-            //    //IVsTextBuffer buffer = snippetEditorForm.snippetCodeWindow.OldTextLines;
-            //    //buffer.SetStateFlags(0);
+                // Load the file
+                try
+                {
+                    snippetEditorForm.LoadSnippet(fileToLoad);
+                }
+                catch (IOException)
+                {
+                    Trace.WriteLine(Resources.ErrorFileIO);
+                    throw; //throw the excpetion so vs handles it
+                }
 
 
-            //    // Hook up to file change notifications
-            //    if (String.IsNullOrEmpty(fileName) || 0 != String.Compare(fileName, fileToLoad, true, CultureInfo.CurrentCulture))
-            //    {
-            //        fileName = fileToLoad;
+                //clear and show all markers
+                snippetEditorForm.RefreshReplacementMarkers();
 
-            //        //TODO: FIX FOR WPF
-            //        //SetFileChangeNotification(fileToLoad, true);
+                isDirty = false; //the file is not dirty since we just loaded it
+                //clear the buffer dirty flag, this stops the * from appearing after we load
+                //it doesnt make sense to call a file dirty when you first load it 
+                IVsTextBuffer buffer = snippetEditorForm.snippetCodeWindow.OldTextLines;
+                buffer.SetStateFlags(0);
 
-            //        // Notify the load or reload
-            //        //NotifyDocChanged();
-            //    }
-            //}
-            //finally
-            //{
-            //    RefreshPropertiesWindow();
-            //}
-            ////create the properties
-            //ShowPropertiesWindow();
-            //loadDone = true;
+
+                // Hook up to file change notifications
+                if (String.IsNullOrEmpty(fileName) || 0 != String.Compare(fileName, fileToLoad, true, CultureInfo.CurrentCulture))
+                {
+                    fileName = fileToLoad;
+                    SetFileChangeNotification(fileToLoad, true);
+
+                    // Notify the load or reload
+                    NotifyDocChanged();
+                }
+            }
+            finally
+            {
+                RefreshPropertiesWindow();
+            }
+            //create the properties
+            ShowPropertiesWindow();
+            loadDone = true;
 
             return VSConstants.S_OK;
         }
@@ -964,10 +954,9 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.IsDirty(out int dirty)
         {
-            //TODO: FIX FOR WPF
-           // IVsPersistDocData bufferDoc = (IVsPersistDocData)snippetEditorForm.snippetCodeWindow.OldTextLines;
+            IVsPersistDocData bufferDoc = (IVsPersistDocData)snippetEditorForm.snippetCodeWindow.OldTextLines;
             int codeWindowDirty = 0;
-            //bufferDoc.IsDocDataDirty(out codeWindowDirty);
+            bufferDoc.IsDocDataDirty(out codeWindowDirty);
 
             if (isDirty || codeWindowDirty == 1 || snippetEditorForm.IsFormDirty)
             {
@@ -1142,15 +1131,14 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_Ok if the method succeeds</returns>
         int IVsPersistDocData.LoadDocData(string fileToLoad)
         {
-            //TODO: Figure out how to do this for WPF
-            ////set the buffer moniker
-            //IVsUserData udata = (IVsUserData)snippetEditorForm.CodeWindow.OldTextLines;
-            ////generate random gui
-            //string uniqueMoniker = Guid.NewGuid().ToString();
-            ////guid for buffer moniker property
-            //Guid bufferMonikerGuid = typeof (IVsUserData).GUID;
-            ////set the moniker
-            //udata.SetData(ref bufferMonikerGuid, uniqueMoniker);
+            //set the buffer moniker
+            IVsUserData udata = (IVsUserData)snippetEditorForm.CodeWindow.OldTextLines;
+            //generate random gui
+            string uniqueMoniker = Guid.NewGuid().ToString();
+            //guid for buffer moniker property
+            Guid bufferMonikerGuid = typeof (IVsUserData).GUID;
+            //set the moniker
+            udata.SetData(ref bufferMonikerGuid, uniqueMoniker);
 
             //continue with load of the document
             return ((IPersistFileFormat) this).Load(fileToLoad, 0, 0);
@@ -1187,12 +1175,10 @@ namespace Microsoft.SnippetDesigner
         {
             //we are closing this file so we dont want to be notified about it anymore
             SetFileChangeNotification(fileName, false);
-
-            //TODO: FIX FOR WPF
-            //if (snippetEditorForm.snippetCodeWindow != null)
-            //{
-            //    snippetEditorForm.snippetCodeWindow.Dispose();
-            //}
+            if (snippetEditorForm.snippetCodeWindow != null)
+            {
+                snippetEditorForm.snippetCodeWindow.Dispose();
+            }
             return VSConstants.S_OK;
         }
 
@@ -1408,13 +1394,11 @@ namespace Microsoft.SnippetDesigner
         /// <param name="focusedView"></param>
         public void OnSetFocus(IVsTextView focusedView)
         {
-
-            //TODO:  FIX THIS FOR WPF TOO
             //make sure codewindow is told it has focus
             //it doesnt always know it has focus cause the IVTextView will gobble up the info
-            //snippetEditorForm.CodeWindow.Select();
-            //activeTextView = focusedView;
-            //snippetEditorForm.RefreshReplacementMarkers();
+            snippetEditorForm.CodeWindow.Select();
+            activeTextView = focusedView;
+            snippetEditorForm.RefreshReplacementMarkers();
         }
 
         #endregion
@@ -1433,22 +1417,21 @@ namespace Microsoft.SnippetDesigner
             }
 
 
-            //TODO: FIX FOR WPF
-            //int startIndex = textLineChanges[0].iStartIndex;
-            //int endIndex = textLineChanges[0].iNewEndIndex;
-            //if (endIndex - startIndex == StringConstants.SymbolReplacement.Length)
-            //{
-            //    snippetEditorForm.lastCharacterEntered = snippetEditorForm.CodeWindow.GetCharacterAtPosition(new TextPoint(textLineChanges[0].iStartLine, startIndex));
-            //}
-            //else
-            //{
-            //    snippetEditorForm.lastCharacterEntered = null;
-            //}
+            int startIndex = textLineChanges[0].iStartIndex;
+            int endIndex = textLineChanges[0].iNewEndIndex;
+            if (endIndex - startIndex == StringConstants.SymbolReplacement.Length)
+            {
+                snippetEditorForm.lastCharacterEntered = snippetEditorForm.CodeWindow.GetCharacterAtPosition(new TextPoint(textLineChanges[0].iStartLine, startIndex));
+            }
+            else
+            {
+                snippetEditorForm.lastCharacterEntered = null;
+            }
 
-            //if (textLineChanges[0].iOldEndLine != textLineChanges[0].iNewEndLine)
-            //    snippetEditorForm.RefreshReplacementMarkers(-1);
-            //else
-            //    snippetEditorForm.RefreshReplacementMarkers(textLineChanges[0].iStartLine);
+            if (textLineChanges[0].iOldEndLine != textLineChanges[0].iNewEndLine)
+                snippetEditorForm.RefreshReplacementMarkers(-1);
+            else
+                snippetEditorForm.RefreshReplacementMarkers(textLineChanges[0].iStartLine);
         }
 
         #endregion

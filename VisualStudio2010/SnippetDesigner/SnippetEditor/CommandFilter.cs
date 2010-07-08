@@ -54,7 +54,8 @@ namespace Microsoft.SnippetDesigner
                         }
                     case (uint) VSConstants.VSStd2KCmdID.ECMD_LEFTCLICK:
                         {
-                            snippetEditor.MakeClickedReplacementActive();
+                            //TODO:  FIX FOR WPF
+                            //snippetEditor.snippetEditorForm.MakeClickedReplacementActive();
                             break;
                         }
                     default:
@@ -72,13 +73,15 @@ namespace Microsoft.SnippetDesigner
                         //our replace command ahs been pressed to act on it
                     case PkgCmdIDList.cmdidSnippetMakeReplacement:
                         {
-                            snippetEditor.CreateReplacementFromSelection(); //make the current cursor position a replacement
+                            //TODO:  FIX FOR WPF
+                            //snippetEditor.snippetEditorForm.CreateReplacementFromSelection(); //make the current cursor position a replacement
                             hr = VSConstants.S_OK;
                             break;
                         }
                     case PkgCmdIDList.cmdidSnippetRemoveReplacement:
                         {
-                            snippetEditor.ReplacementRemove(); //remove the replcement at the current cusor position
+                            //TODO:  FIX FOR WPF
+                            //snippetEditor.snippetEditorForm.ReplacementRemove(); //remove the replcement at the current cusor position
                             hr = VSConstants.S_OK;
                             break;
                         }

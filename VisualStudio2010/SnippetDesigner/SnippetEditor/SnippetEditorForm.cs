@@ -30,7 +30,7 @@ namespace Microsoft.SnippetDesigner
 
         //if the user typed a single character then store it here so we know what it is
         //otherwise its null
-        protected string lastCharacterEntered;
+        public string lastCharacterEntered;
 
         //hash which maps the display names of the languages to the path to their user snippet directory
         internal readonly Dictionary<string, string> snippetDirectories = SnippetDirectories.Instance.UserSnippetDirectories;
@@ -576,12 +576,13 @@ namespace Microsoft.SnippetDesigner
                     //store the last language
                     previousLanguageSelected = languageText;
 
-                    //refresh the properties window
-                    SnippetEditor sEditor = (this as SnippetEditor);
-                    if (sEditor != null)
-                    {
-                        sEditor.RefreshPropertiesWindow();
-                    }
+                    //TODO: Convert this to an event that the SnippetEditor can handle
+                    ////refresh the properties window
+                    //SnippetEditor sEditor = (this as SnippetEditor);
+                    //if (sEditor != null)
+                    //{
+                    //    sEditor.RefreshPropertiesWindow();
+                    //}
                 }
             }
         }
@@ -608,17 +609,17 @@ namespace Microsoft.SnippetDesigner
 
                     PullFieldsFromActiveSnippet();
 
-                    //clear and show all markers
-                    //RefreshReplacementMarkers(false);
 
+
+                    //TODO: Convert this to an event that the SnippetEditor can handle
                     //not the best way to do this but since I dont know if we want to move the change current snippet to the 
-                    // porperties window this will have to do for now
+                    // properties window this will have to do for now
                     // I am assuming this object is actually an instance of snippeteditor
-                    SnippetEditor theEditor = this as SnippetEditor;
-                    if (theEditor != null)
-                    {
-                        theEditor.RefreshPropertiesWindow();
-                    }
+                    //SnippetEditor theEditor = this as SnippetEditor;
+                    //if (theEditor != null)
+                    //{
+                    //    theEditor.RefreshPropertiesWindow();
+                    //}
                 }
             }
         }
@@ -797,7 +798,7 @@ namespace Microsoft.SnippetDesigner
             return allReplacements;
         }
 
-        protected void RefreshReplacementMarkers(int lineToMark)
+        public void RefreshReplacementMarkers(int lineToMark)
         {
             var allReplacements = GetCurrentReplacements();
 
@@ -805,7 +806,7 @@ namespace Microsoft.SnippetDesigner
             MarkReplacements(allReplacements, lineToMark);
         }
 
-        protected void RefreshReplacementMarkers()
+        public void RefreshReplacementMarkers()
         {
             RefreshReplacementMarkers(-1);
         }
@@ -1171,6 +1172,37 @@ namespace Microsoft.SnippetDesigner
         {
             SnippetDesignerPackage.Instance.ActiveSnippetLanguage = SnippetLanguage;
             SnippetDesignerPackage.Instance.ActiveSnippetTitle = SnippetTitle;
+        }
+
+
+        /// <summary> 
+        /// Clean up any resources being used.
+        /// </summary>
+        protected override  void Dispose(bool disposing)
+        {
+            try
+            {
+                if (disposing)
+                {
+                    if (snippetCodeWindow != null)
+                    {
+                        //dispose of code window
+                        snippetCodeWindow.Dispose();
+                        snippetCodeWindow = null;
+                    }
+
+                    if (components != null)
+                    {
+                        components.Dispose();
+                    }
+
+                    GC.SuppressFinalize(this);
+                }
+            }
+            finally
+            {
+                base.Dispose(disposing);
+            }
         }
     }
 }
