@@ -13,11 +13,5 @@ namespace Microsoft.SnippetDesigner
         /// Get and set the text in the code window
         /// </summary>
         string CodeText{get; set;}
-
-
-        /// <summary>
-        /// Set content type of the editor
-        /// </summary>
-        void SetContentType();
     }
 }

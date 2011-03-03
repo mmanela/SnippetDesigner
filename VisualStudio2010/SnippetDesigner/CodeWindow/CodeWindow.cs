@@ -10,6 +10,7 @@ using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
 using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.VisualStudio.Utilities;
+using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -24,17 +25,17 @@ namespace Microsoft.SnippetDesigner
         private uint cookieTextViewEvents;
         private uint cookieTextLineEvents;
         private bool isHandleCreated;
-        private IVsTextLines vsTextBuffer;
         private IConnectionPoint textViewEventsConnectionPoint;
         private IConnectionPoint textLinesEventsConnectionPoint;
         private bool isTextInitialized;
-        public IVsCodeWindow VsCodeWindow { get; private set; }
-
-        private readonly IVsEditorAdaptersFactoryService editorAdapterFactoryService;
-        private ITextSearchService textSearchService;
         private readonly IContentTypeRegistryService contentTypeService;
 
-        private const string CodeSnippetContentType = "codesnippet";
+        private const string CodeSnippetContentTypeString = "codesnippet";
+        private IContentType codeSnippetContentType;
+
+        private IVsTextView viewAdapter;
+        private IVsTextBuffer bufferAdapter;
+        private readonly IVsEditorAdaptersFactoryService editorAdapterFactoryService;
 
         /// <summary>
         /// Constructor for the code window which is a user snippetExplorerForm that hosts a vscodewindow
@@ -47,25 +48,23 @@ namespace Microsoft.SnippetDesigner
 
             editorAdapterFactoryService =
                 SnippetDesignerPackage.Instance.ComponentModel.GetService<IVsEditorAdaptersFactoryService>();
-            textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
+            SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
             contentTypeService =
                 SnippetDesignerPackage.Instance.ComponentModel.GetService<IContentTypeRegistryService>();
-              
+
             RegisterCodeSnippetContentType();
         }
 
         private void RegisterCodeSnippetContentType()
         {
-            var codeSnippetType = contentTypeService.GetContentType(CodeSnippetContentType);
-            if (codeSnippetType == null)
-                contentTypeService.AddContentType(CodeSnippetContentType, new List<string> {"code"});
+            codeSnippetContentType = contentTypeService.GetContentType(CodeSnippetContentTypeString);
+            if (codeSnippetContentType == null)
+                codeSnippetContentType = contentTypeService.AddContentType(CodeSnippetContentTypeString, new List<string> {"code"});
         }
 
-        public CodeWindow(IVsEditorAdaptersFactoryService editorAdapterFactoryService,
-                          ITextSearchService textSearchService, IContentTypeRegistryService contentTypeService)
+        public CodeWindow(IVsEditorAdaptersFactoryService editorAdapterFactoryService, IContentTypeRegistryService contentTypeService)
         {
             this.editorAdapterFactoryService = editorAdapterFactoryService;
-            this.textSearchService = textSearchService;
             this.contentTypeService = contentTypeService;
         }
 
@@ -96,9 +95,7 @@ namespace Microsoft.SnippetDesigner
             {
                 try
                 {
-                    IVsTextLines vsTextLines = OldTextLines;
-
-                    if (vsTextLines != null)
+                    if (TextBufferAdapter != null)
                     {
                         if (isTextInitialized)
                             SetText(value);
@@ -118,12 +115,9 @@ namespace Microsoft.SnippetDesigner
 
         private bool InitializeText(string newText)
         {
-            IVsTextLines textLines = OldTextLines;
             newText = newText ?? "";
-            if (ErrorHandler.Failed(textLines.InitializeContent(newText, newText.Length)))
+            if (ErrorHandler.Failed(bufferAdapter.InitializeContent(newText, newText.Length)))
                 return false;
-
-            SetContentType();
 
             return true;
         }
@@ -145,9 +139,9 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                if (VsCodeWindow != null)
+                if (viewAdapter != null)
                 {
-                    return editorAdapterFactoryService.GetWpfTextView(OldTextView);
+                    return editorAdapterFactoryService.GetWpfTextView(viewAdapter);
                 }
                 return null;
             }
@@ -165,43 +159,18 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// The TextLines interface of the codewindows textbuffer
         /// </summary>
-        internal IVsTextLines OldTextLines
+        internal IVsTextLines TextBufferAdapter
         {
-            get
-            {
-                if (VsCodeWindow != null)
-                {
-                    IVsTextLines vsTextLines;
-                    ErrorHandler.ThrowOnFailure(VsCodeWindow.GetBuffer(out vsTextLines));
-                    return vsTextLines;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            set { vsTextBuffer = value; }
+            get { return (IVsTextLines) bufferAdapter; }
         }
 
 
         /// <summary>
         /// the primary view for the code window
         /// </summary>
-        internal IVsTextView OldTextView
+        internal IVsTextView TextViewAdapter
         {
-            get
-            {
-                if (VsCodeWindow != null)
-                {   
-                    IVsTextView textView;
-                    ErrorHandler.ThrowOnFailure(VsCodeWindow.GetPrimaryView(out textView));
-                    return textView;
-                }
-                else
-                {
-                    return null;
-                }
-            }
+            get { return viewAdapter; }
         }
 
 
@@ -260,10 +229,9 @@ namespace Microsoft.SnippetDesigner
                     textViewEventsConnectionPoint.Unadvise(cookieTextViewEvents);
                 }
 
-                if (VsCodeWindow != null)
+                if (viewAdapter != null)
                 {
-                    VsCodeWindow.Close();
-                    VsCodeWindow = null;
+                    ((IVsWindowPane) viewAdapter).ClosePane();
                 }
             }
             base.Dispose(disposing);
@@ -292,19 +260,44 @@ namespace Microsoft.SnippetDesigner
             isHandleCreated = true;
         }
 
-        /// <summary>
-        /// Set the content type on the editor
-        /// </summary>
-        /// <param name="lang"></param>
-        public void SetContentType()
+
+        public void InitializeEditor()
         {
-            if (TextView != null)
+            IOleServiceProvider oleServiceProvider = codeWindowHost.ServiceProvider;
+            bufferAdapter = editorAdapterFactoryService.CreateVsTextBufferAdapter(oleServiceProvider, codeSnippetContentType);
+            int result = bufferAdapter.InitializeContent("", 0);
+            viewAdapter = editorAdapterFactoryService.CreateVsTextViewAdapter(oleServiceProvider);
+            ((IVsWindowPane) viewAdapter).SetSite(oleServiceProvider);
+
+            var initView = new[] {new INITVIEW()};
+            initView[0].fSelectionMargin = 1;
+            initView[0].fWidgetMargin = 0;
+            initView[0].fVirtualSpace = 0;
+            initView[0].fDragDropMove = 1;
+            initView[0].fVirtualSpace = 0;
+
+
+            uint readOnlyValue = 0;
+            if (codeWindowHost.ReadOnlyCodeWindow)
             {
-                var contentType = contentTypeService.GetContentType(CodeSnippetContentType);
-                if (!TextView.TextBuffer.ContentType.TypeName.Equals(contentType.TypeName))
-                    TextView.TextBuffer.ChangeContentType(contentType, new object());
+                readOnlyValue = (uint) TextViewInitFlags2.VIF_READONLY;
             }
+
+            uint flags =
+                (uint) TextViewInitFlags.VIF_SET_SELECTION_MARGIN |
+                (uint) TextViewInitFlags.VIF_SET_DRAGDROPMOVE |
+                (uint) TextViewInitFlags2.VIF_SUPPRESS_STATUS_BAR_UPDATE |
+                (uint) TextViewInitFlags2.VIF_SUPPRESSBORDER |
+                (uint) TextViewInitFlags2.VIF_SUPPRESSTRACKCHANGES |
+                (uint) TextViewInitFlags2.VIF_SUPPRESSTRACKGOBACK |
+                (uint) TextViewInitFlags.VIF_HSCROLL |
+                (uint) TextViewInitFlags.VIF_VSCROLL |
+                (uint) TextViewInitFlags3.VIF_NO_HWND_SUPPORT |
+                readOnlyValue;
+
+            viewAdapter.Initialize(bufferAdapter as IVsTextLines, Handle, flags, initView);
         }
+
 
         /// <summary>
         /// Constructs the IVsCodeWindow and attaches an IVsTextBuffer
@@ -312,89 +305,18 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if success</returns>
         private int CreateVsCodeWindow()
         {
+            InitializeEditor();
+
             int hr = VSConstants.S_OK;
-            Guid clsidVsCodeWindow = typeof (VsCodeWindowClass).GUID;
-            Guid iidVsCodeWindow = typeof (IVsCodeWindow).GUID;
-            Guid clsidVsTextBuffer = typeof (VsTextBufferClass).GUID;
-            Guid iidVsTextLines = typeof (IVsTextLines).GUID;
 
-            //create/site a VsTextBuffer object
-            vsTextBuffer =
-                (IVsTextLines)
-                SnippetDesignerPackage.Instance.CreateInstance(ref clsidVsTextBuffer,
-                                                               ref iidVsTextLines,
-                                                               typeof (IVsTextLines));
-
-            IObjectWithSite ows = (IObjectWithSite) vsTextBuffer;
-
-            //set the site of the buffer to the parent editor
-            ows.SetSite(codeWindowHost.ServiceProvider);
-
-            // tell the text buffer to not attempt to try to figure out the language service on its own
-            // we only want it to use the language service we explicitly tell it to use
-            Guid VsBufferDetectLangSID = VisualStudio.Package.EditorFactory.GuidVSBufferDetectLangSid;
-            IVsUserData vsUserData = (IVsUserData) vsTextBuffer;
-            vsUserData.SetData(ref VsBufferDetectLangSID, false);
-
-
-            // create/initialize a VsCodeWindow object
-            VsCodeWindow =
-                (IVsCodeWindow)
-                SnippetDesignerPackage.Instance.CreateInstance(ref clsidVsCodeWindow,
-                                                               ref iidVsCodeWindow,
-                                                               typeof (IVsCodeWindow));
-
-            //set readonly value based codewindowhosts readonly value
-            uint readOnlyValue = 0;
-            if (codeWindowHost.ReadOnlyCodeWindow)
-            {
-                readOnlyValue = (uint) TextViewInitFlags2.VIF_READONLY;
-            }
-
-            //set the inital view properties of the code window
-            INITVIEW[] initView = new INITVIEW[1];
-            initView[0].fSelectionMargin = 1; //use selection margin
-            initView[0].fWidgetMargin = 0; //no widget margin
-            initView[0].fDragDropMove = 1; //allow drag and drop of text
-            initView[0].fVirtualSpace = 0; //no virtual space
-            initView[0].IndentStyle = vsIndentStyle.vsIndentStyleDefault;
-
-            IVsCodeWindowEx vsCodeWindowEx = (IVsCodeWindowEx) VsCodeWindow;
-            hr =
-                vsCodeWindowEx.Initialize(
-                    (uint) _codewindowbehaviorflags.CWB_DISABLEDROPDOWNBAR |
-                    (uint) _codewindowbehaviorflags.CWB_DISABLESPLITTER,
-                    0,
-                    null,
-                    null,
-                    //tell codewindow which flags to use
-                    (uint) TextViewInitFlags.VIF_SET_WIDGET_MARGIN |
-                    (uint) TextViewInitFlags.VIF_SET_SELECTION_MARGIN |
-                    (uint) TextViewInitFlags.VIF_SET_VIRTUAL_SPACE |
-                    (uint) TextViewInitFlags.VIF_SET_DRAGDROPMOVE |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESS_STATUS_BAR_UPDATE |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESSBORDER |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESSTRACKCHANGES |
-                    readOnlyValue |
-                    (uint) TextViewInitFlags2.VIF_SUPPRESSTRACKGOBACK,
-                    initView);
-            //set the codewindows text buffer
-            hr = VsCodeWindow.SetBuffer(vsTextBuffer);
-            IVsWindowPane vsWindowPane = (IVsWindowPane) VsCodeWindow;
-            //set the site of the codewindow at the parent edtiors service provider
-            hr = vsWindowPane.SetSite(codeWindowHost.ServiceProvider);
             //create the codewindow as the size of the snippetExplorerForm its in
-            hr = vsWindowPane.CreatePaneWindow(Handle, 0, 0, Parent.Size.Width, Parent.Size.Height, out hWndCodeWindow);
+            hr = ((IVsWindowPane) viewAdapter).CreatePaneWindow(Handle, 0, 0, Parent.Size.Width, Parent.Size.Height, out hWndCodeWindow);
 
-            //get the textview object
-            IVsTextView vsTextView = OldTextView;
-
-
-            //we are only getting events if the codewindowhost is the snippet editor
+            //we are only getting events if the codewindowhost is the snippet editor)
             if (snippetEditor != null)
             {
                 // sink IVsTextViewEvents, so we can determine when a VsCodeWindow object actually has the focus.
-                IConnectionPointContainer connptCntr = (IConnectionPointContainer) vsTextView;
+                var connptCntr = (IConnectionPointContainer) viewAdapter;
                 Guid riid = typeof (IVsTextViewEvents).GUID;
 
                 //find the desired connection point
@@ -404,7 +326,7 @@ namespace Microsoft.SnippetDesigner
 
 
                 // sink IVsTextLineEvents, so we can determine when the buffer is changed
-                connptCntr = (IConnectionPointContainer) OldTextLines;
+                connptCntr = (IConnectionPointContainer) bufferAdapter;
                 riid = typeof (IVsTextLinesEvents).GUID;
 
                 //find the desired connection point
@@ -412,6 +334,7 @@ namespace Microsoft.SnippetDesigner
                 //connect to this connection point to be advised of changes
                 textLinesEventsConnectionPoint.Advise(snippetEditor, out cookieTextLineEvents);
             }
+
 
             return hr;
         }
@@ -448,10 +371,10 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                if (OldTextLines != null)
+                if (TextBufferAdapter != null)
                 {
                     int lineCount;
-                    OldTextLines.GetLineCount(out lineCount);
+                    TextBufferAdapter.GetLineCount(out lineCount);
                     return lineCount;
                 }
                 else
@@ -479,10 +402,10 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
-                if (OldTextView != null)
+                if (TextViewAdapter != null)
                 {
                     string selectedText = String.Empty;
-                    OldTextView.GetSelectedText(out selectedText);
+                    TextViewAdapter.GetSelectedText(out selectedText);
                     return selectedText;
                 }
                 else
@@ -499,10 +422,10 @@ namespace Microsoft.SnippetDesigner
         /// <returns>the length of the line</returns>
         internal int LineLength(int line)
         {
-            if (OldTextLines != null)
+            if (TextBufferAdapter != null)
             {
                 int lineLength;
-                OldTextLines.GetLengthOfLine(line, out lineLength);
+                TextBufferAdapter.GetLengthOfLine(line, out lineLength);
                 return lineLength;
             }
             else
@@ -518,7 +441,7 @@ namespace Microsoft.SnippetDesigner
 
         public string GetCharacterAtPosition(TextPoint positon)
         {
-            IVsTextLines textLines = OldTextLines;
+            IVsTextLines textLines = TextBufferAdapter;
             string charAtPos;
             textLines.GetLineText(positon.Line, positon.Index, positon.Line, positon.Index + 1, out charAtPos);
             return charAtPos;
@@ -536,7 +459,7 @@ namespace Microsoft.SnippetDesigner
 
         public string GetWordFromPosition(SnapshotPoint positon)
         {
-            var span = GetWordSpanFromPosition(positon);
+            SnapshotSpan span = GetWordSpanFromPosition(positon);
 
             return span.GetText();
         }
@@ -546,9 +469,9 @@ namespace Microsoft.SnippetDesigner
             if (positon.Position >= positon.Snapshot.Length)
                 return new SnapshotSpan(positon, 0);
 
-            var charAtPos = positon.GetChar();
-            var text = positon.Snapshot.GetText();
-            var lineSnapshot = positon.Snapshot.GetLineFromPosition(positon);
+            char charAtPos = positon.GetChar();
+            string text = positon.Snapshot.GetText();
+            ITextSnapshotLine lineSnapshot = positon.Snapshot.GetLineFromPosition(positon);
             int left, right;
             left = right = positon.Position;
 

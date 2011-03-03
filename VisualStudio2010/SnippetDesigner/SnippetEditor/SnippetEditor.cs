@@ -291,7 +291,7 @@ namespace Microsoft.SnippetDesigner
         {
             CommandFilter filter = new CommandFilter(this);
             IOleCommandTarget originalFilter;
-            ErrorHandler.ThrowOnFailure(CodeWindow.OldTextView.AddCommandFilter(filter, out originalFilter));
+            ErrorHandler.ThrowOnFailure(CodeWindow.TextViewAdapter.AddCommandFilter(filter, out originalFilter));
             filter.Init(originalFilter);
         }
 
@@ -317,7 +317,7 @@ namespace Microsoft.SnippetDesigner
             // Show the menu.
             Guid menuGuid = GuidList.SnippetDesignerCmdSet;
             //tell the ui shell to show the context menu
-            uiShell.ShowContextMenu(0, ref menuGuid, (int) PkgCmdIDList.SnippetContextMenu, pnts, snippetCodeWindow.OldTextView as IOleCommandTarget);
+            uiShell.ShowContextMenu(0, ref menuGuid, (int) PkgCmdIDList.SnippetContextMenu, pnts, snippetCodeWindow.TextViewAdapter as IOleCommandTarget);
         }
 
         /// <summary>
@@ -453,7 +453,7 @@ namespace Microsoft.SnippetDesigner
                 }
                 isDirty = false;
                 IsFormDirty = false;
-                IVsTextBuffer buffer = snippetCodeWindow.OldTextLines;
+                IVsTextBuffer buffer = snippetCodeWindow.TextBufferAdapter;
                 buffer.SetStateFlags(0);
             }
 
@@ -943,7 +943,7 @@ namespace Microsoft.SnippetDesigner
                 isDirty = false; //the file is not dirty since we just loaded it
                 //clear the buffer dirty flag, this stops the * from appearing after we load
                 //it doesnt make sense to call a file dirty when you first load it 
-                IVsTextBuffer buffer = snippetCodeWindow.OldTextLines;
+                IVsTextBuffer buffer = snippetCodeWindow.TextBufferAdapter;
                 buffer.SetStateFlags(0);
 
 
@@ -976,7 +976,12 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.IsDirty(out int dirty)
         {
-            IVsPersistDocData bufferDoc = (IVsPersistDocData) snippetCodeWindow.OldTextLines;
+            IVsPersistDocData bufferDoc = (IVsPersistDocData) snippetCodeWindow.TextBufferAdapter;
+            if(bufferDoc == null)
+            {
+                dirty = 0;
+                return VSConstants.S_OK;
+            }
             int codeWindowDirty = 0;
             bufferDoc.IsDocDataDirty(out codeWindowDirty);
 
@@ -1154,7 +1159,7 @@ namespace Microsoft.SnippetDesigner
         int IVsPersistDocData.LoadDocData(string fileToLoad)
         {
             //set the buffer moniker
-            IVsUserData udata = (IVsUserData) CodeWindow.OldTextLines;
+            IVsUserData udata = (IVsUserData) CodeWindow.TextBufferAdapter;
             //generate random gui
             string uniqueMoniker = Guid.NewGuid().ToString();
             //guid for buffer moniker property

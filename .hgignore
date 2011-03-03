@@ -24,3 +24,4 @@ glob:VisualStudio2008/SnippetDesignerSetup/bin/Release/SnippetDesignerSetup.vsho
 glob:VisualStudio2008/SnippetDesigner/SnippetDesigner.csproj.user
 glob:VisualStudio2008/SnippetDesignerSetup/obj
 glob:VisualStudio2008/SnippetDesignerSetup/bin
+glob:VisualStudio2010/SnippetDesigner.5.1.ReSharper.user
