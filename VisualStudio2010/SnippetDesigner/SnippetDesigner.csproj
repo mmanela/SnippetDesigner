@@ -90,7 +90,6 @@
     <Compile Include="CodeWindow\CodeWindow.designer.cs">
       <DependentUpon>CodeWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="CodeWindow\CodeWindowWPF.cs" />
     <Compile Include="CodeWindow\ISnippetCodeWindow.cs" />
     <Compile Include="CodeWindow\TextPoint.cs" />
     <Compile Include="EditorFactory.cs" />
@@ -124,20 +123,18 @@
     <Compile Include="SnippetDirectories.cs" />
     <Compile Include="CollectionWithEvents.cs" />
     <Compile Include="SnippetEditor\CommandFilter.cs" />
-    <Compile Include="SnippetEditor\SnippetEditorOld.cs" />
     <Compile Include="SnippetEditor\EditorProperties.cs" />
     <Compile Include="SnippetEditor\FilteredPropertiesTypeDescriptor.cs" />
     <Compile Include="SnippetEditor\ICodeWindowHost.cs" />
     <Compile Include="SnippetEditor\ISnippetEditor.cs" />
-    <Compile Include="SnippetEditor\SnippetEditor.cs" />
+    <Compile Include="SnippetEditor\SnippetEditor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="SnippetEditor\SnippetEditorForm.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="SnippetEditor\SnippetEditorForm.Designer.cs">
       <DependentUpon>SnippetEditorForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="SnippetEditor\SnippetEditorWPF.xaml.cs">
-      <DependentUpon>SnippetEditorWPF.xaml</DependentUpon>
     </Compile>
     <Compile Include="SnippetExplorer\SnippetExplorerForm.cs">
       <SubType>UserControl</SubType>
@@ -239,12 +236,6 @@
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="SnippetEditor\SnippetEditorWPF.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <PropertyGroup>
     <!--
