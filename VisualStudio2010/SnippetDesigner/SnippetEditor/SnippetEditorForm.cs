@@ -936,6 +936,7 @@ namespace Microsoft.SnippetDesigner
 
         private void MarkReplacements(ICollection<string> replaceIDs, int lineToMark)
         {
+            if (CodeWindow.TextBuffer == null) return;
             if (replaceIDs == null)
             {
                 return;

@@ -30,6 +30,32 @@ namespace Microsoft.RegistryTools
             return location;
         }
 
+        public static int GetVSUILanguage()
+        {
+            int language = 1033; // default to english
+            using (RegistryKey vsKey = GetVSRegKey(Registry.CurrentUser, false))
+            {
+                if (vsKey != null)
+                {
+                    using (RegistryKey generalKey = vsKey.OpenSubKey("General"))
+                    {
+                        if (generalKey != null)
+                        {
+                            try
+                            {
+                                language = (int) vsKey.GetValue("UILanguage", 1033);
+                            }
+                            catch(InvalidCastException)
+                            {
+                            }
+                        }
+                    }
+                }
+            }
+
+            return language;
+        }
+
         public static RegistryKey GetVSRegKey(RegistryKey regKey)
         {
             return GetVSRegKey(regKey, false);

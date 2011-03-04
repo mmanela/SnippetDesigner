@@ -14,9 +14,7 @@ namespace Microsoft.SnippetLibrary
         private readonly Stream snippetFileStream;
         private XmlSchemaSet schemas;
         private XmlNamespaceManager nsMgr;
-
-        public static readonly string SnippetSchemaPathBegin = RegistryLocations.GetVSInstallDir() + @"..\..\Xml\Schemas\";
-        public static readonly string SnippetSchemaPathEnd = @"\snippetformat.xsd";
+        public static readonly string SnippetSchemaFormat = RegistryLocations.GetVSInstallDir() + @"..\..\Xml\Schemas\{0}\snippetformat.xsd";
         public static readonly string SnippetNS = @"http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet";
         private readonly bool showErrorMessages;
 
@@ -27,11 +25,6 @@ namespace Microsoft.SnippetLibrary
         public string FileName { get; private set; }
 
         public List<Snippet> Snippets { get; private set; }
-
-        public SnippetFile()
-        {
-            Snippets = new List<Snippet>();
-        }
 
         public void CreateBlankSnippet()
         {
@@ -47,34 +40,29 @@ namespace Microsoft.SnippetLibrary
             LoadData();
         }
 
-
-        public SnippetFile(Stream fileStream, bool showErrors)
-        {
-            Snippets = new List<Snippet>();
-            snippetFileStream = fileStream;
-            showErrorMessages = showErrors;
-            LoadSchema();
-            LoadData();
-        }
-
-        public SnippetFile(string fileName, bool showErrors)
-        {
-            Snippets = new List<Snippet>();
-            FileName = fileName;
-            showErrorMessages = showErrors;
-            LoadSchema();
-            LoadData();
-        }
-
         private void LoadSchema()
         {
             schemas = new XmlSchemaSet();
-            string snippetSchema = SnippetSchemaPathBegin + CultureInfo.CurrentCulture.LCID + SnippetSchemaPathEnd;
-            if (!File.Exists(snippetSchema))
+            var schemaPath = GetSnippetSchemaPath();
+            if(!string.IsNullOrEmpty(schemaPath))
             {
-                snippetSchema = SnippetSchemaPathBegin + "1033" + SnippetSchemaPathEnd;
+                schemas.Add(SnippetNS, schemaPath);
             }
-            schemas.Add(SnippetNS, snippetSchema);
+        }
+
+        private static string GetSnippetSchemaPath()
+        {
+            int uiLanguage = RegistryLocations.GetVSUILanguage();
+            string snippetSchema = string.Format(SnippetSchemaFormat, uiLanguage);
+            if (File.Exists(snippetSchema)) return snippetSchema;
+
+            snippetSchema = string.Format(SnippetSchemaFormat, CultureInfo.CurrentCulture.LCID);
+            if (File.Exists(snippetSchema)) return snippetSchema;
+
+            snippetSchema = string.Format(SnippetSchemaFormat, 1033);
+            if (File.Exists(snippetSchema)) return snippetSchema;
+
+            return null;
         }
 
 
@@ -82,7 +70,11 @@ namespace Microsoft.SnippetLibrary
         {
             LoadSchema();
             SnippetXmlDoc = new XmlDocument();
-            SnippetXmlDoc.Schemas = schemas;
+
+            if (schemas.Count > 0)
+            {
+                SnippetXmlDoc.Schemas = schemas;
+            }
             SnippetXmlDoc.LoadXml(text);
             LoadFromDoc();
         }
@@ -93,9 +85,9 @@ namespace Microsoft.SnippetLibrary
             SnippetXmlDoc = new XmlDocument();
             SnippetXmlDoc.Schemas = schemas;
             SnippetXmlDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-                        "<CodeSnippets xmlns=\"" + SnippetNS + "\">" +
-                        snippetNode.OuterXml
-                        + "</CodeSnippets>");
+                                  "<CodeSnippets xmlns=\"" + SnippetNS + "\">" +
+                                  snippetNode.OuterXml
+                                  + "</CodeSnippets>");
 
             Snippets = new List<Snippet>();
             nsMgr = new XmlNamespaceManager(SnippetXmlDoc.NameTable);
@@ -169,10 +161,10 @@ namespace Microsoft.SnippetLibrary
             SnippetXmlDoc = new XmlDocument();
             SnippetXmlDoc.Schemas = schemas;
             SnippetXmlDoc.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\" ?>" +
-                        "<CodeSnippets xmlns=\"" + SnippetNS + "\">" +
-                        "<CodeSnippet Format=\"1.0.0\"><Header></Header>" +
-                        "<Snippet>" + 
-                        "</Snippet></CodeSnippet></CodeSnippets>");
+                                  "<CodeSnippets xmlns=\"" + SnippetNS + "\">" +
+                                  "<CodeSnippet Format=\"1.0.0\"><Header></Header>" +
+                                  "<Snippet>" +
+                                  "</Snippet></CodeSnippet></CodeSnippets>");
 
             Snippets = new List<Snippet>();
             nsMgr = new XmlNamespaceManager(SnippetXmlDoc.NameTable);
@@ -212,9 +204,12 @@ namespace Microsoft.SnippetLibrary
                     Snippets.Add(new Snippet(node, nsMgr));
                 }
             }
-            SnippetXmlDoc.Schemas = schemas;
-            ValidationEventHandler schemaValidator = SchemaValidationEventHandler;
-            SnippetXmlDoc.Validate(schemaValidator);
+            if (schemas.Count > 0)
+            {
+                SnippetXmlDoc.Schemas = schemas;
+                ValidationEventHandler schemaValidator = SchemaValidationEventHandler;
+                SnippetXmlDoc.Validate(schemaValidator);
+            }
         }
 
         // Read in the xml document and extract relevant data
