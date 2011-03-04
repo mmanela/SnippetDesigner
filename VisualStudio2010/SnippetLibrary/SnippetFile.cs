@@ -11,12 +11,11 @@ namespace Microsoft.SnippetLibrary
 {
     public class SnippetFile
     {
-        private readonly Stream snippetFileStream;
         private XmlSchemaSet schemas;
         private XmlNamespaceManager nsMgr;
         public static readonly string SnippetSchemaFormat = RegistryLocations.GetVSInstallDir() + @"..\..\Xml\Schemas\{0}\snippetformat.xsd";
         public static readonly string SnippetNS = @"http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet";
-        private readonly bool showErrorMessages;
+        private bool validateSnippetFile;
 
         public XmlDocument SnippetXmlDoc { get; private set; }
 
@@ -43,10 +42,13 @@ namespace Microsoft.SnippetLibrary
         private void LoadSchema()
         {
             schemas = new XmlSchemaSet();
-            var schemaPath = GetSnippetSchemaPath();
-            if(!string.IsNullOrEmpty(schemaPath))
+            if (validateSnippetFile)
             {
-                schemas.Add(SnippetNS, schemaPath);
+                var schemaPath = GetSnippetSchemaPath();
+                if (!string.IsNullOrEmpty(schemaPath))
+                {
+                    schemas.Add(SnippetNS, schemaPath);
+                }
             }
         }
 
@@ -116,7 +118,7 @@ namespace Microsoft.SnippetLibrary
                 case XmlSeverityType.Error:
                     {
                         HasXmlErrors = true;
-                        if (showErrorMessages)
+                        if (validateSnippetFile)
                         {
                             MessageBox.Show(String.Format("\nError: {0}", e.Message));
                         }
@@ -125,7 +127,7 @@ namespace Microsoft.SnippetLibrary
                 case XmlSeverityType.Warning:
                     {
                         HasXmlErrors = true;
-                        if (showErrorMessages)
+                        if (validateSnippetFile)
                         {
                             MessageBox.Show(String.Format("\nWarning: {0}", e.Message));
                         }
@@ -223,10 +225,6 @@ namespace Microsoft.SnippetLibrary
                 {
                     //if file name exists use it otherweise use stream if it exists
                     SnippetXmlDoc.Load(FileName);
-                }
-                else if (snippetFileStream != null)
-                {
-                    SnippetXmlDoc.Load(snippetFileStream);
                 }
                 else
                 {

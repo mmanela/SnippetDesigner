@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
+using System.Windows;
 using EnvDTE;
 using EnvDTE80;
 using Microsoft.RegistryTools;
@@ -13,9 +14,11 @@ using Microsoft.SnippetDesigner.OptionPages;
 using Microsoft.SnippetDesigner.SnippetExplorer;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.ComponentModelHost;
+using Microsoft.VisualStudio.OLE.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
+using Window = EnvDTE.Window;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -32,7 +35,7 @@ namespace Microsoft.SnippetDesigner
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#100", "#102", "1.3.0", IconResourceID = 404)]
+    [InstalledProductRegistration("#100", "#102", "1.3.1", IconResourceID = 404)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof (SnippetExplorerToolWindow))]
@@ -66,7 +69,7 @@ namespace Microsoft.SnippetDesigner
         private string activeSnippetLanguage = String.Empty;
         private IComponentModel componentModel;
         internal ILogger Logger { get; private set; }
-        
+
         /// <summary>
         /// Default constructor of the package.
         /// Inside this method you can place any initialization code that does not require 
@@ -139,7 +142,7 @@ namespace Microsoft.SnippetDesigner
         internal static string GetResourceString(string resourceName)
         {
             string resourceValue;
-            IVsResourceManager resourceManager = (IVsResourceManager) GetGlobalService(typeof (SVsResourceManager));
+            var resourceManager = (IVsResourceManager) GetGlobalService(typeof (SVsResourceManager));
             if (resourceManager == null)
                 throw new InvalidOperationException(
                     "Could not get SVsResourceManager service. Make sure the package is Sited before calling this method.");
@@ -158,7 +161,7 @@ namespace Microsoft.SnippetDesigner
 
         public string GetVisualStudioResourceString(uint resourceId)
         {
-            IVsShell shell = (IVsShell) GetService(typeof (SVsShell));
+            var shell = (IVsShell) GetService(typeof (SVsShell));
             string localizedResource = null;
             if (shell != null)
                 shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
@@ -225,7 +228,7 @@ namespace Microsoft.SnippetDesigner
                 throw new COMException(Resources.CanNotCreateWindow);
             }
             Guid textEditor = GuidList.textEditorFactory;
-            IVsWindowFrame windowFrame = (IVsWindowFrame) window.Frame;
+            var windowFrame = (IVsWindowFrame) window.Frame;
             ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
@@ -337,10 +340,10 @@ namespace Microsoft.SnippetDesigner
         /// <param name="e"></param>
         private void CreateSnippet(object sender, EventArgs e)
         {
-            OleMenuCmdEventArgs eventArgs = e as OleMenuCmdEventArgs;
+            var eventArgs = e as OleMenuCmdEventArgs;
             if (eventArgs != null && Dte != null)
             {
-                NewSnippetCommand newSnippet = new NewSnippetCommand(eventArgs.InValue.ToString().Split(' '));
+                var newSnippet = new NewSnippetCommand(eventArgs.InValue.ToString().Split(' '));
 
                 //build export object
                 ExportSnippetData = new ExportToSnippetData(newSnippet.Code, newSnippet.Language.ToLower());
@@ -353,10 +356,30 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal void CreateNewSnippetFile()
         {
-            if (Dte != null)
+            if (!LaunchNewFile(GetNextAvailableNewSnippetTitle()))
             {
-                Dte.ItemOperations.NewFile(StringConstants.NewFileFormat, GetNextAvailableNewSnippetTitle());
+                MessageBox.Show("Unable to create .Snippet file", "Snippet Designer Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private IOleCommandTarget GetShellCommandDispatcher()
+        {
+            return GetService(typeof (SUIHostCommandDispatcher)) as IOleCommandTarget;
+        }
+
+        private bool LaunchNewFile(string fileName)
+        {
+            IntPtr inArgPtr = Marshal.AllocCoTaskMem(200);
+            Marshal.GetNativeVariantForObject(fileName, inArgPtr);
+
+            Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
+            IOleCommandTarget commandTarget = GetShellCommandDispatcher();
+            int hr = commandTarget.Exec(ref cmdGroup,
+                                        (uint) VSConstants.VSStd97CmdID.FileNew,
+                                        (uint) OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT,
+                                        inArgPtr,
+                                        IntPtr.Zero);
+            return ErrorHandler.Succeeded(hr);
         }
 
         private string GetNextAvailableNewSnippetTitle()
@@ -405,7 +428,7 @@ namespace Microsoft.SnippetDesigner
 
                 //Set up Selection Events so that I can tell when a new window in VS has become active.
                 uint cookieForSelection = 0;
-                IVsMonitorSelection selMonitor = GetService(typeof (SVsShellMonitorSelection)) as IVsMonitorSelection;
+                var selMonitor = GetService(typeof (SVsShellMonitorSelection)) as IVsMonitorSelection;
 
                 if (selMonitor != null)
                     selMonitor.AdviseSelectionEvents(this, out cookieForSelection);
@@ -414,29 +437,29 @@ namespace Microsoft.SnippetDesigner
                 // Add our command handlers for menu (commands must exist in the .vstc file)
 
                 // Create the command for the tool window
-                CommandID snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                                   (int) PkgCmdIDList.cmdidSnippetExplorer);
+                var snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                             (int) PkgCmdIDList.cmdidSnippetExplorer);
                 DefineCommandHandler(ShowSnippetExplorer, snippetExplorerCommandID);
 
 
                 //DefineCommandHandler not used for these since extra properties need to be set
                 // Create the command for the context menu export snippet
-                CommandID contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                       (int) PkgCmdIDList.cmdidExportToSnippet);
+                var contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                 (int) PkgCmdIDList.cmdidExportToSnippet);
                 snippetExportCommand = DefineCommandHandler(ExportToSnippet, contextcmdID);
                 snippetExportCommand.Visible = false;
 
                 // commandline command for exporting as snippet
-                CommandID exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                          (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
+                var exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                    (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
                 OleMenuCommand snippetExportCommandLine = DefineCommandHandler(ExportToSnippet, exportCmdLineID);
                 snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker;
                 //a space means arguments are coming
 
 
                 // Create the command for CreateSnippet
-                CommandID createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                      (int) PkgCmdIDList.cmdidCreateSnippet);
+                var createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
+                                                (int) PkgCmdIDList.cmdidCreateSnippet);
                 OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
                 createCommand.ParametersDescription = StringConstants.ArgumentStartMarker;
 
