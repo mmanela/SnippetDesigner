@@ -18,7 +18,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
     public partial class SnippetExplorerForm : UserControl, ICodeWindowHost
     {
         private SnippetIndex snippetIndex; // class which gets snippet data and how to display
-        private readonly List<CheckBox> languageFilterBoxList = new List<CheckBox>();
         private string iconCellName = "Icon";
         private string titleCellName = "Title";
         private string descriptionCellName = "Description";
@@ -34,12 +33,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             InitializeComponent();
             previewCodeWindow.CodeWindowHost = this;
-            languageFilterBoxList.Add(csharpFilterBox);
-            languageFilterBoxList.Add(vbFilterBox);
-            languageFilterBoxList.Add(xmlFilterBox);
-            languageFilterBoxList.Add(htmlFilterBox);
-            languageFilterBoxList.Add(javasScriptFilterBox);
-            languageFilterBoxList.Add(sqlFilterBox);
         }
 
         /// <summary>
@@ -155,13 +148,27 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
             snippetIndex.PropertyChanged += SnippetIndexChanged;
 
+            UpdateSelectedLanguagesFromOptions();
+        }
+
+        private void UpdateSelectedLanguagesFromOptions()
+        {
             SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
-            csharpFilterBox.Checked = !options.HideCSharp;
-            vbFilterBox.Checked = !options.HideVisualBasic;
-            xmlFilterBox.Checked = !options.HideXML;
-            htmlFilterBox.Checked = !options.HideHTML;
-            javasScriptFilterBox.Checked = !options.HideJavaScript;
-            sqlFilterBox.Checked = !options.HideSQL;
+            var languageOptions = new Dictionary<string, bool>
+                                     {
+                                         {"C#", options.HideCSharp},
+                                         {"Visual Basic", options.HideVisualBasic},
+                                         {"JavaScript", options.HideJavaScript},
+                                         {"SQL", options.HideSQL},
+                                         {"HTML", options.HideHTML},
+                                         {"XML", options.HideXML},
+                                     };
+
+            foreach (var pair in languageOptions)
+            {
+                var index = languageFilters.Items.IndexOf(pair.Key);
+                languageFilters.SetItemCheckState(index, pair.Value ? CheckState.Unchecked : CheckState.Checked);
+            }
         }
 
 
@@ -171,15 +178,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// <param name="searchString">String to search by</param>
         public void PerformSearch(string searchString)
         {
-            IEnumerable<SnippetIndexItem> foundSnippets = null;
-            List<string> langsToDisplay = new List<string>();
-            foreach (CheckBox langBox in languageFilterBoxList)
-            {
-                if (langBox.Checked)
-                {
-                    langsToDisplay.Add(LanguageMaps.LanguageMap.DisplayLanguageToXML[langBox.Text]);
-                }
-            }
+            IEnumerable<SnippetIndexItem> foundSnippets;
+            var langsToDisplay = (from string item in languageFilters.CheckedItems
+                                  select LanguageMaps.LanguageMap.DisplayLanguageToXML[item]).ToList();
 
             //clear the grid view
             searchResultView.Rows.Clear();
@@ -457,6 +458,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             {
                 PerformSearch(searchBox.Text);
             }
+        }
+
+        private void languageFilters_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

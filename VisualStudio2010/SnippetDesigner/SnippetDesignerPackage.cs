@@ -369,7 +369,7 @@ namespace Microsoft.SnippetDesigner
 
         private bool LaunchNewFile(string fileName)
         {
-            IntPtr inArgPtr = Marshal.AllocCoTaskMem(200);
+            IntPtr inArgPtr = Marshal.AllocCoTaskMem(512);
             Marshal.GetNativeVariantForObject(fileName, inArgPtr);
 
             Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;

@@ -132,107 +132,77 @@
   <data name="tableLayoutPanel1.ColumnCount" type="System.Int32, mscorlib">
     <value>1</value>
   </data>
-  <data name="htmlFilterBox.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="panel1.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
+    <value>GrowAndShrink</value>
   </data>
-  <data name="htmlFilterBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="languageFilters.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
   </data>
-  <data name="htmlFilterBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>162, 27</value>
+  <data name="languageFilters.Items" xml:space="preserve">
+    <value>C#</value>
   </data>
-  <data name="htmlFilterBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>56, 17</value>
+  <data name="languageFilters.Items1" xml:space="preserve">
+    <value>Visual Basic</value>
   </data>
-  <data name="htmlFilterBox.TabIndex" type="System.Int32, mscorlib">
-    <value>7</value>
-  </data>
-  <data name="htmlFilterBox.Text" xml:space="preserve">
-    <value>HTML</value>
-  </data>
-  <data name="&gt;&gt;htmlFilterBox.Name" xml:space="preserve">
-    <value>htmlFilterBox</value>
-  </data>
-  <data name="&gt;&gt;htmlFilterBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;htmlFilterBox.Parent" xml:space="preserve">
-    <value>panel1</value>
-  </data>
-  <data name="&gt;&gt;htmlFilterBox.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="javasScriptFilterBox.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="javasScriptFilterBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="javasScriptFilterBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>162, 4</value>
-  </data>
-  <data name="javasScriptFilterBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>76, 17</value>
-  </data>
-  <data name="javasScriptFilterBox.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="javasScriptFilterBox.Text" xml:space="preserve">
+  <data name="languageFilters.Items2" xml:space="preserve">
     <value>JavaScript</value>
   </data>
-  <data name="&gt;&gt;javasScriptFilterBox.Name" xml:space="preserve">
-    <value>javasScriptFilterBox</value>
-  </data>
-  <data name="&gt;&gt;javasScriptFilterBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;javasScriptFilterBox.Parent" xml:space="preserve">
-    <value>panel1</value>
-  </data>
-  <data name="&gt;&gt;javasScriptFilterBox.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="sqlFilterBox.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="sqlFilterBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="sqlFilterBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>244, 4</value>
-  </data>
-  <data name="sqlFilterBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 17</value>
-  </data>
-  <data name="sqlFilterBox.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="sqlFilterBox.Text" xml:space="preserve">
+  <data name="languageFilters.Items3" xml:space="preserve">
     <value>SQL</value>
   </data>
-  <data name="&gt;&gt;sqlFilterBox.Name" xml:space="preserve">
-    <value>sqlFilterBox</value>
+  <data name="languageFilters.Items4" xml:space="preserve">
+    <value>HTML</value>
   </data>
-  <data name="&gt;&gt;sqlFilterBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="languageFilters.Items5" xml:space="preserve">
+    <value>XML</value>
   </data>
-  <data name="&gt;&gt;sqlFilterBox.Parent" xml:space="preserve">
+  <data name="languageFilters.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 17</value>
+  </data>
+  <data name="languageFilters.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 10, 3, 0</value>
+  </data>
+  <data name="languageFilters.Size" type="System.Drawing.Size, System.Drawing">
+    <value>331, 46</value>
+  </data>
+  <data name="languageFilters.TabIndex" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="&gt;&gt;languageFilters.Name" xml:space="preserve">
+    <value>languageFilters</value>
+  </data>
+  <data name="&gt;&gt;languageFilters.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckedListBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;languageFilters.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;sqlFilterBox.ZOrder" xml:space="preserve">
-    <value>2</value>
+  <data name="&gt;&gt;languageFilters.ZOrder" xml:space="preserve">
+    <value>0</value>
   </data>
   <data name="languageLabel.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
+  </data>
+  <data name="languageLabel.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="languageLabel.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Microsoft Sans Serif, 8.25pt, style=Bold</value>
   </data>
   <data name="languageLabel.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="languageLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 4</value>
+    <value>3, 0</value>
+  </data>
+  <data name="languageLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 3, 5</value>
+  </data>
+  <data name="languageLabel.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 0, 0, 4</value>
   </data>
   <data name="languageLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>63, 13</value>
+    <value>73, 17</value>
   </data>
   <data name="languageLabel.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -250,88 +220,7 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;languageLabel.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="xmlFilterBox.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="xmlFilterBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="xmlFilterBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>244, 26</value>
-  </data>
-  <data name="xmlFilterBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>48, 17</value>
-  </data>
-  <data name="xmlFilterBox.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;xmlFilterBox.Name" xml:space="preserve">
-    <value>xmlFilterBox</value>
-  </data>
-  <data name="&gt;&gt;xmlFilterBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;xmlFilterBox.Parent" xml:space="preserve">
-    <value>panel1</value>
-  </data>
-  <data name="&gt;&gt;xmlFilterBox.ZOrder" xml:space="preserve">
-    <value>4</value>
-  </data>
-  <data name="vbFilterBox.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="vbFilterBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="vbFilterBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>73, 26</value>
-  </data>
-  <data name="vbFilterBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>83, 17</value>
-  </data>
-  <data name="vbFilterBox.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
-  </data>
-  <data name="&gt;&gt;vbFilterBox.Name" xml:space="preserve">
-    <value>vbFilterBox</value>
-  </data>
-  <data name="&gt;&gt;vbFilterBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;vbFilterBox.Parent" xml:space="preserve">
-    <value>panel1</value>
-  </data>
-  <data name="&gt;&gt;vbFilterBox.ZOrder" xml:space="preserve">
-    <value>5</value>
-  </data>
-  <data name="csharpFilterBox.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="csharpFilterBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="csharpFilterBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>73, 3</value>
-  </data>
-  <data name="csharpFilterBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>40, 17</value>
-  </data>
-  <data name="csharpFilterBox.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;csharpFilterBox.Name" xml:space="preserve">
-    <value>csharpFilterBox</value>
-  </data>
-  <data name="&gt;&gt;csharpFilterBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;csharpFilterBox.Parent" xml:space="preserve">
-    <value>panel1</value>
-  </data>
-  <data name="&gt;&gt;csharpFilterBox.ZOrder" xml:space="preserve">
-    <value>6</value>
   </data>
   <data name="panel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
@@ -339,8 +228,11 @@
   <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 35</value>
   </data>
+  <data name="panel1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 0, 0, 0</value>
+  </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 55</value>
+    <value>336, 65</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -370,7 +262,7 @@
     <value>0, 22</value>
   </data>
   <data name="searchOptionBar.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 93</value>
+    <value>0, 103</value>
   </data>
   <data name="searchOptionBar.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
     <value>0, 0, 0, 3</value>
@@ -469,10 +361,10 @@
     <value>Fill</value>
   </data>
   <data name="searchResultView.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 124</value>
+    <value>3, 134</value>
   </data>
   <data name="searchResultView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 223</value>
+    <value>336, 213</value>
   </data>
   <data name="searchResultView.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -637,7 +529,7 @@
     <value>previewCodeWindow</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Type" xml:space="preserve">
-    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.2.3.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.3.4133.16532, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Parent" xml:space="preserve">
     <value>snippetExplorerSplitter.Panel2</value>

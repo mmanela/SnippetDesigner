@@ -38,10 +38,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.snippetExplorerSplitter = new System.Windows.Forms.SplitContainer();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.languageFilters = new System.Windows.Forms.CheckedListBox();
             this.languageLabel = new System.Windows.Forms.Label();
-            this.xmlFilterBox = new System.Windows.Forms.CheckBox();
-            this.vbFilterBox = new System.Windows.Forms.CheckBox();
-            this.csharpFilterBox = new System.Windows.Forms.CheckBox();
             this.searchOptionBar = new System.Windows.Forms.ToolStrip();
             this.statusLabel = new System.Windows.Forms.ToolStripLabel();
             this.searchResultView = new System.Windows.Forms.DataGridView();
@@ -58,9 +56,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchBox = new System.Windows.Forms.TextBox();
             this.searchButton = new System.Windows.Forms.Button();
             this.previewCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
-            this.sqlFilterBox = new System.Windows.Forms.CheckBox();
-            this.javasScriptFilterBox = new System.Windows.Forms.CheckBox();
-            this.htmlFilterBox = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.snippetExplorerSplitter)).BeginInit();
             this.snippetExplorerSplitter.Panel1.SuspendLayout();
             this.snippetExplorerSplitter.Panel2.SuspendLayout();
@@ -99,49 +94,34 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // 
             // panel1
             // 
+            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.BackColor = System.Drawing.Color.White;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panel1.Controls.Add(this.htmlFilterBox);
-            this.panel1.Controls.Add(this.javasScriptFilterBox);
-            this.panel1.Controls.Add(this.sqlFilterBox);
+            this.panel1.Controls.Add(this.languageFilters);
             this.panel1.Controls.Add(this.languageLabel);
-            this.panel1.Controls.Add(this.xmlFilterBox);
-            this.panel1.Controls.Add(this.vbFilterBox);
-            this.panel1.Controls.Add(this.csharpFilterBox);
-            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
+            // 
+            // languageFilters
+            // 
+            this.languageFilters.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.languageFilters.CheckOnClick = true;
+            resources.ApplyResources(this.languageFilters, "languageFilters");
+            this.languageFilters.FormattingEnabled = true;
+            this.languageFilters.Items.AddRange(new object[] {
+            resources.GetString("languageFilters.Items"),
+            resources.GetString("languageFilters.Items1"),
+            resources.GetString("languageFilters.Items2"),
+            resources.GetString("languageFilters.Items3"),
+            resources.GetString("languageFilters.Items4"),
+            resources.GetString("languageFilters.Items5")});
+            this.languageFilters.MultiColumn = true;
+            this.languageFilters.Name = "languageFilters";
+            this.languageFilters.SelectedIndexChanged += new System.EventHandler(this.languageFilters_SelectedIndexChanged);
             // 
             // languageLabel
             // 
             resources.ApplyResources(this.languageLabel, "languageLabel");
             this.languageLabel.Name = "languageLabel";
-            // 
-            // xmlFilterBox
-            // 
-            resources.ApplyResources(this.xmlFilterBox, "xmlFilterBox");
-            this.xmlFilterBox.Checked = true;
-            this.xmlFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.xmlFilterBox.Name = "xmlFilterBox";
-            this.xmlFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameXML;
-            this.xmlFilterBox.UseVisualStyleBackColor = true;
-            // 
-            // vbFilterBox
-            // 
-            resources.ApplyResources(this.vbFilterBox, "vbFilterBox");
-            this.vbFilterBox.Checked = true;
-            this.vbFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.vbFilterBox.Name = "vbFilterBox";
-            this.vbFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameVisualBasic;
-            this.vbFilterBox.UseVisualStyleBackColor = true;
-            // 
-            // csharpFilterBox
-            // 
-            resources.ApplyResources(this.csharpFilterBox, "csharpFilterBox");
-            this.csharpFilterBox.Checked = true;
-            this.csharpFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.csharpFilterBox.Name = "csharpFilterBox";
-            this.csharpFilterBox.Text = global::Microsoft.SnippetDesigner.Resources.DisplayNameCSharp;
-            this.csharpFilterBox.UseVisualStyleBackColor = true;
             // 
             // searchOptionBar
             // 
@@ -296,30 +276,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             resources.ApplyResources(this.previewCodeWindow, "previewCodeWindow");
             this.previewCodeWindow.Name = "previewCodeWindow";
             // 
-            // sqlFilterBox
-            // 
-            resources.ApplyResources(this.sqlFilterBox, "sqlFilterBox");
-            this.sqlFilterBox.Checked = true;
-            this.sqlFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.sqlFilterBox.Name = "sqlFilterBox";
-            this.sqlFilterBox.UseVisualStyleBackColor = true;
-            // 
-            // javasScriptFilterBox
-            // 
-            resources.ApplyResources(this.javasScriptFilterBox, "javasScriptFilterBox");
-            this.javasScriptFilterBox.Checked = true;
-            this.javasScriptFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.javasScriptFilterBox.Name = "javasScriptFilterBox";
-            this.javasScriptFilterBox.UseVisualStyleBackColor = true;
-            // 
-            // htmlFilterBox
-            // 
-            resources.ApplyResources(this.htmlFilterBox, "htmlFilterBox");
-            this.htmlFilterBox.Checked = true;
-            this.htmlFilterBox.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.htmlFilterBox.Name = "htmlFilterBox";
-            this.htmlFilterBox.UseVisualStyleBackColor = true;
-            // 
             // SnippetExplorerForm
             // 
             resources.ApplyResources(this, "$this");
@@ -355,9 +311,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private System.Windows.Forms.ToolStripLabel statusLabel;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label languageLabel;
-        private System.Windows.Forms.CheckBox xmlFilterBox;
-        private System.Windows.Forms.CheckBox vbFilterBox;
-        private System.Windows.Forms.CheckBox csharpFilterBox;
         private System.Windows.Forms.ContextMenuStrip snippetExplorerContextMenu;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
@@ -370,9 +323,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private System.Windows.Forms.DataGridViewTextBoxColumn Description;
         private System.Windows.Forms.DataGridViewTextBoxColumn Language;
         private System.Windows.Forms.DataGridViewTextBoxColumn Path;
-        private System.Windows.Forms.CheckBox htmlFilterBox;
-        private System.Windows.Forms.CheckBox javasScriptFilterBox;
-        private System.Windows.Forms.CheckBox sqlFilterBox;
+        private System.Windows.Forms.CheckedListBox languageFilters;
 
     }
 }
