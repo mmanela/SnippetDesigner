@@ -5,13 +5,6 @@ using Microsoft.VisualStudio.Utilities;
 
 namespace SnippetDesignerComponents
 {
-    internal static class TypeExports
-    {
-        [Export(typeof (ClassificationTypeDefinition))] 
-        [Name("snippet-replacement")] 
-        private static ClassificationTypeDefinition SnippetReplacementClassificationType;
-    }
-
     [Export(typeof (EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = "snippet-replacement")]
     [Name("snippet-replacement")]

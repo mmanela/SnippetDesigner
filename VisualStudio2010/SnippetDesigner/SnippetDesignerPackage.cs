@@ -38,19 +38,19 @@ namespace Microsoft.SnippetDesigner
     [InstalledProductRegistration("#100", "#102", "1.3.1", IconResourceID = 404)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
-    [ProvideToolWindow(typeof (SnippetExplorerToolWindow))]
+    [ProvideToolWindow(typeof(SnippetExplorerToolWindow))]
     // Options pages
-    [ProvideOptionPage(typeof (SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
-    [ProvideOptionPage(typeof (ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
+    [ProvideOptionPage(typeof(SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
+    [ProvideOptionPage(typeof(ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
     //cause the package to autoload - Only when a solution exists
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
-    [ProvideEditorExtension(typeof (EditorFactory), StringConstants.SnippetExtension, 70,
+    [ProvideEditorExtension(typeof(EditorFactory), StringConstants.SnippetExtension, 70,
         ProjectGuid = GuidList.miscellaneousFilesProject,
         DefaultName = "Snippet Designer",
         NameResourceID = 100,
         TemplateDir = @"..\..\Templates"
         )]
-    [ProvideEditorLogicalView(typeof (EditorFactory), GuidList.editorFactoryLogicalView)]
+    [ProvideEditorLogicalView(typeof(EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
     [ComVisible(true)]
     public sealed class SnippetDesignerPackage : Package, IVsSelectionEvents, IDisposable, IVsInstalledProduct
@@ -88,7 +88,7 @@ namespace Microsoft.SnippetDesigner
             get
             {
                 if (componentModel == null)
-                    componentModel = (IComponentModel) GetGlobalService(typeof (SComponentModel));
+                    componentModel = (IComponentModel)GetGlobalService(typeof(SComponentModel));
                 return componentModel;
             }
         }
@@ -142,12 +142,12 @@ namespace Microsoft.SnippetDesigner
         internal static string GetResourceString(string resourceName)
         {
             string resourceValue;
-            var resourceManager = (IVsResourceManager) GetGlobalService(typeof (SVsResourceManager));
+            var resourceManager = (IVsResourceManager)GetGlobalService(typeof(SVsResourceManager));
             if (resourceManager == null)
                 throw new InvalidOperationException(
                     "Could not get SVsResourceManager service. Make sure the package is Sited before calling this method.");
 
-            Guid packageGuid = typeof (SnippetDesignerPackage).GUID;
+            Guid packageGuid = typeof(SnippetDesignerPackage).GUID;
             int hr = resourceManager.LoadResourceString(ref packageGuid, -1, resourceName, out resourceValue);
             ErrorHandler.ThrowOnFailure(hr);
 
@@ -161,7 +161,7 @@ namespace Microsoft.SnippetDesigner
 
         public string GetVisualStudioResourceString(uint resourceId)
         {
-            var shell = (IVsShell) GetService(typeof (SVsShell));
+            var shell = (IVsShell)GetService(typeof(SVsShell));
             string localizedResource = null;
             if (shell != null)
                 shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
@@ -184,7 +184,7 @@ namespace Microsoft.SnippetDesigner
                     if (rk != null)
                     {
                         rk = rk.OpenSubKey(StringConstants.VSRegistryRegistrationName);
-                        registeredName = (String) rk.GetValue(StringConstants.VSRegistryRegistrationNameEntry);
+                        registeredName = (String)rk.GetValue(StringConstants.VSRegistryRegistrationNameEntry);
                     }
                 }
                 catch (SecurityException)
@@ -222,13 +222,13 @@ namespace Microsoft.SnippetDesigner
             // The last flag is set to true so that if the tool window does not exists it will be created.
 
 
-            ToolWindowPane window = FindToolWindow(typeof (SnippetExplorerToolWindow), 0, true);
+            ToolWindowPane window = FindToolWindow(typeof(SnippetExplorerToolWindow), 0, true);
             if ((null == window) || (null == window.Frame))
             {
                 throw new COMException(Resources.CanNotCreateWindow);
             }
             Guid textEditor = GuidList.textEditorFactory;
-            var windowFrame = (IVsWindowFrame) window.Frame;
+            var windowFrame = (IVsWindowFrame)window.Frame;
             ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }
 
@@ -364,7 +364,7 @@ namespace Microsoft.SnippetDesigner
 
         private IOleCommandTarget GetShellCommandDispatcher()
         {
-            return GetService(typeof (SUIHostCommandDispatcher)) as IOleCommandTarget;
+            return GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
         }
 
         private bool LaunchNewFile(string fileName)
@@ -375,8 +375,8 @@ namespace Microsoft.SnippetDesigner
             Guid cmdGroup = VSConstants.GUID_VSStandardCommandSet97;
             IOleCommandTarget commandTarget = GetShellCommandDispatcher();
             int hr = commandTarget.Exec(ref cmdGroup,
-                                        (uint) VSConstants.VSStd97CmdID.FileNew,
-                                        (uint) OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT,
+                                        (uint)VSConstants.VSStd97CmdID.FileNew,
+                                        (uint)OLECMDEXECOPT.OLECMDEXECOPT_DODEFAULT,
                                         inArgPtr,
                                         IntPtr.Zero);
             return ErrorHandler.Succeeded(hr);
@@ -409,7 +409,7 @@ namespace Microsoft.SnippetDesigner
 
 
                 //create the dte automation object so rest of package can access the automation model
-                Dte = (DTE2) GetService(typeof (DTE));
+                Dte = (DTE2)GetService(typeof(DTE));
                 if (Dte == null)
                 {
                     //if dte is null then we throw a excpetion
@@ -419,7 +419,7 @@ namespace Microsoft.SnippetDesigner
 
 
                 Logger = new Logger(this);
-                Settings = GetDialogPage(typeof (SnippetDesignerOptions)) as SnippetDesignerOptions;
+                Settings = GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
 
                 //Create Editor Factory
                 editorFactory = new EditorFactory(this);
@@ -428,7 +428,7 @@ namespace Microsoft.SnippetDesigner
 
                 //Set up Selection Events so that I can tell when a new window in VS has become active.
                 uint cookieForSelection = 0;
-                var selMonitor = GetService(typeof (SVsShellMonitorSelection)) as IVsMonitorSelection;
+                var selMonitor = GetService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
 
                 if (selMonitor != null)
                     selMonitor.AdviseSelectionEvents(this, out cookieForSelection);
@@ -438,20 +438,20 @@ namespace Microsoft.SnippetDesigner
 
                 // Create the command for the tool window
                 var snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                             (int) PkgCmdIDList.cmdidSnippetExplorer);
+                                                             (int)PkgCmdIDList.cmdidSnippetExplorer);
                 DefineCommandHandler(ShowSnippetExplorer, snippetExplorerCommandID);
 
 
                 //DefineCommandHandler not used for these since extra properties need to be set
                 // Create the command for the context menu export snippet
                 var contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                 (int) PkgCmdIDList.cmdidExportToSnippet);
+                                                 (int)PkgCmdIDList.cmdidExportToSnippet);
                 snippetExportCommand = DefineCommandHandler(ExportToSnippet, contextcmdID);
                 snippetExportCommand.Visible = false;
 
                 // commandline command for exporting as snippet
                 var exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                    (int) PkgCmdIDList.cmdidExportToSnippetCommandLine);
+                                                    (int)PkgCmdIDList.cmdidExportToSnippetCommandLine);
                 OleMenuCommand snippetExportCommandLine = DefineCommandHandler(ExportToSnippet, exportCmdLineID);
                 snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker;
                 //a space means arguments are coming
@@ -459,7 +459,7 @@ namespace Microsoft.SnippetDesigner
 
                 // Create the command for CreateSnippet
                 var createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
-                                                (int) PkgCmdIDList.cmdidCreateSnippet);
+                                                (int)PkgCmdIDList.cmdidCreateSnippet);
                 OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
                 createCommand.ParametersDescription = StringConstants.ArgumentStartMarker;
 
@@ -467,10 +467,10 @@ namespace Microsoft.SnippetDesigner
                 SnippetIndex = new SnippetIndex();
                 ThreadPool.QueueUserWorkItem(
                     delegate
-                        {
-                            SnippetIndex.ReadIndexFile();
-                            SnippetIndex.CreateOrUpdateIndexFile();
-                        }
+                    {
+                        SnippetIndex.ReadIndexFile();
+                        SnippetIndex.CreateOrUpdateIndexFile();
+                    }
                     );
             }
             catch (Exception e)
@@ -500,7 +500,7 @@ namespace Microsoft.SnippetDesigner
             {
                 // Get the OleCommandService object provided by the MPF; this object is the one
                 // responsible for handling the collection of commands implemented by the package.
-                menuCommandService = GetService(typeof (IMenuCommandService)) as OleMenuCommandService;
+                menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             }
             OleMenuCommand command = null;
             if (null != menuCommandService)
@@ -522,44 +522,54 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int OnCmdUIContextChanged(uint dwCmdUICookie, int fActive)
         {
-            try
-            {
-                if (currentWindow == null)
-                {
-                    currentWindow = Dte.ActiveWindow;
-                }
-                else if (currentWindow != Dte.ActiveWindow)
-                {
-                    previousWindow = currentWindow;
-                    currentWindow = Dte.ActiveWindow;
-                }
-
-                string lang = CurrentWindowLanguage;
-                if (StringConstants.ExportNameCSharp.Equals(lang, StringComparison.OrdinalIgnoreCase)
-                    || StringConstants.ExportNameVisualBasic.Equals(lang, StringComparison.OrdinalIgnoreCase)
-                    || StringConstants.ExportNameXML.Equals(lang, StringComparison.OrdinalIgnoreCase)
-                    || StringConstants.ExportNameSQL.Equals(lang, StringComparison.OrdinalIgnoreCase)
-                    || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
-                    || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase))
-                {
-                    //make the export context menu item visible
-                    snippetExportCommand.Visible = true;
-                }
-                else
-                {
-                    //make the export context menu item not visible
-                    snippetExportCommand.Visible = false;
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(ex.Message, "OnCmdUIContextChanged", ex);
-            }
             return VSConstants.S_OK;
         }
 
         public int OnElementValueChanged(uint elementid, object varValueOld, object varValueNew)
         {
+            try
+            {
+                if (elementid == (uint)VSConstants.VSSELELEMID.SEID_WindowFrame)
+                {
+
+                    if (currentWindow == null)
+                    {
+                        currentWindow = Dte.ActiveWindow;
+                    }
+                    else if (currentWindow != Dte.ActiveWindow)
+                    {
+                        previousWindow = currentWindow;
+                        currentWindow = Dte.ActiveWindow;
+                    }
+
+                    string lang = CurrentWindowLanguage;
+                    if (StringConstants.ExportNameCSharp.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        || StringConstants.ExportNameVisualBasic.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        || StringConstants.ExportNameXML.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        || StringConstants.ExportNameSQL.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase))
+                    {
+                        //make the export context menu item visible
+                        snippetExportCommand.Visible = true;
+                    }
+                    else
+                    {
+                        //make the export context menu item not visible
+                        snippetExportCommand.Visible = false;
+                    }
+                }
+            }
+            catch (NullReferenceException)
+            {
+                return VSConstants.S_FALSE;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(ex.Message, "OnElementValueChanged", ex);
+                return VSConstants.S_FALSE;
+            }
+
             return VSConstants.S_OK;
         }
 
