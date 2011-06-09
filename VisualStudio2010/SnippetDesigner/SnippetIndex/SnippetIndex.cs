@@ -93,7 +93,7 @@ namespace Microsoft.SnippetDesigner
 
         private static Regex CreateRegex(string pattern, string arg)
         {
-            return new Regex(string.Format(pattern, Regex.Escape(arg), RegexOptions.IgnoreCase));
+            return new Regex(string.Format(pattern, Regex.Escape(arg)), RegexOptions.IgnoreCase);
         }
 
         /// <summary>
