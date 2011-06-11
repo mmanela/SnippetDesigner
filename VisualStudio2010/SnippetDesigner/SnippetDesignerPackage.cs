@@ -134,11 +134,6 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public ExportToSnippetData ExportSnippetData { get; private set; }
 
-        public void ClearSnippetExportData()
-        {
-            ExportSnippetData = null;
-        }
-
         internal static string GetResourceString(string resourceName)
         {
             string resourceValue;
@@ -234,43 +229,6 @@ namespace Microsoft.SnippetDesigner
 
 
         /// <summary>
-        /// Called by the export command.  This fucntion will determin the exported language
-        /// and the exported code and build a ExportToSnippetData object.  It then creates a new snippet
-        /// which will read this export to snippet object
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ExportToSnippet(object sender, EventArgs e)
-        {
-            // The selected item is the active window pane
-            // in Visual Studio. 
-
-            // Get the code from the Document into TextDocument codeDoc
-            TextDocument codeDoc = CurrentTextDocument;
-            if (codeDoc == null) //if the active window isnt a textwindow get the last active text window
-            {
-                codeDoc = GetTextDocumentFromWindow(previousWindow);
-            }
-
-            if (codeDoc != null)
-            {
-                try
-                {
-                    //build export object
-                    ExportSnippetData = new ExportToSnippetData(codeDoc.Selection.Text.Normalize(),
-                                                                codeDoc.Language.ToLower());
-                    //launch new file
-                    CreateNewSnippetFile();
-                }
-                catch (Exception ex)
-                {
-                    Logger.Log(ex.Message, "ExportToSnippet", ex);
-                }
-                return;
-            }
-        }
-
-        /// <summary>
         /// Get the language of the active window
         /// </summary>
         /// <returns></returns>
@@ -332,6 +290,51 @@ namespace Microsoft.SnippetDesigner
             return codeDoc;
         }
 
+        public void ClearSnippetExportData()
+        {
+            ExportSnippetData = null;
+        }
+
+
+        /// <summary>
+        /// Called by the export command.  This fucntion will determin the exported language
+        /// and the exported code and build a ExportToSnippetData object.  It then creates a new snippet
+        /// which will read this export to snippet object
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void ExportToSnippet(object sender, EventArgs e)
+        {
+            // The selected item is the active window pane
+            // in Visual Studio. 
+
+            // Get the code from the Document into TextDocument codeDoc
+            TextDocument codeDoc = CurrentTextDocument;
+            if (codeDoc == null) //if the active window isnt a textwindow get the last active text window
+            {
+                codeDoc = GetTextDocumentFromWindow(previousWindow);
+            }
+
+            if (codeDoc != null)
+            {
+                try
+                {
+                    //build export object
+                    var snippetText = codeDoc.Selection.Text.Normalize();
+                    snippetText = snippetText.Replace("$", "$$"); //Escape existing replacement symbols
+                    ExportSnippetData = new ExportToSnippetData(snippetText, codeDoc.Language.ToLower());
+                    //launch new file
+                    CreateNewSnippetFile();
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log(ex.Message, "ExportToSnippet", ex);
+                }
+                return;
+            }
+        }
+
+
         /// <summary>
         /// The vs command line argument parser.  When you do File.NewSnippet and then args of
         /// /lang langyage and/or /code myCode it will create new snippet with those options
@@ -362,6 +365,22 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
+
+        private string GetNextAvailableNewSnippetTitle()
+        {
+            int i = 1;
+            string newTitle = null;
+
+            newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
+            while (Dte.Windows.Cast<Window>().Any(window => window.Caption.Equals(newTitle)))
+            {
+                newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
+            }
+
+            return newTitle;
+        }
+
+
         private IOleCommandTarget GetShellCommandDispatcher()
         {
             return GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
@@ -380,20 +399,6 @@ namespace Microsoft.SnippetDesigner
                                         inArgPtr,
                                         IntPtr.Zero);
             return ErrorHandler.Succeeded(hr);
-        }
-
-        private string GetNextAvailableNewSnippetTitle()
-        {
-            int i = 1;
-            string newTitle = null;
-
-            newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
-            while (Dte.Windows.Cast<Window>().Any(window => window.Caption.Equals(newTitle)))
-            {
-                newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
-            }
-
-            return newTitle;
         }
 
         /// <summary>
