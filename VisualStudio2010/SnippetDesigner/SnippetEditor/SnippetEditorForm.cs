@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.SnippetLibrary;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
+using Microsoft.VisualStudio.Text.Operations;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.SnippetDesigner
@@ -62,17 +62,18 @@ namespace Microsoft.SnippetDesigner
         private readonly CollectionWithEvents<string> snippetImports = new CollectionWithEvents<string>();
         private readonly CollectionWithEvents<string> snippetReferences = new CollectionWithEvents<string>();
         private readonly CollectionWithEvents<AlternativeShortcut> snippetAlternativeShortcuts = new CollectionWithEvents<AlternativeShortcut>();
-        public static readonly Regex ValidPotentialReplacementRegex = new Regex(StringConstants.ValidPotentialReplacementString, RegexOptions.Compiled);
-        public static readonly Regex ValidExistingReplacementRegex = new Regex(StringConstants.ValidExistingReplacementString, RegexOptions.Compiled);
         private const string EndMarker = "$end$";
         private const string SelectedMarker = "$selected$";
 
+        private ITextSearchService textSearchService;
 
         public SnippetEditorForm()
         {
             snippetImports.CollectionChanged += snippet_CollectionChanged;
             snippetReferences.CollectionChanged += snippet_CollectionChanged;
             snippetAlternativeShortcuts.CollectionChanged += snippet_CollectionChanged;
+
+            textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
         }
 
    
@@ -789,6 +790,18 @@ namespace Microsoft.SnippetDesigner
             return StringConstants.SymbolReplacement + text + StringConstants.SymbolReplacement;
         }
 
+        private static string TurnReplacementSymbolIntoText(string text)
+        {
+            if (text.Length > 2 
+                && text[0].ToString() == StringConstants.SymbolReplacement 
+                && text[text.Length - 1].ToString() == StringConstants.SymbolReplacement)
+            {
+                return text.Substring(1, text.Length - 2);
+            }
+            return text;
+        }
+
+
         private List<string> GetCurrentReplacements()
         {
             var allReplacements = new List<string>();
@@ -801,19 +814,6 @@ namespace Microsoft.SnippetDesigner
                 }
             }
             return allReplacements;
-        }
-
-        protected void RefreshReplacementMarkers(int lineToMark)
-        {
-            List<string> allReplacements = GetCurrentReplacements();
-
-            //search through the code window and update all replcement highlight martkers
-            MarkReplacements(allReplacements, lineToMark);
-        }
-
-        protected void RefreshReplacementMarkers()
-        {
-            RefreshReplacementMarkers(-1);
         }
 
         public void MakeClickedReplacementActive()
@@ -908,7 +908,7 @@ namespace Microsoft.SnippetDesigner
 
         private bool IsValidReplaceableText(string text)
         {
-            return ValidPotentialReplacementRegex.IsMatch(text);
+            return RegexPatterns.ValidPotentialReplacementRegex.IsMatch(text);
         }
 
         private bool CreateReplacement(string textToChange)
@@ -930,8 +930,15 @@ namespace Microsoft.SnippetDesigner
             if (!existsAlready)
             {
                 object[] newRow = {textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true};
-                int rowIndex = replacementGridView.Rows.Add(newRow);
-                SetOrDisableTypeField(false, rowIndex);
+                try
+                {
+                    int rowIndex = replacementGridView.Rows.Add(newRow);
+                    SetOrDisableTypeField(false, rowIndex);
+                }
+                catch(InvalidOperationException ex)
+                {
+                    logger.Log("Possible error when reloading snippet","SnippetEditorForm",ex);
+                }
             }
 
             //replace all occurances of the textToFind with $textToFind$
@@ -954,81 +961,26 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
-        private void MarkReplacements(ICollection<string> replaceIDs, int lineToMark)
+        protected void RefreshReplacementMarkers()
+        {
+            List<string> allReplacements = GetCurrentReplacements();
+
+            //search through the code window and update all replcement highlight martkers
+            MarkReplacements(allReplacements);
+        }
+
+        private void MarkReplacements(ICollection<string> replaceIDs)
         {
             if (CodeWindow.TextBuffer == null) return;
-            if (replaceIDs == null)
+            var findData = new FindData(RegexPatterns.ValidReplacementString, CodeWindow.TextBuffer.CurrentSnapshot, FindOptions.UseRegularExpressions, null);
+            var candidateSpans = textSearchService.FindAll(findData);
+            foreach(var candidateSpan in candidateSpans)
             {
-                return;
-            }
-
-            int lineLength;
-            int startLine = 0;
-            int endLine = CodeWindow.LineCount;
-
-            if (lineToMark > -1) //are we just replacing markers on the given line
-            {
-                startLine = lineToMark;
-                endLine = startLine + 1;
-            }
-
-            //loop through all the lines we are searching
-            for (int line = startLine; line < endLine; line++)
-            {
-                //get the length of this line
-                lineLength = CodeWindow.LineLength(line);
-
-                //loop over the line looking for $ and find the next matching one
-                for (int index = 0; index < lineLength; index++)
+                var replacementText = candidateSpan.GetText();
+                var textBetween = TurnReplacementSymbolIntoText(replacementText);
+                if (!replaceIDs.Contains(textBetween))
                 {
-                    //find the character at this position
-                    string character = CodeWindow.GetCharacterAtPosition(new TextPoint(line, index));
-                    //check if this character is the replacement symbol
-                    if (character == StringConstants.SymbolReplacement)
-                    {
-                        int nextIndex = index + 1;
-                        while (nextIndex < lineLength && CodeWindow.GetCharacterAtPosition(new TextPoint(line, nextIndex)) != StringConstants.SymbolReplacement)
-                        {
-                            nextIndex++;
-                        }
-                        if (nextIndex < lineLength) //we found another SymbolReplacement
-                        {
-                            //create text span for the space between the two SnippetDesigner.StringConstants.ReplacementSymbols
-                            //make sure text between the $ symbols matches replaceID
-                            string lineText = CodeWindow.TextBuffer.CurrentSnapshot.GetLineFromLineNumber(line).GetText();
-                            string textBetween = lineText.Substring(index + 1, nextIndex - (index + 1));
-
-                            if (replaceIDs.Contains(textBetween))
-                            {
-                                index = nextIndex;
-                                //skip the ending SnippetDesigner.StringConstants.SymbolReplacement, it will be incremented the one extra in the next loop iteration
-                            }
-                            else
-                            {
-                                string trimedText = textBetween.Trim();
-                                //this replacement does not exist yet so create it only if the last character entered was the replacement symbol
-                                if (lastCharacterEntered != null //make sure a single character was just entered
-                                    && lastCharacterEntered == StringConstants.SymbolReplacement //make sure the last charcter is a $
-                                    && trimedText == textBetween //make sure this replacement doesnt have whitespace in it
-                                    && trimedText != String.Empty //and make sure its not empty
-                                    && trimedText != StringConstants.SymbolEndWord //the word cant be end
-                                    && trimedText != StringConstants.SymbolSelectedWord // and the word cant be selected they have special meaning
-                                    && IsValidReplaceableText(textBetween)
-                                    )
-                                {
-                                    //make the text into a replacement but dont add the replacement symbols since the user is doing it
-                                    CreateReplacement(textBetween);
-                                    RefreshReplacementMarkers(lineToMark);
-                                    //clear last character 
-                                    lastCharacterEntered = null;
-                                }
-                                else
-                                {
-                                    index = nextIndex - 1; //subtract one since it will be incrememented in the next loop iteration
-                                }
-                            }
-                        }
-                    }
+                    CreateReplacement(textBetween);
                 }
             }
         }

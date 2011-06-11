@@ -936,9 +936,8 @@ namespace Microsoft.SnippetDesigner
                     throw; //throw the excpetion so vs handles it
                 }
 
-
-                //clear and show all markers
                 RefreshReplacementMarkers();
+                //clear and show all markers
 
                 isDirty = false; //the file is not dirty since we just loaded it
                 //clear the buffer dirty flag, this stops the * from appearing after we load
@@ -1455,10 +1454,7 @@ namespace Microsoft.SnippetDesigner
                 lastCharacterEntered = null;
             }
 
-            if (textLineChanges[0].iOldEndLine != textLineChanges[0].iNewEndLine)
-                RefreshReplacementMarkers(-1);
-            else
-                RefreshReplacementMarkers(textLineChanges[0].iStartLine);
+            RefreshReplacementMarkers();
         }
 
         #endregion

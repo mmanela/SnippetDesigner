@@ -14,7 +14,7 @@ namespace SnippetDesignerComponents
     {
         private readonly IClassificationType classificationType;
         public const string ReplacementListKey = "CurrentReplacements";
-        public const string ValidExistingReplacementString = @"\$(("".*"")|(\w+))\$";
+        public const string ValidExistingReplacementString = @"(?<!\$)\$(("".*"")|(\w+))\$";
 
         private ITextView View { get; set; }
         private ITextBuffer SourceBuffer { get; set; }
