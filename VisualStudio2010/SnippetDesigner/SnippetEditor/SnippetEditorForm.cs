@@ -65,7 +65,7 @@ namespace Microsoft.SnippetDesigner
         private readonly CollectionWithEvents<AlternativeShortcut> snippetAlternativeShortcuts = new CollectionWithEvents<AlternativeShortcut>();
         private const string EndMarker = "$end$";
         private const string SelectedMarker = "$selected$";
-
+        private IList<string> reservedReplacements = new List<string>();
         private ITextSearchService textSearchService;
 
         public SnippetEditorForm()
@@ -73,6 +73,8 @@ namespace Microsoft.SnippetDesigner
             snippetImports.CollectionChanged += snippet_CollectionChanged;
             snippetReferences.CollectionChanged += snippet_CollectionChanged;
             snippetAlternativeShortcuts.CollectionChanged += snippet_CollectionChanged;
+            reservedReplacements.Add("end");
+            reservedReplacements.Add("selected");
 
             textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
         }
@@ -914,6 +916,9 @@ namespace Microsoft.SnippetDesigner
 
         private bool CreateReplacement(string textToChange)
         {
+            if (reservedReplacements.Contains(textToChange.Trim()))
+                return false;
+
             //check if replacement exists already
             bool existsAlready = false;
             foreach (DataGridViewRow row in replacementGridView.Rows)
