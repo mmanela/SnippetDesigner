@@ -21,6 +21,8 @@ namespace Microsoft.SnippetDesigner
         public const uint cmdidCreateSnippet = 0x104;
         public const uint cmdidExportToSnippetCommandLine = 0x105;
         public const uint cmdidSnippetRemoveReplacement = 0x106;
+        public const uint cmdidSnippetInsertEnd = 0x107;
+        public const uint cmdidSnippetInsertSelected = 0x108;
         public const uint cmdidSnippetReplacementMarker = 0x1100;
     };
 }

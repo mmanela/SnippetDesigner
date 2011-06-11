@@ -82,6 +82,18 @@ namespace Microsoft.SnippetDesigner
                             hr = VSConstants.S_OK;
                             break;
                         }
+                    case PkgCmdIDList.cmdidSnippetInsertEnd:
+                        {
+                            snippetEditor.InsertEndMarker();
+                            hr = VSConstants.S_OK;
+                            break;
+                        }
+                    case PkgCmdIDList.cmdidSnippetInsertSelected:
+                        {
+                            snippetEditor.InsertSelectedMarker();
+                            hr = VSConstants.S_OK;
+                            break;
+                        }
                     default:
                         {
                             //this is a command we arent intercepting so forward it

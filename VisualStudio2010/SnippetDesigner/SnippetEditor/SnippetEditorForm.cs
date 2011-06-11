@@ -64,6 +64,9 @@ namespace Microsoft.SnippetDesigner
         private readonly CollectionWithEvents<AlternativeShortcut> snippetAlternativeShortcuts = new CollectionWithEvents<AlternativeShortcut>();
         public static readonly Regex ValidPotentialReplacementRegex = new Regex(StringConstants.ValidPotentialReplacementString, RegexOptions.Compiled);
         public static readonly Regex ValidExistingReplacementRegex = new Regex(StringConstants.ValidExistingReplacementString, RegexOptions.Compiled);
+        private const string EndMarker = "$end$";
+        private const string SelectedMarker = "$selected$";
+
 
         public SnippetEditorForm()
         {
@@ -834,6 +837,20 @@ namespace Microsoft.SnippetDesigner
             }
         }
 
+        public void InsertEndMarker()
+        {
+            ReplaceAll(EndMarker, "", false);
+            var caretPosition = CodeWindow.TextView.Caret.Position.BufferPosition.Position;
+            CodeWindow.TextBuffer.Insert(caretPosition, EndMarker);
+        }
+
+        public void InsertSelectedMarker()
+        {
+            ReplaceAll(SelectedMarker, "", false);
+            var caretPosition = CodeWindow.TextView.Caret.Position.BufferPosition.Position;
+            CodeWindow.TextBuffer.Insert(caretPosition, SelectedMarker);
+        }
+
         public void ReplacementRemove()
         {
             SnapshotSpan currentWordSpan;
@@ -1157,7 +1174,6 @@ namespace Microsoft.SnippetDesigner
 
         private IEnumerable<SnapshotSpan> GetReplaceableSpans(ITextSnapshot textSnapshot, string textToFind)
         {
-            ITextView textView = CodeWindow.TextView;
             bool isReplacement = IsTextReplacement(textToFind);
             string text = textSnapshot.GetText();
             int start = 0;

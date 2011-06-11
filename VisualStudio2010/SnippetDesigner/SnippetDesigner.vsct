@@ -106,9 +106,9 @@
             <!--      -->
             <Button guid="guidSnippetDesignerCmdSet" id="cmdidSnippetMakeReplacement" priority="0x0100" type="Button">
                 <Parent guid="guidSnippetDesignerCmdSet" id="SnippetCustGrp"/>
-                <!--<Icon guid="guidImages" id="bmpPic2"/>-->
                 <Strings>
                     <ButtonText>Make Replacement</ButtonText>
+                    <ToolTipText>Convert the selected item into a snippet replacement</ToolTipText>
                 </Strings>
             </Button>
             <!--  -->
@@ -117,6 +117,21 @@
                 <Icon guid="guidImages" id="bmpPicX"/>
                 <Strings>
                     <ButtonText>Remove Replacement</ButtonText>
+                    <ToolTipText>Remove the selected snippet replacement</ToolTipText>
+                </Strings>
+            </Button>            
+            <Button guid="guidSnippetDesignerCmdSet" id="cmdidSnippetInsertEnd" priority="0x0102" type="Button">
+                <Parent guid="guidSnippetDesignerCmdSet" id="SnippetCustGrp"/>
+                <Strings>
+                    <ButtonText>Insert $end$ marker</ButtonText>
+                    <ToolTipText>The $end$ marker indicates where the cursor will placed after the snippet is inserted.</ToolTipText>
+                </Strings>
+            </Button>
+             <Button guid="guidSnippetDesignerCmdSet" id="cmdidSnippetInsertSelected" priority="0x0103" type="Button">
+                <Parent guid="guidSnippetDesignerCmdSet" id="SnippetCustGrp"/>
+                <Strings>
+                    <ButtonText>Insert $selected$ marker</ButtonText>
+                    <ToolTipText>The $selected$ marker indicates where the selected text will be placed after the snippet is inserted. This requires a snippet type of SurroundsWith.</ToolTipText>
                 </Strings>
             </Button>
             <!--  -->
@@ -279,6 +294,8 @@
             <IDSymbol name="cmdidCreateSnippet" value="0x104" />
             <IDSymbol name="cmdidExportToSnippetCommandLine" value="0x105" />
             <IDSymbol name="cmdidSnippetRemoveReplacement" value="0x106" />
+            <IDSymbol name="cmdidSnippetInsertEnd" value="0x107" />
+            <IDSymbol name="cmdidSnippetInsertSelected" value="0x108" />
 
             <IDSymbol name="cmdidSnippetReplacementMarker" value="0x1100" />
 
