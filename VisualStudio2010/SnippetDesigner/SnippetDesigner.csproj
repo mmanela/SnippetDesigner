@@ -127,7 +127,6 @@
     <Compile Include="SnippetEditor\FilteredPropertiesTypeDescriptor.cs" />
     <Compile Include="SnippetEditor\ICodeWindowHost.cs" />
     <Compile Include="SnippetEditor\ISnippetEditor.cs" />
-    <Compile Include="RegexPatterns.cs" />
     <Compile Include="SnippetEditor\SnippetEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>

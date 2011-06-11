@@ -9,6 +9,7 @@ using Microsoft.SnippetLibrary;
 using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Editor;
 using Microsoft.VisualStudio.Text.Operations;
+using SnippetDesignerComponents;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.SnippetDesigner
@@ -908,7 +909,7 @@ namespace Microsoft.SnippetDesigner
 
         private bool IsValidReplaceableText(string text)
         {
-            return RegexPatterns.ValidPotentialReplacementRegex.IsMatch(text);
+            return SnippetRegexPatterns.ValidPotentialReplacementRegex.IsMatch(text);
         }
 
         private bool CreateReplacement(string textToChange)
@@ -972,7 +973,7 @@ namespace Microsoft.SnippetDesigner
         private void MarkReplacements(ICollection<string> replaceIDs)
         {
             if (CodeWindow.TextBuffer == null) return;
-            var findData = new FindData(RegexPatterns.ValidReplacementString, CodeWindow.TextBuffer.CurrentSnapshot, FindOptions.UseRegularExpressions, null);
+            var findData = new FindData(SnippetRegexPatterns.ValidReplacementString, CodeWindow.TextBuffer.CurrentSnapshot, FindOptions.UseRegularExpressions, null);
             var candidateSpans = textSearchService.FindAll(findData);
             foreach(var candidateSpan in candidateSpans)
             {

@@ -14,7 +14,6 @@ namespace SnippetDesignerComponents
     {
         private readonly IClassificationType classificationType;
         public const string ReplacementListKey = "CurrentReplacements";
-        public const string ValidExistingReplacementString = @"(?<!\$)\$(("".*"")|(\w+))\$";
 
         private ITextView View { get; set; }
         private ITextBuffer SourceBuffer { get; set; }
@@ -61,8 +60,7 @@ namespace SnippetDesignerComponents
             {
                 var wordSpans = new List<SnapshotSpan>();
                 var findOptions = FindOptions.UseRegularExpressions;
-                var findData = new FindData(ValidExistingReplacementString, View.TextBuffer.CurrentSnapshot, findOptions,
-                                            null);
+                var findData = new FindData(SnippetRegexPatterns.ValidReplacementString, View.TextBuffer.CurrentSnapshot, findOptions,null);
                 wordSpans.AddRange(TextSearchService.FindAll(findData));
 
                 SynchronousUpdate(new NormalizedSnapshotSpanCollection(wordSpans));
