@@ -30,7 +30,8 @@ namespace Microsoft.SnippetDesigner
                                         Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Title, 10),
                                         Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Code, 5),
                                         Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Description, 3),
-                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Keywords, 2)
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => snippet.Keywords, 2),
+                                        Tuple.Create<Func<SnippetIndexItem, string>, int>(snippet => Path.GetFileNameWithoutExtension(snippet.File), 2)
                                     };
 
         /// <summary>
