@@ -23,6 +23,7 @@ namespace Microsoft.SnippetDesigner
         internal const string markerServiceString = "BD9FE285-9066-4553-9C6A-C2F49A24777E";
 
         internal const string autoLoadOnSolutionExists = "f1536ef8-92ec-443c-9ed7-fdadf150da82";
+        internal const string autoLoadOnNoSolution = "adfc4e64-0397-11d1-9f4e-00a0c911004f";
 
         internal const string editorFactoryLogicalView = "{7651a703-06e5-11d1-8ebd-00a0c90f26ea}";
 

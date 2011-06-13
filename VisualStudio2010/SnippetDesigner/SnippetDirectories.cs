@@ -92,34 +92,40 @@ namespace Microsoft.SnippetDesigner
             try
             {
                 using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey, configSection))
-                using (RegistryKey codeExpansionKey = vsKey.OpenSubKey("Languages\\CodeExpansions"))
-                    foreach (string lang in codeExpansionKey.GetSubKeyNames())
+                {
+                    if (vsKey == null) return;
+
+                    using (RegistryKey codeExpansionKey = vsKey.OpenSubKey("Languages\\CodeExpansions"))
                     {
-                        try
+                        foreach (string lang in codeExpansionKey.GetSubKeyNames())
                         {
-                            if (lang.Equals("CSharp", StringComparison.OrdinalIgnoreCase) ||
-                                lang.Equals("Basic", StringComparison.OrdinalIgnoreCase) ||
-                                lang.Equals("JScript", StringComparison.OrdinalIgnoreCase) ||
-                                lang.Equals("HTML", StringComparison.OrdinalIgnoreCase) ||
-                                lang.Equals("SQL", StringComparison.OrdinalIgnoreCase) ||
-                                lang.Equals("XML", StringComparison.OrdinalIgnoreCase))
+                            try
                             {
-                                using (var langKey = codeExpansionKey.OpenSubKey(lang))
+                                if (lang.Equals("CSharp", StringComparison.OrdinalIgnoreCase) ||
+                                    lang.Equals("Basic", StringComparison.OrdinalIgnoreCase) ||
+                                    lang.Equals("JScript", StringComparison.OrdinalIgnoreCase) ||
+                                    lang.Equals("HTML", StringComparison.OrdinalIgnoreCase) ||
+                                    lang.Equals("SQL", StringComparison.OrdinalIgnoreCase) ||
+                                    lang.Equals("XML", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    AddPathsFromRegistryKey(langKey, "ForceCreateDirs");
-                                    AddPathsFromRegistryKey(langKey, "Paths");
+                                    using (var langKey = codeExpansionKey.OpenSubKey(lang))
+                                    {
+                                        AddPathsFromRegistryKey(langKey, "ForceCreateDirs");
+                                        AddPathsFromRegistryKey(langKey, "Paths");
+                                    }
                                 }
                             }
-                        }
-                        catch (NullReferenceException e)
-                        {
-                            SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values for {0}", lang), "SnippetDirectories", e);
-                        }
-                        catch (ArgumentException e)
-                        {
-                            SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values for {0}", lang), "SnippetDirectories", e);
+                            catch (NullReferenceException e)
+                            {
+                                SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values for {0}", lang), "SnippetDirectories", e);
+                            }
+                            catch (ArgumentException e)
+                            {
+                                SnippetDesignerPackage.Instance.Logger.Log(string.Format("Cannot find registry values for {0}", lang), "SnippetDirectories", e);
+                            }
                         }
                     }
+                }
             }
             catch (ArgumentException e)
             {
