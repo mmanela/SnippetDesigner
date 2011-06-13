@@ -67,6 +67,12 @@ namespace Microsoft.SnippetDesigner.OptionPages
             }
         }
 
+        /// <summary>
+        /// How many items to show in Snippet Explorer search results
+        /// </summary>
+        [Browsable(false)]
+        public int SearchResultCount { get; set; }
+
         [Category("Search")]
         [Description("Additional directories where you want snippets to be index.  The indexer will index all sub-durectories from each of these directories.")]
         [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
@@ -81,33 +87,37 @@ namespace Microsoft.SnippetDesigner.OptionPages
         [Description("The default language the Snippet Editor starts in.")]
         public Language DefaultLanguage { get; set; }
 
+        [Browsable(false)]
         [Category("Search")]
         [DisplayName("Hide C# Snippets")]
         [Description("Should search results for C# snippets be hidden?")]
         public bool HideCSharp { get; set; }
 
+        [Browsable(false)]
         [Category("Search")]
         [DisplayName("Hide VB Snippets")]
         [Description("Should search results for Visual Basic snippets be hidden?")]
         public bool HideVisualBasic { get; set; }
 
+        [Browsable(false)]
         [Category("Search")]
         [DisplayName("Hide XML Snippets")]
         [Description("Should search results for XML snippets be hidden?")]
         public bool HideXML { get; set; }
 
-
+        [Browsable(false)]
         [Category("Search")]
         [DisplayName("Hide JavaScript Snippets")]
         [Description("Should search results for JavaScript snippets be hidden?")]
         public bool HideJavaScript { get; set; }
 
-
+        [Browsable(false)]
         [Category("Search")]
         [DisplayName("Hide SQL Snippets")]
         [Description("Should search results for SQL snippets be hidden?")]
         public bool HideSQL { get; set; }
 
+        [Browsable(false)]
         [Category("Search")]
         [DisplayName("Hide HTML Snippets")]
         [Description("Should search results for HTML snippets be hidden?")]

@@ -24,7 +24,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private string codeLanguageCellName = "Language";
         private string pathCellName = "Path";
         private DTE2 dte2;
-        private const int MaxResultCount = 25; //max number of snippets to return from a search\
+        private const int MinResultCount = 25; 
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnippetExplorerForm"/> class.
@@ -33,6 +33,16 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             InitializeComponent();
             previewCodeWindow.CodeWindowHost = this;
+
+            foreach (var lang in LanguageMaps.LanguageMap.DisplayLanguageToXML.Keys.Where(lang => !string.IsNullOrEmpty(lang)))
+            {
+                languageFilters.Items.Add(lang);
+            }
+
+            showCountComboBox.Items.Add(MinResultCount);
+            showCountComboBox.Items.Add(50);
+            showCountComboBox.Items.Add(100);
+            showCountComboBox.Items.Add(1000);
         }
 
         /// <summary>
@@ -148,27 +158,30 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
             snippetIndex.PropertyChanged += SnippetIndexChanged;
 
-            UpdateSelectedLanguagesFromOptions();
+            UpdateSelectedItemsFromOptions();
         }
 
-        private void UpdateSelectedLanguagesFromOptions()
+        private void UpdateSelectedItemsFromOptions()
         {
             SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
             var languageOptions = new Dictionary<string, bool>
-                                     {
-                                         {"C#", options.HideCSharp},
-                                         {"Visual Basic", options.HideVisualBasic},
-                                         {"JavaScript", options.HideJavaScript},
-                                         {"SQL", options.HideSQL},
-                                         {"HTML", options.HideHTML},
-                                         {"XML", options.HideXML},
-                                     };
+                                      {
+                                          {Resources.DisplayNameCSharp, options.HideCSharp},
+                                          {Resources.DisplayNameVisualBasic, options.HideVisualBasic},
+                                          {Resources.DisplayNameJavaScript, options.HideJavaScript},
+                                          {Resources.DisplayNameSQL, options.HideSQL},
+                                          {Resources.DisplayNameHTML, options.HideHTML},
+                                          {Resources.DisplayNameXML, options.HideXML},
+                                      };
 
             foreach (var pair in languageOptions)
             {
                 var index = languageFilters.Items.IndexOf(pair.Key);
                 languageFilters.SetItemCheckState(index, pair.Value ? CheckState.Unchecked : CheckState.Checked);
             }
+
+            var count = options.SearchResultCount;
+            showCountComboBox.SelectedItem = Math.Max(options.SearchResultCount, MinResultCount);
         }
 
 
@@ -186,7 +199,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             searchResultView.Rows.Clear();
 
             int totalFoundCount = 0;
-            foundSnippets = snippetIndex.PerformSnippetSearch(searchString, langsToDisplay, MaxResultCount);
+            var maxCount = (int)showCountComboBox.SelectedItem;
+            foundSnippets = snippetIndex.PerformSnippetSearch(searchString, langsToDisplay, maxCount);
             if (foundSnippets.Count() > 0)
             {
                 AddItemsToGridView(foundSnippets);
@@ -238,7 +252,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             string codeToShow = String.Empty;
             if (searchResultView.SelectedRows.Count == 1) //if more than once are selected dont show any additional info
             {
-                SnippetIndexItem snippet = searchResultView.SelectedRows[0].Tag as SnippetIndexItem;
+                var snippet = searchResultView.SelectedRows[0].Tag as SnippetIndexItem;
                 //if more than one selected just take the first one
                 if (snippet != null)
                 {
@@ -257,7 +271,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             if (rowIndex >= 0)
             {
-                SnippetIndexItem item = searchResultView.Rows[rowIndex].Tag as SnippetIndexItem;
+                var item = searchResultView.Rows[rowIndex].Tag as SnippetIndexItem;
                 if (item != null && !String.IsNullOrEmpty(item.File) && File.Exists(item.File))
                 {
                     string openFileCommand = "File.OpenFile";
@@ -295,7 +309,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             if (searchResultView.SelectedRows.Count > 0)
             {
                 DataGridViewRow row = searchResultView.Rows[rowIndex];
-                SnippetIndexItem item = row.Tag as SnippetIndexItem;
+                var item = row.Tag as SnippetIndexItem;
                 if (item != null)
                 {
                     DialogResult result = MessageBox.Show("Are you sure you want to delete this snippet?",
@@ -357,7 +371,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     searchResultView.Rows[info.RowIndex].Selected = true;
                     snippetExplorerContextMenu.Enabled = true;
 
-                    SnippetIndexItem currentItem = searchResultView.Rows[info.RowIndex].Tag as SnippetIndexItem;
+                    var currentItem = searchResultView.Rows[info.RowIndex].Tag as SnippetIndexItem;
                     if (currentItem != null)
                     {
                     }
@@ -377,7 +391,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                     }
                     else
                     {
-                        SnippetIndexItem item = searchResultView.Rows[info.RowIndex].Tag as SnippetIndexItem;
+                        var item = searchResultView.Rows[info.RowIndex].Tag as SnippetIndexItem;
                         if (item != null)
                         {
                             if (item.File != null)
@@ -396,7 +410,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             if (e.RowIndex >= 0)
             {
                 DataGridViewRow row = searchResultView.Rows[e.RowIndex];
-                SnippetIndexItem item = row.Tag as SnippetIndexItem;
+                var item = row.Tag as SnippetIndexItem;
                 if (item != null)
                 {
                     row.Cells[e.ColumnIndex].ToolTipText = item.Description;
@@ -462,7 +476,29 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
 
         private void languageFilters_SelectedIndexChanged(object sender, EventArgs e)
         {
+            SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
+            var languageSetters = new Dictionary<string, Action<bool>>
+                                      {
+                                          {Resources.DisplayNameCSharp, x => options.HideCSharp = x},
+                                          {Resources.DisplayNameVisualBasic, x => options.HideVisualBasic = x},
+                                          {Resources.DisplayNameJavaScript, x => options.HideJavaScript = x},
+                                          {Resources.DisplayNameSQL, x => options.HideSQL = x},
+                                          {Resources.DisplayNameHTML, x => options.HideHTML = x},
+                                          {Resources.DisplayNameXML, x => options.HideXML = x},
+                                      };
 
+            foreach (var pair in languageSetters)
+            {
+                var index = languageFilters.Items.IndexOf(pair.Key);
+                pair.Value(!languageFilters.GetItemChecked(index));
+                SnippetDesignerPackage.Instance.Settings.SaveSettingsToStorage();
+            }
+        }
+
+        private void showCountComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            SnippetDesignerPackage.Instance.Settings.SearchResultCount = Math.Max((int)showCountComboBox.SelectedItem, MinResultCount);
+            SnippetDesignerPackage.Instance.Settings.SaveSettingsToStorage();
         }
     }
 }

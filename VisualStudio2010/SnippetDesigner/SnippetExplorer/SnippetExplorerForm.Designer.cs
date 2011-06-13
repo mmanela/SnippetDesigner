@@ -41,6 +41,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.languageFilters = new System.Windows.Forms.CheckedListBox();
             this.languageLabel = new System.Windows.Forms.Label();
             this.searchOptionBar = new System.Windows.Forms.ToolStrip();
+            this.showCountLabel = new System.Windows.Forms.ToolStripLabel();
+            this.showCountComboBox = new System.Windows.Forms.ToolStripComboBox();
             this.statusLabel = new System.Windows.Forms.ToolStripLabel();
             this.searchResultView = new System.Windows.Forms.DataGridView();
             this.Icon = new System.Windows.Forms.DataGridViewImageColumn();
@@ -107,13 +109,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.languageFilters.CheckOnClick = true;
             resources.ApplyResources(this.languageFilters, "languageFilters");
             this.languageFilters.FormattingEnabled = true;
-            this.languageFilters.Items.AddRange(new object[] {
-            resources.GetString("languageFilters.Items"),
-            resources.GetString("languageFilters.Items1"),
-            resources.GetString("languageFilters.Items2"),
-            resources.GetString("languageFilters.Items3"),
-            resources.GetString("languageFilters.Items4"),
-            resources.GetString("languageFilters.Items5")});
             this.languageFilters.MultiColumn = true;
             this.languageFilters.Name = "languageFilters";
             this.languageFilters.SelectedIndexChanged += new System.EventHandler(this.languageFilters_SelectedIndexChanged);
@@ -128,10 +123,24 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             resources.ApplyResources(this.searchOptionBar, "searchOptionBar");
             this.searchOptionBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.searchOptionBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showCountLabel,
+            this.showCountComboBox,
             this.statusLabel});
             this.searchOptionBar.Name = "searchOptionBar";
             this.searchOptionBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.searchOptionBar.Stretch = true;
+            // 
+            // showCountLabel
+            // 
+            this.showCountLabel.Name = "showCountLabel";
+            resources.ApplyResources(this.showCountLabel, "showCountLabel");
+            // 
+            // showCountComboBox
+            // 
+            this.showCountComboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.showCountComboBox.Name = "showCountComboBox";
+            resources.ApplyResources(this.showCountComboBox, "showCountComboBox");
+            this.showCountComboBox.SelectedIndexChanged += new System.EventHandler(this.showCountComboBox_SelectedIndexChanged);
             // 
             // statusLabel
             // 
@@ -324,6 +333,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private System.Windows.Forms.DataGridViewTextBoxColumn Language;
         private System.Windows.Forms.DataGridViewTextBoxColumn Path;
         private System.Windows.Forms.CheckedListBox languageFilters;
+        private System.Windows.Forms.ToolStripLabel showCountLabel;
+        private System.Windows.Forms.ToolStripComboBox showCountComboBox;
 
     }
 }

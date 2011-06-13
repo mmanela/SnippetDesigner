@@ -193,7 +193,7 @@ namespace Microsoft.SnippetDesigner
 
             lock (indexedSnippets)
             {
-                indexedSnippets.Add(GetDictionaryKey(filePath, item.Title), item);
+                indexedSnippets[GetDictionaryKey(filePath, item.Title)] = item;
             }
         }
 
