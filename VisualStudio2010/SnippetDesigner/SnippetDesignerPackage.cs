@@ -35,14 +35,14 @@ namespace Microsoft.SnippetDesigner
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#100", "#102", "1.3.1", IconResourceID = 404)]
+    [InstalledProductRegistration("#100", "#102", "1.4.0", IconResourceID = 404)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(SnippetExplorerToolWindow))]
     // Options pages
     [ProvideOptionPage(typeof(SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
     [ProvideOptionPage(typeof(ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
-    //cause the package to autoload - Only when a solution exists
+    [ProvideAutoLoad(GuidList.autoLoadOnNoSolution)]
     [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
     [ProvideEditorExtension(typeof(EditorFactory), StringConstants.SnippetExtension, 70,
         ProjectGuid = GuidList.miscellaneousFilesProject,
