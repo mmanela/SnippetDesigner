@@ -53,9 +53,9 @@ namespace Microsoft.SnippetDesigner
             uint lcid = (uint) CultureInfo.CurrentCulture.LCID;
             localeHost.GetUILocale(out lcid);
 
-            registryPathReplacements.Add("%InstallRoot%", GetInstallRoot());
+            registryPathReplacements.Add("%InstallRoot%", GetInstallRoot(SnippetDesignerPackage.Instance.Dte.Version));
             registryPathReplacements.Add("%LCID%", lcid.ToString());
-            registryPathReplacements.Add("%MyDocs%", RegistryLocations.GetVisualStudioUserDataPath());
+            registryPathReplacements.Add("%MyDocs%", RegistryLocations.GetVisualStudioUserDataPath(SnippetDesignerPackage.Instance.Dte.Version));
             replaceRegex = new Regex("(%InstallRoot%)|(%LCID%)|(%MyDocs%)", RegexOptions.Compiled);
 
             GetUserSnippetDirectories();
@@ -91,7 +91,7 @@ namespace Microsoft.SnippetDesigner
         {
             try
             {
-                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey, configSection))
+                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey, configSection, SnippetDesignerPackage.Instance.Dte.Version))
                 {
                     if (vsKey == null) return;
 
@@ -222,8 +222,9 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Gets the install root.
         /// </summary>
+        /// <param name="version"> </param>
         /// <returns></returns>
-        private static string GetInstallRoot()
+        private static string GetInstallRoot(string version)
         {
             string fullName = SnippetDesignerPackage.Instance.Dte.Application.FullName;
             string pathRoot = Path.GetPathRoot(fullName);
@@ -235,7 +236,7 @@ namespace Microsoft.SnippetDesigner
             }
             else
             {
-                vsDirPath = RegistryLocations.GetVSInstallDir() + @"..\..\";
+                vsDirPath = RegistryLocations.GetVSInstallDir(version) + @"..\..\";
             }
 
             return vsDirPath;
@@ -246,7 +247,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void GetUserSnippetDirectories()
         {
-            string vsDocDir = RegistryLocations.GetVisualStudioUserDataPath();
+            string vsDocDir = RegistryLocations.GetVisualStudioUserDataPath(SnippetDesignerPackage.Instance.Dte.Version);
             string snippetDir = Path.Combine(vsDocDir, StringConstants.SnippetDirectoryName);
             userSnippetDirectories[Resources.DisplayNameCSharp] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameCSharp, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameVisualBasic] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameVisualBasic, StringConstants.MySnippetsDir));

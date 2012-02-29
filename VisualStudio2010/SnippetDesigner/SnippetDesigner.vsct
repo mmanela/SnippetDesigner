@@ -233,6 +233,9 @@
         </CommandPlacement>
         <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
             <Parent guid="guidJsEditorMenu" id="IDM_JS_SOURCE"/>
+        </CommandPlacement>        
+        <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x000">
+            <Parent guid="guidJsEditorMenuVs11" id="IDM_JS_SOURCE_Vs11"/>
         </CommandPlacement>
         <CommandPlacement guid="guidSnippetDesignerCmdSet" id="SnippetExportGrp" priority="0x010">
             <Parent guid="guidSqlEditorMenu" id="IDM_SQL_SOURCE"/>
@@ -317,6 +320,10 @@
 
         <GuidSymbol name="guidJsEditorMenu" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">
             <IDSymbol name="IDM_JS_SOURCE" value ="0x0034"/>
+        </GuidSymbol>
+
+         <GuidSymbol name="guidJsEditorMenuVs11" value="{D309F791-903F-11D0-9EFC-00A0C911004F}">
+            <IDSymbol name="IDM_JS_SOURCE_Vs11" value ="0x040D"/>
         </GuidSymbol>
 
         <GuidSymbol name="guidAspEditorMenu" value="{D7E8C5E1-BDB8-11D0-9C88-0000F8040A53}">

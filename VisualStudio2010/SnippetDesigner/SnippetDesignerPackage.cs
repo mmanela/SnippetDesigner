@@ -175,7 +175,7 @@ namespace Microsoft.SnippetDesigner
                 try
                 {
                     //get the reg entry
-                    RegistryKey rk = RegistryLocations.GetVSRegKey(Registry.LocalMachine);
+                    RegistryKey rk = RegistryLocations.GetVSRegKey(Registry.LocalMachine, Instance.Dte.Version);
                     if (rk != null)
                     {
                         rk = rk.OpenSubKey(StringConstants.VSRegistryRegistrationName);

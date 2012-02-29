@@ -8,10 +8,10 @@ namespace Microsoft.RegistryTools
     /// </summary>
     public static class RegistryLocations
     {
-        public static string GetVisualStudioUserDataPath()
+        public static string GetVisualStudioUserDataPath(string version)
         {
             string location = String.Empty;
-            RegistryKey vsKey = GetVSRegKey(Registry.CurrentUser);
+            RegistryKey vsKey = GetVSRegKey(Registry.CurrentUser, version);
             if (vsKey != null)
             {
                 location = (string) vsKey.GetValue("VisualStudioLocation", String.Empty);
@@ -19,10 +19,10 @@ namespace Microsoft.RegistryTools
             return location;
         }
 
-        public static string GetVSInstallDir()
+        public static string GetVSInstallDir(string version = "10.0")
         {
             string location = String.Empty;
-            RegistryKey vsKey = GetVSRegKey(Registry.LocalMachine);
+            RegistryKey vsKey = GetVSRegKey(Registry.LocalMachine, version);
             if (vsKey != null)
             {
                 location = (string) vsKey.GetValue("InstallDir", String.Empty);
@@ -30,10 +30,10 @@ namespace Microsoft.RegistryTools
             return location;
         }
 
-        public static int GetVSUILanguage()
+        public static int GetVSUILanguage(string version = "10.0")
         {
             int language = 1033; // default to english
-            using (RegistryKey vsKey = GetVSRegKey(Registry.CurrentUser, false))
+            using (RegistryKey vsKey = GetVSRegKey(Registry.CurrentUser, false, version))
             {
                 if (vsKey != null)
                 {
@@ -56,14 +56,14 @@ namespace Microsoft.RegistryTools
             return language;
         }
 
-        public static RegistryKey GetVSRegKey(RegistryKey regKey)
+        public static RegistryKey GetVSRegKey(RegistryKey regKey, string version)
         {
-            return GetVSRegKey(regKey, false);
+            return GetVSRegKey(regKey, false, version);
         }
 
-        public static RegistryKey GetVSRegKey(RegistryKey regKey, bool configSection)
+        public static RegistryKey GetVSRegKey(RegistryKey regKey, bool configSection, string version)
         {
-            string versionPath = configSection ? "10.0_Config" : "10.0";
+            string versionPath = configSection ? version + "_Config" : version;
             RegistryKey vsKey = regKey.OpenSubKey(@"Software\Microsoft\VisualStudio\" + versionPath);
             if (vsKey == null)
             {
