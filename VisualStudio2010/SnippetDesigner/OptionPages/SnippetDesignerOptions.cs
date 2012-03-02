@@ -18,7 +18,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
     {
         private string indexedSnippetDirectoriesString;
         private List<string> indexedSnippetDirectories;
-
+        private string defaultSnippetIndexLocation;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnippetDesignerOptions"/> class.
@@ -32,7 +32,21 @@ namespace Microsoft.SnippetDesigner.OptionPages
             // Initialize indexedSnippetDirectories to all snippet directories
             // if the user already modified this it will be overwritten
             indexedSnippetDirectories = new List<string>();
-            SnippetIndexLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnippetDesigner\\SnippetIndex.xml";
+
+            var version = SnippetDesignerPackage.Instance.VSVersion;
+            var versionPart = version.Equals("10.0") ? "" : version;
+            defaultSnippetIndexLocation = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\SnippetDesigner\\SnippetIndex" + versionPart + ".xml";
+            SnippetIndexLocation = defaultSnippetIndexLocation;
+        }
+
+        public void ResetSnippetIndexLocation()
+        {
+            SnippetIndexLocation = defaultSnippetIndexLocation;
+        }
+
+        public void ResetSnippetIndexDirectories()
+        {
+            IndexedSnippetDirectories = new List<string>();
         }
 
         [Browsable(false)]

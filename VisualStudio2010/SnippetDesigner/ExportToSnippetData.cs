@@ -30,6 +30,7 @@ namespace Microsoft.SnippetDesigner
             exportNameToSchemaName[StringConstants.ExportNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
             exportNameToSchemaName[StringConstants.ExportNameXML] = StringConstants.SchemaNameXML;
             exportNameToSchemaName[StringConstants.ExportNameJavaScript] = StringConstants.SchemaNameJavaScript;
+            exportNameToSchemaName[StringConstants.ExportNameJavaScript2] = StringConstants.SchemaNameJavaScript;
             exportNameToSchemaName[StringConstants.ExportNameHTML] = StringConstants.SchemaNameHTML;
             exportNameToSchemaName[StringConstants.ExportNameSQL] = StringConstants.SchemaNameSQL;
 

@@ -49,18 +49,19 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private SnippetDirectories()
         {
+            var version = SnippetDesignerPackage.Instance.VSVersion;
             IUIHostLocale localeHost = (IUIHostLocale) SnippetDesignerPackage.Instance.GetService(typeof (IUIHostLocale));
             uint lcid = (uint) CultureInfo.CurrentCulture.LCID;
             localeHost.GetUILocale(out lcid);
 
-            registryPathReplacements.Add("%InstallRoot%", GetInstallRoot(SnippetDesignerPackage.Instance.Dte.Version));
+            registryPathReplacements.Add("%InstallRoot%", GetInstallRoot(version));
             registryPathReplacements.Add("%LCID%", lcid.ToString());
-            registryPathReplacements.Add("%MyDocs%", RegistryLocations.GetVisualStudioUserDataPath(SnippetDesignerPackage.Instance.Dte.Version));
+            registryPathReplacements.Add("%MyDocs%", RegistryLocations.GetVisualStudioUserDataPath(version));
             replaceRegex = new Regex("(%InstallRoot%)|(%LCID%)|(%MyDocs%)", RegexOptions.Compiled);
 
             GetUserSnippetDirectories();
-            GetSnippetDirectoriesFromRegistry(Registry.LocalMachine, false);
-            GetSnippetDirectoriesFromRegistry(Registry.Users, true);
+            GetSnippetDirectoriesFromRegistry(Registry.LocalMachine, false, version);
+            GetSnippetDirectoriesFromRegistry(Registry.CurrentUser, true, version);
         }
 
         private void AddPathsFromRegistryKey(RegistryKey key, string subKeyName)
@@ -87,11 +88,11 @@ namespace Microsoft.SnippetDesigner
         }
 
 
-        private void GetSnippetDirectoriesFromRegistry(RegistryKey rootKey, bool configSection)
+        private void GetSnippetDirectoriesFromRegistry(RegistryKey rootKey, bool configSection, string version)
         {
             try
             {
-                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey, configSection, SnippetDesignerPackage.Instance.Dte.Version))
+                using (RegistryKey vsKey = RegistryLocations.GetVSRegKey(rootKey, configSection, version))
                 {
                     if (vsKey == null) return;
 
@@ -104,8 +105,10 @@ namespace Microsoft.SnippetDesigner
                                 if (lang.Equals("CSharp", StringComparison.OrdinalIgnoreCase) ||
                                     lang.Equals("Basic", StringComparison.OrdinalIgnoreCase) ||
                                     lang.Equals("JScript", StringComparison.OrdinalIgnoreCase) ||
+                                    lang.Equals("JavaScript", StringComparison.OrdinalIgnoreCase) ||
                                     lang.Equals("HTML", StringComparison.OrdinalIgnoreCase) ||
                                     lang.Equals("SQL", StringComparison.OrdinalIgnoreCase) ||
+                                    lang.Equals("SQL_SSDT", StringComparison.OrdinalIgnoreCase) ||
                                     lang.Equals("XML", StringComparison.OrdinalIgnoreCase))
                                 {
                                     using (var langKey = codeExpansionKey.OpenSubKey(lang))
@@ -150,6 +153,8 @@ namespace Microsoft.SnippetDesigner
             if (!String.IsNullOrEmpty(pathString))
             {
                 string parsedPath = ReplacePathVariables(pathString);
+                parsedPath = NormalizeSlashes(parsedPath);
+
                 string[] pathArray = parsedPath.Split(';');
 
                 foreach (string pathToAdd in pathArray)
@@ -193,6 +198,11 @@ namespace Microsoft.SnippetDesigner
                     }
                 }
             }
+        }
+
+        private static string NormalizeSlashes(string pathString)
+        {
+            return pathString.Replace(@"\\", @"\");
         }
 
         /// <summary>
@@ -247,15 +257,26 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void GetUserSnippetDirectories()
         {
-            string vsDocDir = RegistryLocations.GetVisualStudioUserDataPath(SnippetDesignerPackage.Instance.Dte.Version);
+            var version = SnippetDesignerPackage.Instance.VSVersion;
+            string vsDocDir = RegistryLocations.GetVisualStudioUserDataPath(version);
             string snippetDir = Path.Combine(vsDocDir, StringConstants.SnippetDirectoryName);
             userSnippetDirectories[Resources.DisplayNameCSharp] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameCSharp, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameVisualBasic] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameVisualBasic, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameXML] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameXML, StringConstants.MyXmlSnippetsDir));
             userSnippetDirectories[Resources.DisplayNameSQL] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameSQL, StringConstants.MySnippetsDir));
 
+            if(version.Equals("11.0"))
+            {
+                userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameJavaScriptVS11, StringConstants.MySnippetsDir));
+            }
+
+
             var webDevSnippetDir = Path.Combine(snippetDir, StringConstants.VisualWebDeveloper);
-            userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameJavaScript);
+            if (version.Equals("10.0"))
+            {
+                userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameJavaScript);
+            }
+
             userSnippetDirectories[Resources.DisplayNameHTML] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameHTML);
 
             userSnippetDirectories[String.Empty] = snippetDir;

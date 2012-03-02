@@ -128,6 +128,8 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public DTE2 Dte { get; private set; }
 
+        public string VSVersion { get; private set; }
+
         /// <summary>
         /// Get the export snippet data
         /// contains language and code of the snippet
@@ -175,7 +177,7 @@ namespace Microsoft.SnippetDesigner
                 try
                 {
                     //get the reg entry
-                    RegistryKey rk = RegistryLocations.GetVSRegKey(Registry.LocalMachine, Instance.Dte.Version);
+                    RegistryKey rk = RegistryLocations.GetVSRegKey(Registry.LocalMachine, Instance.VSVersion);
                     if (rk != null)
                     {
                         rk = rk.OpenSubKey(StringConstants.VSRegistryRegistrationName);
@@ -422,6 +424,8 @@ namespace Microsoft.SnippetDesigner
                     throw new ArgumentNullException(Resources.ErrorDTENull);
                 }
 
+                VSVersion = Dte.Version;
+
 
                 Logger = new Logger(this);
                 Settings = GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
@@ -553,6 +557,7 @@ namespace Microsoft.SnippetDesigner
                         || StringConstants.ExportNameXML.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameSQL.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        || StringConstants.ExportNameJavaScript2.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase))
                     {
                         //make the export context menu item visible

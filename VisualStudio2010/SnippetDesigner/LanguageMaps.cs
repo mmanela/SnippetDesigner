@@ -76,11 +76,13 @@ namespace Microsoft.SnippetDesigner
                 case Language.VisualBasic:
                     return StringConstants.SchemaNameVisualBasic;
                 case Language.XML:
-                    return StringConstants.SchemaNameXML;                
+                    return StringConstants.SchemaNameXML;
                 case Language.JavaScript:
-                    return StringConstants.SchemaNameJavaScript;                
+                    return SnippetDesignerPackage.Instance.VSVersion.Equals("10.0")
+                               ? StringConstants.SchemaNameJavaScript
+                               : StringConstants.SchemaNameJavaScriptVS11;
                 case Language.SQL:
-                    return StringConstants.SchemaNameSQL;                
+                    return StringConstants.SchemaNameSQL;
                 case Language.HTML:
                     return StringConstants.SchemaNameHTML;
                 default:
@@ -99,6 +101,7 @@ namespace Microsoft.SnippetDesigner
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp2] = Resources.DisplayNameCSharp;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameXML] = Resources.DisplayNameXML;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameJavaScript] = Resources.DisplayNameJavaScript;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameJavaScriptVS11] = Resources.DisplayNameJavaScript;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameSQL] = Resources.DisplayNameSQL;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameHTML] = Resources.DisplayNameHTML;
             snippetSchemaLanguageToDisplay[String.Empty] = String.Empty;
@@ -107,7 +110,9 @@ namespace Microsoft.SnippetDesigner
             displayLanguageToXML[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
             displayLanguageToXML[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
             displayLanguageToXML[Resources.DisplayNameXML] = StringConstants.SchemaNameXML;
-            displayLanguageToXML[Resources.DisplayNameJavaScript] = StringConstants.SchemaNameJavaScript;
+            displayLanguageToXML[Resources.DisplayNameJavaScript] = SnippetDesignerPackage.Instance.VSVersion.Equals("10.0")
+                                                                        ? StringConstants.SchemaNameJavaScript
+                                                                        : StringConstants.SchemaNameJavaScriptVS11;
             displayLanguageToXML[Resources.DisplayNameSQL] = StringConstants.SchemaNameSQL;
             displayLanguageToXML[Resources.DisplayNameHTML] = StringConstants.SchemaNameHTML;
             displayLanguageToXML[String.Empty] = String.Empty;

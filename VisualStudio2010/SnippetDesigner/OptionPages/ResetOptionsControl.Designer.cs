@@ -33,11 +33,15 @@
             this.resetIndexDirectoriesButton = new System.Windows.Forms.Button();
             this.rebuildIndexButton = new System.Windows.Forms.Button();
             this.resetIndexedDirectoriesLabel = new System.Windows.Forms.Label();
+            this.resetSnippetIndexFilePath = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.resetSnippetIndexFilePath);
+            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.rebuildIndexLabel);
             this.groupBox1.Controls.Add(this.resetIndexDirectoriesButton);
             this.groupBox1.Controls.Add(this.rebuildIndexButton);
@@ -54,7 +58,7 @@
             // 
             this.rebuildIndexLabel.AutoSize = true;
             this.rebuildIndexLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rebuildIndexLabel.Location = new System.Drawing.Point(189, 89);
+            this.rebuildIndexLabel.Location = new System.Drawing.Point(189, 111);
             this.rebuildIndexLabel.Name = "rebuildIndexLabel";
             this.rebuildIndexLabel.Size = new System.Drawing.Size(207, 18);
             this.rebuildIndexLabel.TabIndex = 4;
@@ -72,7 +76,7 @@
             // 
             // rebuildIndexButton
             // 
-            this.rebuildIndexButton.Location = new System.Drawing.Point(6, 89);
+            this.rebuildIndexButton.Location = new System.Drawing.Point(6, 111);
             this.rebuildIndexButton.Name = "rebuildIndexButton";
             this.rebuildIndexButton.Size = new System.Drawing.Size(149, 23);
             this.rebuildIndexButton.TabIndex = 3;
@@ -90,6 +94,27 @@
             this.resetIndexedDirectoriesLabel.Size = new System.Drawing.Size(351, 18);
             this.resetIndexedDirectoriesLabel.TabIndex = 1;
             this.resetIndexedDirectoriesLabel.Text = "Clear the list of additional snippet directories to index";
+            // 
+            // resetSnippetIndexFilePath
+            // 
+            this.resetSnippetIndexFilePath.Location = new System.Drawing.Point(6, 72);
+            this.resetSnippetIndexFilePath.Name = "resetSnippetIndexFilePath";
+            this.resetSnippetIndexFilePath.Size = new System.Drawing.Size(149, 23);
+            this.resetSnippetIndexFilePath.TabIndex = 6;
+            this.resetSnippetIndexFilePath.Text = "Reset Index File Path";
+            this.resetSnippetIndexFilePath.UseVisualStyleBackColor = true;
+            this.resetSnippetIndexFilePath.Click += new System.EventHandler(this.resetSnippetIndexFilePath_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoEllipsis = true;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(189, 77);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(231, 18);
+            this.label1.TabIndex = 5;
+            this.label1.Text = "Reset path to the snippet index file";
             // 
             // ResetOptionsControl
             // 
@@ -111,5 +136,7 @@
         private System.Windows.Forms.Button resetIndexDirectoriesButton;
         private System.Windows.Forms.Button rebuildIndexButton;
         private System.Windows.Forms.Label rebuildIndexLabel;
+        private System.Windows.Forms.Button resetSnippetIndexFilePath;
+        private System.Windows.Forms.Label label1;
     }
 }

@@ -31,6 +31,7 @@ namespace Microsoft.SnippetDesigner
         public const string ExportNameVisualBasic = "basic";
         public const string ExportNameXML = "xml";
         public const string ExportNameJavaScript = "jscript";
+        public const string ExportNameJavaScript2 = "javascript";
         public const string ExportNameHTML = "html";
         public const string ExportNameSQL = "sql";
         public const string MySnippetsDir = "My Code Snippets";
@@ -40,6 +41,7 @@ namespace Microsoft.SnippetDesigner
         public const string SchemaNameVisualBasic = "vb";
         public const string SchemaNameXML = "xml";
         public const string SchemaNameJavaScript = "jscript";
+        public const string SchemaNameJavaScriptVS11 = "javascript";
         public const string SchemaNameSQL = "sql";
         public const string SchemaNameHTML = "html";
 
@@ -50,6 +52,7 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetDirNameSQL= "SQL";
         public const string SnippetDirNameHTML = "My HTML Snippets";
         public const string SnippetDirNameJavaScript = "My JScript Snippets";
+        public const string SnippetDirNameJavaScriptVS11 = "JavaScript";
         public const string VisualWebDeveloper = "Visual Web Developer";
         public const string SnippetTypeExpansion = "Expansion";
         public const string SnippetTypeMethodBody = "method body";

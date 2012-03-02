@@ -43,7 +43,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
             if (!SnippetDesignerPackage.Instance.SnippetIndex.IsIndexLoading &&
                 !SnippetDesignerPackage.Instance.SnippetIndex.IsIndexUpdating)
             {
-                SnippetDesignerPackage.Instance.Settings.IndexedSnippetDirectories = new List<string>();
+                SnippetDesignerPackage.Instance.Settings.ResetSnippetIndexDirectories();
             }
         }
 
@@ -56,6 +56,15 @@ namespace Microsoft.SnippetDesigner.OptionPages
                 {
                     SnippetDesignerPackage.Instance.SnippetIndex.RebuildSnippetIndex();
                 });
+            }
+        }
+
+        private void resetSnippetIndexFilePath_Click(object sender, EventArgs e)
+        {
+            if (!SnippetDesignerPackage.Instance.SnippetIndex.IsIndexLoading &&
+                !SnippetDesignerPackage.Instance.SnippetIndex.IsIndexUpdating)
+            {
+                SnippetDesignerPackage.Instance.Settings.ResetSnippetIndexLocation();
             }
         }
     }
