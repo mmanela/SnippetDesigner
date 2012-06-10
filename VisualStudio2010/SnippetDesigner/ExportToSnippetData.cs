@@ -9,7 +9,7 @@ namespace Microsoft.SnippetDesigner
     public class ExportToSnippetData
     {
         //member variables
-        private readonly Dictionary<string, string> exportNameToSchemaName = new Dictionary<string, string>();
+        private readonly Dictionary<string, string> exportNameToSchemaName = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 
         /// <summary>
@@ -33,6 +33,7 @@ namespace Microsoft.SnippetDesigner
             exportNameToSchemaName[StringConstants.ExportNameJavaScript2] = StringConstants.SchemaNameJavaScript;
             exportNameToSchemaName[StringConstants.ExportNameHTML] = StringConstants.SchemaNameHTML;
             exportNameToSchemaName[StringConstants.ExportNameSQL] = StringConstants.SchemaNameSQL;
+            exportNameToSchemaName[StringConstants.ExportNameSQL2] = StringConstants.SchemaNameSQL;
 
             Code = code;
             if (exportNameToSchemaName.ContainsKey(language))

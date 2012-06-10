@@ -34,6 +34,7 @@ namespace Microsoft.SnippetDesigner
         public const string ExportNameJavaScript2 = "javascript";
         public const string ExportNameHTML = "html";
         public const string ExportNameSQL = "sql";
+        public const string ExportNameSQL2 = "SQL Server Tools";
         public const string MySnippetsDir = "My Code Snippets";
         public const string MyXmlSnippetsDir = "My Xml Snippets";
         public const string SchemaNameCSharp = "csharp";

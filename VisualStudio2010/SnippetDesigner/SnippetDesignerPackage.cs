@@ -556,6 +556,7 @@ namespace Microsoft.SnippetDesigner
                         || StringConstants.ExportNameVisualBasic.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameXML.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameSQL.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        || StringConstants.ExportNameSQL2.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameJavaScript2.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase))
