@@ -27,6 +27,8 @@ namespace Microsoft.SnippetDesigner
         public const string ColumnTooltip = "Tooltip";
         public const string ColumnType = "Type";
         public const string DoubleQuoteString = "\"";
+
+        public const string ExportNameCPP = "C/C++";
         public const string ExportNameCSharp = "csharp";
         public const string ExportNameVisualBasic = "basic";
         public const string ExportNameXML = "xml";
@@ -35,8 +37,10 @@ namespace Microsoft.SnippetDesigner
         public const string ExportNameHTML = "html";
         public const string ExportNameSQL = "sql";
         public const string ExportNameSQL2 = "SQL Server Tools";
+        
         public const string MySnippetsDir = "My Code Snippets";
         public const string MyXmlSnippetsDir = "My Xml Snippets";
+        public const string SchemaNameCPP = "cpp";
         public const string SchemaNameCSharp = "csharp";
         public const string SchemaNameCSharp2 = "vcsharp";
         public const string SchemaNameVisualBasic = "vb";
@@ -47,6 +51,7 @@ namespace Microsoft.SnippetDesigner
         public const string SchemaNameHTML = "html";
 
         public const string SnippetDirectoryName = "Code Snippets";
+        public const string SnippetDirNameCPP = "Visual C++";
         public const string SnippetDirNameCSharp = "Visual C#";
         public const string SnippetDirNameVisualBasic = "Visual Basic";
         public const string SnippetDirNameXML = "XML";
@@ -54,6 +59,7 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetDirNameHTML = "My HTML Snippets";
         public const string SnippetDirNameJavaScript = "My JScript Snippets";
         public const string SnippetDirNameJavaScriptVS11 = "JavaScript";
+
         public const string VisualWebDeveloper = "Visual Web Developer";
         public const string SnippetTypeExpansion = "Expansion";
         public const string SnippetTypeMethodBody = "method body";

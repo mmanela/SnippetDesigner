@@ -352,4 +352,7 @@
   <data name="PropNameSnippetAlternativeShortcuts" xml:space="preserve">
     <value>Alternative Shortcuts</value>
   </data>
+  <data name="DisplayNameCPP" xml:space="preserve">
+    <value>C++</value>
+  </data>
 </root>

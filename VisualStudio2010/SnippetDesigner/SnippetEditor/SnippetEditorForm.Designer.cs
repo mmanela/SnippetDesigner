@@ -94,13 +94,6 @@ namespace Microsoft.SnippetDesigner
             // toolStripLanguageBox
             // 
             this.toolStripLanguageBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.toolStripLanguageBox.Items.AddRange(new object[] {
-            resources.GetString("toolStripLanguageBox.Items"),
-            resources.GetString("toolStripLanguageBox.Items1"),
-            resources.GetString("toolStripLanguageBox.Items2"),
-            resources.GetString("toolStripLanguageBox.Items3"),
-            resources.GetString("toolStripLanguageBox.Items4"),
-            resources.GetString("toolStripLanguageBox.Items5")});
             this.toolStripLanguageBox.Name = "toolStripLanguageBox";
             resources.ApplyResources(this.toolStripLanguageBox, "toolStripLanguageBox");
             this.toolStripLanguageBox.SelectedIndexChanged += new System.EventHandler(this.languageComboBox_SelectedIndexChanged);

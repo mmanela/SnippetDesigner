@@ -65,8 +65,8 @@ namespace Microsoft.SnippetDesigner
         private readonly CollectionWithEvents<AlternativeShortcut> snippetAlternativeShortcuts = new CollectionWithEvents<AlternativeShortcut>();
         private const string EndMarker = "$end$";
         private const string SelectedMarker = "$selected$";
-        private IList<string> reservedReplacements = new List<string>();
-        private ITextSearchService textSearchService;
+        private readonly IList<string> reservedReplacements = new List<string>();
+        private readonly ITextSearchService textSearchService;
 
         public SnippetEditorForm()
         {
@@ -79,7 +79,15 @@ namespace Microsoft.SnippetDesigner
             textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
         }
 
-   
+        protected override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            
+            foreach (var displayLang in LanguageMaps.LanguageMap.DisplayLanguageToXML.Keys.Where(x => !string.IsNullOrEmpty(x)))
+            {
+                toolStripLanguageBox.Items.Add(displayLang);
+            }
+        }
 
         private void snippet_CollectionChanged<T>(object sender, CollectionEventArgs<T> e)
         {
@@ -795,8 +803,8 @@ namespace Microsoft.SnippetDesigner
 
         private static string TurnReplacementSymbolIntoText(string text)
         {
-            if (text.Length > 2 
-                && text[0].ToString() == StringConstants.SymbolReplacement 
+            if (text.Length > 2
+                && text[0].ToString() == StringConstants.SymbolReplacement
                 && text[text.Length - 1].ToString() == StringConstants.SymbolReplacement)
             {
                 return text.Substring(1, text.Length - 2);
@@ -941,9 +949,9 @@ namespace Microsoft.SnippetDesigner
                     int rowIndex = replacementGridView.Rows.Add(newRow);
                     SetOrDisableTypeField(false, rowIndex);
                 }
-                catch(InvalidOperationException ex)
+                catch (InvalidOperationException ex)
                 {
-                    logger.Log("Possible error when reloading snippet","SnippetEditorForm",ex);
+                    logger.Log("Possible error when reloading snippet", "SnippetEditorForm", ex);
                 }
             }
 
@@ -978,9 +986,12 @@ namespace Microsoft.SnippetDesigner
         private void MarkReplacements(ICollection<string> replaceIDs)
         {
             if (CodeWindow.TextBuffer == null) return;
-            var findData = new FindData(SnippetRegexPatterns.ValidReplacementString, CodeWindow.TextBuffer.CurrentSnapshot, FindOptions.UseRegularExpressions, null);
+            var findData = new FindData(SnippetRegexPatterns.ValidReplacementString,
+                                        CodeWindow.TextBuffer.CurrentSnapshot,
+                                        FindOptions.UseRegularExpressions,
+                                        null);
             var candidateSpans = textSearchService.FindAll(findData);
-            foreach(var candidateSpan in candidateSpans)
+            foreach (var candidateSpan in candidateSpans)
             {
                 var replacementText = candidateSpan.GetText();
                 var textBetween = TurnReplacementSymbolIntoText(replacementText);

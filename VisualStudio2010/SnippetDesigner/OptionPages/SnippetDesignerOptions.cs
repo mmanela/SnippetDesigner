@@ -137,6 +137,13 @@ namespace Microsoft.SnippetDesigner.OptionPages
         [Description("Should search results for HTML snippets be hidden?")]
         public bool HideHTML { get; set; }
 
+        [Browsable(false)]
+        [Category("Search")]
+        [DisplayName("Hide C++ Snippets")]
+        [Description("Should search results for C++ snippets be hidden?")]
+        public bool HideCPP { get; set; }
+
+
         [Category("Index")]
         [DisplayName("Snippet Index Location")]
         [Description("Where wold you like to have the snippet index stored?")]

@@ -26,6 +26,7 @@ namespace Microsoft.SnippetDesigner
 
         internal ExportToSnippetData(string code, string language)
         {
+            exportNameToSchemaName[StringConstants.ExportNameCPP] = StringConstants.SchemaNameCPP;
             exportNameToSchemaName[StringConstants.ExportNameCSharp] = StringConstants.SchemaNameCSharp;
             exportNameToSchemaName[StringConstants.ExportNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
             exportNameToSchemaName[StringConstants.ExportNameXML] = StringConstants.SchemaNameXML;

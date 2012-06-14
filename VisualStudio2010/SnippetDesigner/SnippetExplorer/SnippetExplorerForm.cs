@@ -164,6 +164,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private void UpdateSelectedItemsFromOptions()
         {
             SnippetDesignerOptions options = SnippetDesignerPackage.Instance.Settings;
+
+            showCountComboBox.SelectedItem = Math.Max(options.SearchResultCount, MinResultCount);
+
             var languageOptions = new Dictionary<string, bool>
                                       {
                                           {Resources.DisplayNameCSharp, options.HideCSharp},
@@ -172,16 +175,17 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                                           {Resources.DisplayNameSQL, options.HideSQL},
                                           {Resources.DisplayNameHTML, options.HideHTML},
                                           {Resources.DisplayNameXML, options.HideXML},
+                                          {Resources.DisplayNameCPP, options.HideCPP},
                                       };
 
             foreach (var pair in languageOptions)
             {
                 var index = languageFilters.Items.IndexOf(pair.Key);
-                languageFilters.SetItemCheckState(index, pair.Value ? CheckState.Unchecked : CheckState.Checked);
+                if (index >= 0)
+                {
+                    languageFilters.SetItemCheckState(index, pair.Value ? CheckState.Unchecked : CheckState.Checked);
+                }
             }
-
-            var count = options.SearchResultCount;
-            showCountComboBox.SelectedItem = Math.Max(options.SearchResultCount, MinResultCount);
         }
 
 
@@ -485,13 +489,17 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                                           {Resources.DisplayNameSQL, x => options.HideSQL = x},
                                           {Resources.DisplayNameHTML, x => options.HideHTML = x},
                                           {Resources.DisplayNameXML, x => options.HideXML = x},
+                                          {Resources.DisplayNameCPP, x => options.HideCPP = x},
                                       };
 
             foreach (var pair in languageSetters)
             {
                 var index = languageFilters.Items.IndexOf(pair.Key);
-                pair.Value(!languageFilters.GetItemChecked(index));
-                SnippetDesignerPackage.Instance.Settings.SaveSettingsToStorage();
+                if (index >= 0)
+                {
+                    pair.Value(!languageFilters.GetItemChecked(index));
+                    SnippetDesignerPackage.Instance.Settings.SaveSettingsToStorage();
+                }
             }
         }
 

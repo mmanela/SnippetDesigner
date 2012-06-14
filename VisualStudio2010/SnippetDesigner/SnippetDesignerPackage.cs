@@ -130,6 +130,11 @@ namespace Microsoft.SnippetDesigner
 
         public string VSVersion { get; private set; }
 
+        public bool IsVisualStudio2010
+        {
+            get { return VSVersion.Equals("10.0"); }
+        }
+
         /// <summary>
         /// Get the export snippet data
         /// contains language and code of the snippet
@@ -559,7 +564,12 @@ namespace Microsoft.SnippetDesigner
                         || StringConstants.ExportNameSQL2.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameJavaScript2.Equals(lang, StringComparison.OrdinalIgnoreCase)
-                        || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase))
+                        || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase)
+                        
+                        // Only allow C++ if this VS is newer than VS 2010
+                        || (!IsVisualStudio2010 && StringConstants.ExportNameCPP.Equals(lang, StringComparison.OrdinalIgnoreCase))
+                        
+                        )
                     {
                         //make the export context menu item visible
                         snippetExportCommand.Visible = true;

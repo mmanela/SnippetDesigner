@@ -241,13 +241,13 @@
     tag and specify a registry root in it.
     <TargetRegistryRoot></TargetRegistryRoot>
     -->
-    <!-- <TargetRegistryRoot>Software\Microsoft\VisualStudio\11.0</TargetRegistryRoot> -->
+    <!--<TargetRegistryRoot>Software\Microsoft\VisualStudio\11.0</TargetRegistryRoot>--> 
     <RegisterOutputPackage>true</RegisterOutputPackage>
     <RegisterWithCodebase>true</RegisterWithCodebase>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" />
-  <!-- <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v11.0\VSSDK\Microsoft.VsSDK.targets" /> -->
+   <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v10.0\VSSDK\Microsoft.VsSDK.targets" /> 
+  <!--<Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v11.0\VSSDK\Microsoft.VsSDK.targets" />--> 
 
   <PropertyGroup>
     <PostBuildEvent>
