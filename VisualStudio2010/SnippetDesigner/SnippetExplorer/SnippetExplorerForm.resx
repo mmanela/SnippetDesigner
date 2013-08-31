@@ -279,6 +279,9 @@
   <metadata name="Icon.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
+  <data name="Icon.HeaderText" xml:space="preserve">
+    <value />
+  </data>
   <data name="Icon.Width" type="System.Int32, mscorlib">
     <value>19</value>
   </data>
@@ -520,7 +523,7 @@
     <value>previewCodeWindow</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Type" xml:space="preserve">
-    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.3.4181.12673, Culture=neutral, PublicKeyToken=null</value>
+    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.4.4991.16803, Culture=neutral, PublicKeyToken=8cfc085d5269c705</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Parent" xml:space="preserve">
     <value>snippetExplorerSplitter.Panel2</value>

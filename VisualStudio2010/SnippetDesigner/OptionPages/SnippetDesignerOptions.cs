@@ -88,7 +88,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
         public int SearchResultCount { get; set; }
 
         [Category("Search")]
-        [Description("Additional directories where you want snippets to be index.  The indexer will index all sub-durectories from each of these directories.")]
+        [Description("Additional directories where you want snippets to be indexed.  The indexer will index all sub-directories in each of these directories.")]
         [EditorAttribute(typeof(StringCollectionEditor), typeof(UITypeEditor))]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public List<string> IndexedSnippetDirectories
@@ -98,6 +98,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
         }
 
         [Category("Editor")]
+        [DisplayName("Default Language")]
         [Description("The default language the Snippet Editor starts in.")]
         public Language DefaultLanguage { get; set; }
 
@@ -146,7 +147,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
 
         [Category("Index")]
         [DisplayName("Snippet Index Location")]
-        [Description("Where wold you like to have the snippet index stored?")]
+        [Description("Where would you like to have the snippet index stored?")]
         [EditorAttribute(typeof (CustomFileNameEditor), typeof (UITypeEditor))]
         public string SnippetIndexLocation { get; set; }
 

@@ -198,12 +198,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // Icon
             // 
             this.Icon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells;
-            this.Icon.HeaderText = global::Microsoft.SnippetDesigner.Resources.Empty;
+            resources.ApplyResources(this.Icon, "Icon");
             this.Icon.Name = "Icon";
             this.Icon.ReadOnly = true;
             this.Icon.Resizable = System.Windows.Forms.DataGridViewTriState.False;
             this.Icon.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            resources.ApplyResources(this.Icon, "Icon");
             // 
             // Title
             // 
@@ -281,7 +280,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // 
             // previewCodeWindow
             // 
-            this.previewCodeWindow.CodeText = global::Microsoft.SnippetDesigner.Resources.Empty;
+            this.previewCodeWindow.CodeText = "";
             resources.ApplyResources(this.previewCodeWindow, "previewCodeWindow");
             this.previewCodeWindow.Name = "previewCodeWindow";
             // 

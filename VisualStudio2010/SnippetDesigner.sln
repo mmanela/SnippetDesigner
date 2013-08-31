@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnippetDesigner", "SnippetDesigner\SnippetDesigner.csproj", "{1508F8F3-74F4-4ABD-B553-DF359ACFF483}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RegistryTools", "RegistryTools\RegistryTools.csproj", "{F49D29B5-63FE-4A5E-B20C-D7B785FCE9BC}"

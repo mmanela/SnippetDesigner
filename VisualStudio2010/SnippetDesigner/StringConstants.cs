@@ -55,7 +55,7 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetDirNameCSharp = "Visual C#";
         public const string SnippetDirNameVisualBasic = "Visual Basic";
         public const string SnippetDirNameXML = "XML";
-        public const string SnippetDirNameSQL= "SQL";
+        public const string SnippetDirNameSQL = "SQL_SSDT";
         public const string SnippetDirNameHTML = "My HTML Snippets";
         public const string SnippetDirNameJavaScript = "My JScript Snippets";
         public const string SnippetDirNameJavaScriptVS11 = "JavaScript";
