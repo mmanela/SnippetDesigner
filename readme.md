@@ -9,9 +9,9 @@ The Snippet Designer is a plugin which enhances the Visual Studio IDE to allow a
 
 
 ## Content
-* [How to create a snippet from scratch](https://github.com/mmanela/SnippetDesginer/wiki/Creating-a-snippet-from-scratch)
-* [How to manage existing snippets](https://github.com/mmanela/SnippetDesginer/wiki/Manage-Existing-Snippets)
-* [How to build the code?](https://github.com/mmanela/SnippetDesginer/wiki/Building-the-code)
+* [Create a snippets from scratch](https://github.com/mmanela/SnippetDesginer/wiki/Creating-a-snippet-from-scratch)
+* [Managing existing snippets](https://github.com/mmanela/SnippetDesginer/wiki/Manage-Existing-Snippets)
+* [Building the code](https://github.com/mmanela/SnippetDesginer/wiki/Building-the-code)
 
 ## Prerequisites 
 * Visual Studio 2013
