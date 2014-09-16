@@ -35,7 +35,7 @@ A Snippet Explorer tool window to search snippets on your computer.
 * This tool window contains a code preview window which lets to peek inside the snippet to see what it is without opening the file.
 * Maintains an index of snippets on your computer for quick searching.
 * Provides a quick way to find a code snippet to use, edit or delete
-![](https://raw.githubusercontent.com/mmanela/SnippetDesginer/master/images/explorer.png)
+![](https://raw.githubusercontent.com/mmanela/SnippetDesginer/master/images/Explorer.png)
 
 A right Click "Export as Snippet" menu option added to C#, VB, XML, JavaScript, HTML and SQL code editors to send highlighted code directly to the Snippet Editor
- ![](https://raw.githubusercontent.com/mmanela/SnippetDesginer/master/images/export.png)
+ ![](https://raw.githubusercontent.com/mmanela/SnippetDesginer/master/images/Export.png)
