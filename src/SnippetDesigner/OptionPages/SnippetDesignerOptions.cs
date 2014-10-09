@@ -120,6 +120,13 @@ namespace Microsoft.SnippetDesigner.OptionPages
         [Description("Should search results for XML snippets be hidden?")]
         public bool HideXML { get; set; }
 
+
+        [Browsable(false)]
+        [Category("Search")]
+        [DisplayName("Hide XAML Snippets")]
+        [Description("Should search results for XAML snippets be hidden?")]
+        public bool HideXAML { get; set; }
+
         [Browsable(false)]
         [Category("Search")]
         [DisplayName("Hide JavaScript Snippets")]

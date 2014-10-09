@@ -49,6 +49,7 @@ namespace Microsoft.SnippetDesigner
         public const string SchemaNameJavaScriptVS11 = "javascript";
         public const string SchemaNameSQL = "sql";
         public const string SchemaNameHTML = "html";
+        public const string SchemaNameXAML = "xaml";
 
         public const string SnippetDirectoryName = "Code Snippets";
         public const string SnippetDirNameCPP = "Visual C++";
@@ -59,6 +60,7 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetDirNameHTML = "My HTML Snippets";
         public const string SnippetDirNameJavaScript = "My JScript Snippets";
         public const string SnippetDirNameJavaScriptVS11 = "JavaScript";
+        public const string SnippetDirNameXAML = "My XAML Snippets";
 
         public const string VisualWebDeveloper = "Visual Web Developer";
         public const string SnippetTypeExpansion = "Expansion";

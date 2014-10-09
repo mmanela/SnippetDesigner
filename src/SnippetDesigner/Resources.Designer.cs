@@ -142,6 +142,15 @@ namespace Microsoft.SnippetDesigner {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to XAML.
+        /// </summary>
+        internal static string DisplayNameXAML {
+            get {
+                return ResourceManager.GetString("DisplayNameXAML", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XML.
         /// </summary>
         internal static string DisplayNameXML {

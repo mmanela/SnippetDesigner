@@ -176,6 +176,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                                           {Resources.DisplayNameSQL, options.HideSQL},
                                           {Resources.DisplayNameHTML, options.HideHTML},
                                           {Resources.DisplayNameXML, options.HideXML},
+                                          {Resources.DisplayNameXAML, options.HideXAML},
                                           {Resources.DisplayNameCPP, options.HideCPP},
                                       };
 
@@ -494,6 +495,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                                           {Resources.DisplayNameSQL, x => options.HideSQL = x},
                                           {Resources.DisplayNameHTML, x => options.HideHTML = x},
                                           {Resources.DisplayNameXML, x => options.HideXML = x},
+                                          {Resources.DisplayNameXAML, x => options.HideXAML = x},
                                           {Resources.DisplayNameCPP, x => options.HideCPP = x},
                                       };
 

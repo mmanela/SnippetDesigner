@@ -358,4 +358,7 @@
   <data name="PropDescriptionSnippetDelimiter" xml:space="preserve">
     <value>Replacement Delimiter</value>
   </data>
+  <data name="DisplayNameXAML" xml:space="preserve">
+    <value>XAML</value>
+  </data>
 </root>
