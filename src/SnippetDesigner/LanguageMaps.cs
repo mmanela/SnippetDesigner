@@ -113,8 +113,8 @@ namespace Microsoft.SnippetDesigner
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameVisualBasic] = Resources.DisplayNameVisualBasic;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp] = Resources.DisplayNameCSharp;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp2] = Resources.DisplayNameCSharp;
-            
-            if (SnippetDesignerPackage.Instance.IsVisualStudio2013)
+
+            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010 && !SnippetDesignerPackage.Instance.IsVisualStudio2012)
             {
                 snippetSchemaLanguageToDisplay[StringConstants.SchemaNameXAML] = Resources.DisplayNameXAML;
             }
@@ -137,7 +137,7 @@ namespace Microsoft.SnippetDesigner
             displayLanguageToXML[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
             displayLanguageToXML[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
 
-            if (SnippetDesignerPackage.Instance.IsVisualStudio2013)
+            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010 && !SnippetDesignerPackage.Instance.IsVisualStudio2012)
             {
                 displayLanguageToXML[Resources.DisplayNameXAML] = StringConstants.SchemaNameXAML;
             }

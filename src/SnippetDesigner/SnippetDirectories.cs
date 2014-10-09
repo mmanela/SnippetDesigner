@@ -262,11 +262,17 @@ namespace Microsoft.SnippetDesigner
             }
 
 
+            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010 && !SnippetDesignerPackage.Instance.IsVisualStudio2012)
+            {
+                userSnippetDirectories[Resources.DisplayNameXAML] = Path.Combine(snippetDir, StringConstants.SnippetDirNameXAML);
+            }
+
             var webDevSnippetDir = Path.Combine(snippetDir, StringConstants.VisualWebDeveloper);
             if (SnippetDesignerPackage.Instance.IsVisualStudio2010)
             {
                 userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameJavaScript);
             }
+
 
             userSnippetDirectories[Resources.DisplayNameHTML] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameHTML);
 

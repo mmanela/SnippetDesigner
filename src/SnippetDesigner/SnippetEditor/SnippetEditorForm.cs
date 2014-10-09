@@ -570,6 +570,7 @@ namespace Microsoft.SnippetDesigner
 
             ActiveSnippet.Keywords = SnippetKeywords;
             ActiveSnippet.SnippetTypes = SnippetTypes;
+            ActiveSnippet.CodeDelimiterAttribute = SnippetDelimiter;
             ActiveSnippet.Code = SnippetCode;
 
             //must be after code node is declared
