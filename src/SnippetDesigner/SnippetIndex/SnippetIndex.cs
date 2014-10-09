@@ -179,6 +179,7 @@ namespace Microsoft.SnippetDesigner
             item.Keywords = String.Join(",", snippetData.Keywords.ToArray());
             item.Language = snippetData.CodeLanguageAttribute;
             item.Code = snippetData.Code;
+            item.Delimiter = snippetData.CodeDelimiterAttribute;
         }
 
         /// <summary>

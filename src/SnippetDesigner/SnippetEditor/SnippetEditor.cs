@@ -1445,7 +1445,7 @@ namespace Microsoft.SnippetDesigner
 
             int startIndex = textLineChanges[0].iStartIndex;
             int endIndex = textLineChanges[0].iNewEndIndex;
-            if (endIndex - startIndex == StringConstants.SymbolReplacement.Length)
+            if (endIndex - startIndex == SnippetDelimiter.Length)
             {
                 lastCharacterEntered = CodeWindow.GetCharacterAtPosition(new TextPoint(textLineChanges[0].iStartLine, startIndex));
             }

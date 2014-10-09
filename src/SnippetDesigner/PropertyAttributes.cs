@@ -135,6 +135,7 @@ namespace Microsoft.SnippetDesigner
         internal const string PropDescriptionSnippetDescription = "PropDescriptionSnippetDescription";
         internal const string PropDescriptionSnippetAuthor = "PropDescriptionSnippetAuthor";
         internal const string PropDescriptionSnippetKind = "PropDescriptionSnippetKind";
+        internal const string PropDescriptionSnippetDelimiter = "PropDescriptionSnippetDelimiter";
         internal const string PropDescriptionSnippetType = "PropDescriptionSnippetType";
         internal const string PropDescriptionSnippetAlternativeShortcuts = "PropDescriptionSnippetAlternativeShortcuts";
 

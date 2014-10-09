@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using Microsoft.SnippetLibrary;
 using Microsoft.VisualStudio.Text;
@@ -58,15 +59,18 @@ namespace Microsoft.SnippetDesigner
         private string snippetShortcut = String.Empty;
         private string snippetHelpUrl = String.Empty;
         private string snippetKind = String.Empty;
+        private string snippetDelimiter = Snippet.DefaultDelimiter;
         private readonly CollectionWithEvents<string> snippetKeywords = new CollectionWithEvents<string>();
         private readonly CollectionWithEvents<SnippetType> snippetTypes = new CollectionWithEvents<SnippetType>();
         private readonly CollectionWithEvents<string> snippetImports = new CollectionWithEvents<string>();
         private readonly CollectionWithEvents<string> snippetReferences = new CollectionWithEvents<string>();
         private readonly CollectionWithEvents<AlternativeShortcut> snippetAlternativeShortcuts = new CollectionWithEvents<AlternativeShortcut>();
-        private const string EndMarker = "$end$";
-        private const string SelectedMarker = "$selected$";
+        private const string EndMarkerFormat = "{0}end{0}";
+        private const string SelectedMarkerFormat = "{0}selected{0}";
         private readonly IList<string> reservedReplacements = new List<string>();
         private readonly ITextSearchService textSearchService;
+
+        private Regex validPotentialReplacementRegex;
 
         public SnippetEditorForm()
         {
@@ -77,6 +81,8 @@ namespace Microsoft.SnippetDesigner
             reservedReplacements.Add("selected");
 
             textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
+
+            validPotentialReplacementRegex = SnippetRegexPatterns.BuildValidPotentialReplacementRegex();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -277,6 +283,26 @@ namespace Microsoft.SnippetDesigner
             {
                 IsFormDirty = true;
                 snippetKind = value;
+            }
+        }
+
+        public string SnippetDelimiter
+        {
+            get { return snippetDelimiter; }
+
+            set
+            {
+                IsFormDirty = true;
+                snippetDelimiter = value;
+
+                CodeWindow.TextView.Properties[SnippetReplacementTagger.ReplacementDelimiter] = snippetDelimiter;
+
+                SnippetReplacementTagger tagger;
+                if (CodeWindow.TextView.Properties.TryGetProperty<SnippetReplacementTagger>(SnippetReplacementTagger.TaggerInstance, out tagger))
+                {
+                    tagger.UpdateSnippetReplacementAdornmentsAsync();
+                }
+
             }
         }
 
@@ -496,6 +522,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public void PullFieldsFromActiveSnippet()
         {
+            SnippetDelimiter = ActiveSnippet.CodeDelimiterAttribute;
             SnippetTitle = ActiveSnippet.Title;
             SnippetAuthor = ActiveSnippet.Author;
             SnippetDescription = ActiveSnippet.Description;
@@ -796,16 +823,16 @@ namespace Microsoft.SnippetDesigner
             logger.MessageBox("Invalid Replacement", String.Format(Resources.ErrorInvalidReplacementID, newIdValue), LogType.Warning);
         }
 
-        private static string TurnTextIntoReplacementSymbol(string text)
+        private string TurnTextIntoReplacementSymbol(string text)
         {
-            return StringConstants.SymbolReplacement + text + StringConstants.SymbolReplacement;
+            return SnippetDelimiter + text + SnippetDelimiter;
         }
 
-        private static string TurnReplacementSymbolIntoText(string text)
+        private string TurnReplacementSymbolIntoText(string text)
         {
             if (text.Length > 2
-                && text[0].ToString() == StringConstants.SymbolReplacement
-                && text[text.Length - 1].ToString() == StringConstants.SymbolReplacement)
+                && text[0].ToString() == SnippetDelimiter
+                && text[text.Length - 1].ToString() == SnippetDelimiter)
             {
                 return text.Substring(1, text.Length - 2);
             }
@@ -850,16 +877,16 @@ namespace Microsoft.SnippetDesigner
 
         public void InsertEndMarker()
         {
-            ReplaceAll(EndMarker, "", false);
+            ReplaceAll(string.Format(EndMarkerFormat,SnippetDelimiter), "", false);
             var caretPosition = CodeWindow.TextView.Caret.Position.BufferPosition.Position;
-            CodeWindow.TextBuffer.Insert(caretPosition, EndMarker);
+            CodeWindow.TextBuffer.Insert(caretPosition, string.Format(EndMarkerFormat, SnippetDelimiter));
         }
 
         public void InsertSelectedMarker()
         {
-            ReplaceAll(SelectedMarker, "", false);
+            ReplaceAll(string.Format(SelectedMarkerFormat, SnippetDelimiter), "", false);
             var caretPosition = CodeWindow.TextView.Caret.Position.BufferPosition.Position;
-            CodeWindow.TextBuffer.Insert(caretPosition, SelectedMarker);
+            CodeWindow.TextBuffer.Insert(caretPosition, string.Format(SelectedMarkerFormat, SnippetDelimiter));
         }
 
         public void ReplacementRemove()
@@ -919,7 +946,7 @@ namespace Microsoft.SnippetDesigner
 
         private bool IsValidReplaceableText(string text)
         {
-            return SnippetRegexPatterns.ValidPotentialReplacementRegex.IsMatch(text);
+            return validPotentialReplacementRegex.IsMatch(text);
         }
 
         private bool CreateReplacement(string textToChange)
@@ -986,7 +1013,7 @@ namespace Microsoft.SnippetDesigner
         private void MarkReplacements(ICollection<string> replaceIDs)
         {
             if (CodeWindow.TextBuffer == null) return;
-            var findData = new FindData(SnippetRegexPatterns.ValidReplacementString,
+            var findData = new FindData(SnippetRegexPatterns.BuildValidReplacementString(SnippetDelimiter),
                                         CodeWindow.TextBuffer.CurrentSnapshot,
                                         FindOptions.UseRegularExpressions,
                                         null);
@@ -1020,7 +1047,7 @@ namespace Microsoft.SnippetDesigner
             return numberReplaced;
         }
 
-        private static bool ReplaceSpanWithText(ITextEdit textEdit, string newWord, SnapshotSpan replaceSpan, bool skipIfAlreadyReplacement)
+        private bool ReplaceSpanWithText(ITextEdit textEdit, string newWord, SnapshotSpan replaceSpan, bool skipIfAlreadyReplacement)
         {
             try
             {
@@ -1038,7 +1065,7 @@ namespace Microsoft.SnippetDesigner
             return false;
         }
 
-        private static bool FindEnclosingReplacementQuoteSpan(SnapshotSpan span, out SnapshotSpan quoteSpan)
+        private bool FindEnclosingReplacementQuoteSpan(SnapshotSpan span, out SnapshotSpan quoteSpan)
         {
             ITextSnapshotLine lineSnapshot = span.Snapshot.GetLineFromPosition(span.Start.Position);
 
@@ -1098,14 +1125,14 @@ namespace Microsoft.SnippetDesigner
             return true;
         }
 
-        private static bool IsTextReplacement(string text)
+        private bool IsTextReplacement(string text)
         {
             char firstChar = text[0];
             char lastChar = text[text.Length - 1];
 
             //check the first and last characters of the span to see if they are the replacement symbols
-            if (firstChar.ToString() == StringConstants.SymbolReplacement &&
-                lastChar.ToString() == StringConstants.SymbolReplacement
+            if (firstChar.ToString() == SnippetDelimiter &&
+                lastChar.ToString() == SnippetDelimiter
                 )
             {
                 return true;
@@ -1114,7 +1141,7 @@ namespace Microsoft.SnippetDesigner
             return false;
         }
 
-        private static bool IsSpanReplacement(SnapshotSpan replaceSpan)
+        private bool IsSpanReplacement(SnapshotSpan replaceSpan)
         {
             string spanText = replaceSpan.GetText();
             if (string.IsNullOrEmpty(spanText))
@@ -1129,8 +1156,8 @@ namespace Microsoft.SnippetDesigner
                 char beforeFirstChar = replaceSpan.Snapshot[replaceSpan.Span.Start - 1];
                 char afterLastChar = replaceSpan.Snapshot[replaceSpan.Span.End];
 
-                if (beforeFirstChar.ToString() == StringConstants.SymbolReplacement &&
-                    afterLastChar.ToString() == StringConstants.SymbolReplacement
+                if (beforeFirstChar.ToString() == SnippetDelimiter &&
+                    afterLastChar.ToString() == SnippetDelimiter
                     )
                 {
                     return true;

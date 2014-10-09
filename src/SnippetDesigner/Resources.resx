@@ -355,4 +355,7 @@
   <data name="DisplayNameCPP" xml:space="preserve">
     <value>C++</value>
   </data>
+  <data name="PropDescriptionSnippetDelimiter" xml:space="preserve">
+    <value>Replacement Delimiter</value>
+  </data>
 </root>

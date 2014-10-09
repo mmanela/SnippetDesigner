@@ -16,7 +16,7 @@
     <GeneratePkgDefFile>false</GeneratePkgDefFile>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>../snippetdesigner.snk</AssemblyOriginatorKeyFile>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>

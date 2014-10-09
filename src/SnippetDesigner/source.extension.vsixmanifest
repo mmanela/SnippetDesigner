@@ -3,7 +3,7 @@
     <Identifier Id="d21b0d98-7dad-421e-895e-424a0a4e6f0e">
         <Name>Snippet Designer</Name>
         <Author>Matthew Manela</Author>
-        <Version>1.5.0</Version>
+        <Version>1.6.0</Version>
         <Description xml:space="preserve">Snippet Designer is a Visual Studio plug in which allows you to create and search for snippets inside the IDE</Description>
         <Locale>1033</Locale>
         <MoreInfoUrl>https://github.com/mmanela/SnippetDesigner</MoreInfoUrl>

@@ -32,6 +32,9 @@ namespace Microsoft.SnippetDesigner
         [XmlElement("Code")]
         public string Code { get; set; }
 
+        [XmlElement("Delimiter")]
+        public string Delimiter { get; set; }
+
         [XmlElement("DateAdded")]
         public string DateAdded { get; set; }
 

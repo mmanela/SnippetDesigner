@@ -4,22 +4,26 @@ namespace SnippetDesignerComponents
 {
     public static class SnippetRegexPatterns
     {
-        public static string ValidPotentialReplacement;
-        public static string ValidReplacementString;
-        public static readonly Regex ValidPotentialReplacementRegex;
-        public static readonly Regex ValidReplacementRegex;
+        private const string replacmentPart = @"(("".*"")|(\w+))";
+        private const string replacementStringFormat = @"((?<!{1}){1}{0}{1})|((?<={1}{0}{1}){1}{0}{1})";
+        private const string potentialReplacementStringFormat = @"^{0}$";
 
-        static SnippetRegexPatterns()
+        public static string BuildValidReplacementString(string delimiter)
         {
-            const string replacmentPart = @"(("".*"")|(\w+))";
-            const string replacementStringFormat = @"((?<!\$)\${0}\$)|((?<=\${0}\$)\${0}\$)";
-            const string potentialReplacementStringFormat = @"^{0}$";
+            var validReplacementString = string.Format(replacementStringFormat, replacmentPart, Regex.Escape(delimiter));
+            return validReplacementString;
+        }
 
-            ValidReplacementString = string.Format(replacementStringFormat, replacmentPart);
-            ValidReplacementRegex = new Regex(ValidReplacementString, RegexOptions.Compiled);
+        public static Regex BuildValidReplacementRegex(string delimiter)
+        {
+            var validReplacementString = BuildValidReplacementString(delimiter);
+            return new Regex(validReplacementString, RegexOptions.Compiled);
+        }
 
-            ValidPotentialReplacement = string.Format(potentialReplacementStringFormat, replacmentPart);
-            ValidPotentialReplacementRegex = new Regex(ValidPotentialReplacement, RegexOptions.Compiled);
+        public static Regex BuildValidPotentialReplacementRegex()
+        {
+            var validPotentialReplacement = string.Format(potentialReplacementStringFormat, replacmentPart);
+            return new Regex(validPotentialReplacement, RegexOptions.Compiled);
         }
     }
 }

@@ -6,6 +6,7 @@ namespace Microsoft.SnippetLibrary
 {
     public class Snippet
     {
+        public const string DefaultDelimiter = "$";
         private XmlNode codeSnippetNode;
 
         private string title;
@@ -15,6 +16,7 @@ namespace Microsoft.SnippetLibrary
         private string code;
         private string codeLanguageAttribute;
         private string codeKindAttribute;
+        private string codeDelimiterAttribute = DefaultDelimiter;
         private string author;
 
 
@@ -128,6 +130,30 @@ namespace Microsoft.SnippetLibrary
                 XmlNode langAttribute = codeSnippetNode.OwnerDocument.CreateAttribute("Language");
                 langAttribute.Value = codeLanguageAttribute;
                 codeNode.Attributes.SetNamedItem(langAttribute);
+            }
+        }
+
+        public string CodeDelimiterAttribute
+        {
+            get { return codeDelimiterAttribute; }
+            set
+            {
+                codeDelimiterAttribute = value;
+                XmlNode codeNode = codeSnippetNode.SelectSingleNode("descendant::ns1:Snippet//ns1:Code", nsMgr);
+
+                if (codeNode == null)
+                {
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(value))
+                {
+                    value = DefaultDelimiter;
+                }
+
+                XmlNode delimiterAttribute = codeSnippetNode.OwnerDocument.CreateAttribute("Delimiter");
+                delimiterAttribute.Value = codeDelimiterAttribute;
+                codeNode.Attributes.SetNamedItem(delimiterAttribute);
             }
         }
 
@@ -582,9 +608,23 @@ namespace Microsoft.SnippetLibrary
             if (codeNode != null && codeNode.Attributes.Count > 0)
             {
                 if (codeNode.Attributes["Language"] != null)
+                {
                     CodeLanguageAttribute = codeNode.Attributes["Language"].Value;
+                }
+
+                if (codeNode.Attributes["Delimiter"] != null && !string.IsNullOrEmpty(codeNode.Attributes["Delimiter"].Value))
+                {
+                    CodeDelimiterAttribute = codeNode.Attributes["Delimiter"].Value;
+                }
+                else
+                {
+                    CodeDelimiterAttribute = DefaultDelimiter;
+                }
+
                 if (codeNode.Attributes["Kind"] != null)
+                {
                     CodeKindAttribute = codeNode.Attributes["Kind"].Value;
+                }
             }
             extractDeclarations(node.SelectSingleNode("descendant::ns1:Declarations", nsMgr));
             extractImports(node.SelectSingleNode("descendant::ns1:Imports", nsMgr));

@@ -119,15 +119,15 @@
             <Button guid="guidSnippetDesignerCmdSet" id="cmdidSnippetInsertEnd" priority="0x0102" type="Button">
                 <Parent guid="guidSnippetDesignerCmdSet" id="SnippetCustGrp"/>
                 <Strings>
-                    <ButtonText>Insert $end$ marker</ButtonText>
-                    <ToolTipText>The $end$ marker indicates where the cursor will placed after the snippet is inserted.</ToolTipText>
+                    <ButtonText>Insert end marker</ButtonText>
+                    <ToolTipText>The end marker indicates where the cursor will placed after the snippet is inserted.</ToolTipText>
                 </Strings>
             </Button>
              <Button guid="guidSnippetDesignerCmdSet" id="cmdidSnippetInsertSelected" priority="0x0103" type="Button">
                 <Parent guid="guidSnippetDesignerCmdSet" id="SnippetCustGrp"/>
                 <Strings>
-                    <ButtonText>Insert $selected$ marker</ButtonText>
-                    <ToolTipText>The $selected$ marker indicates where the selected text will be placed after the snippet is inserted. This requires a snippet type of SurroundsWith.</ToolTipText>
+                    <ButtonText>Insert selected marker</ButtonText>
+                    <ToolTipText>The selected marker indicates where the selected text will be placed after the snippet is inserted. This requires a snippet type of SurroundsWith.</ToolTipText>
                 </Strings>
             </Button>
             <!--  -->

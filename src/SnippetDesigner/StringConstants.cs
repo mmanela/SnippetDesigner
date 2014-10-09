@@ -66,7 +66,6 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetTypeMethodDeclaration = "method decl";
         public const string SnippetTypeTypeDeclaration = "type decl";
         public const string SymbolEndWord = "end";
-        public const string SymbolReplacement = "$";
         public const string SymbolSelected = "$selected$";
         public const string SymbolSelectedWord = "selected";
         public const string VSRegistryRegistrationName = "Registration";

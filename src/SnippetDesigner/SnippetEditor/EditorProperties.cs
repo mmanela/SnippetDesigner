@@ -283,5 +283,15 @@ namespace Microsoft.SnippetDesigner
                 }
             }
         }
+
+        [SuppressMessage("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
+        [LocalizableCategoryAttribute(SR.PropCategorySnippData)]
+        [LocalizableDescriptionAttribute(SR.PropDescriptionSnippetDelimiter)]
+        [LocalizableDisplayName(SR.PropDescriptionSnippetDelimiter)]
+        public string Delimiter
+        {
+            get { return snippetEditor.SnippetDelimiter; }
+            set { snippetEditor.SnippetDelimiter = string.IsNullOrEmpty(value) ? Snippet.DefaultDelimiter : value; }
+        }
     }
 }

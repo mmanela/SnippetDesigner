@@ -13,7 +13,8 @@ namespace SnippetDesignerComponents
     public class SnippetReplacementTagger : ITagger<ClassificationTag>
     {
         private readonly IClassificationType classificationType;
-        public const string ReplacementListKey = "CurrentReplacements";
+        public const string ReplacementDelimiter = "ReplacementDelimiter";
+        public const string TaggerInstance = "TaggerInstance";
 
         private ITextView View { get; set; }
         private ITextBuffer SourceBuffer { get; set; }
@@ -36,11 +37,19 @@ namespace SnippetDesignerComponents
             SourceBuffer = sourceBuffer;
             TextSearchService = textSearchService;
             TextStructureNavigator = textStructureNavigator;
-
+            
             WordSpans = new NormalizedSnapshotSpanCollection();
 
             View.LayoutChanged += ViewLayoutChanged;
 
+            View.Properties[TaggerInstance] = this;
+
+            UpdateSnippetReplacementAdornmentsAsync();
+
+        }
+
+        public void UpdateSnippetReplacementAdornmentsAsync()
+        {
             ThreadPool.QueueUserWorkItem(UpdateSnippetReplacementAdornments);
         }
 
@@ -58,9 +67,14 @@ namespace SnippetDesignerComponents
         {
             try
             {
+                var delimiter = !View.Properties.ContainsProperty(ReplacementDelimiter) ? null : View.Properties[ReplacementDelimiter] as string;
+                delimiter = string.IsNullOrEmpty(delimiter) ? "$" : delimiter;
+
+                var validReplacementString = SnippetRegexPatterns.BuildValidReplacementString(delimiter);
+
                 var wordSpans = new List<SnapshotSpan>();
                 var findOptions = FindOptions.UseRegularExpressions;
-                var findData = new FindData(SnippetRegexPatterns.ValidReplacementString, View.TextBuffer.CurrentSnapshot, findOptions,null);
+                var findData = new FindData(validReplacementString, View.TextBuffer.CurrentSnapshot, findOptions, null);
                 wordSpans.AddRange(TextSearchService.FindAll(findData));
 
                 SynchronousUpdate(new NormalizedSnapshotSpanCollection(wordSpans));

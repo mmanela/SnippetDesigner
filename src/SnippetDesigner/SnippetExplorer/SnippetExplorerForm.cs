@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using EnvDTE80;
 using Microsoft.SnippetDesigner.OptionPages;
+using SnippetDesignerComponents;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
 namespace Microsoft.SnippetDesigner.SnippetExplorer
@@ -253,7 +254,8 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// <param name="e"></param>
         private void searchResultView_SelectionChanged(object sender, EventArgs e)
         {
-            string codeToShow = String.Empty;
+            string codeToShow = "";
+            string delimiter = "";
             if (searchResultView.SelectedRows.Count == 1) //if more than once are selected dont show any additional info
             {
                 var snippet = searchResultView.SelectedRows[0].Tag as SnippetIndexItem;
@@ -261,8 +263,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 if (snippet != null)
                 {
                     codeToShow = snippet.Code;
+                    delimiter = snippet.Delimiter;
                 }
             }
+
+            previewCodeWindow.TextView.Properties[SnippetReplacementTagger.ReplacementDelimiter] = delimiter;
             previewCodeWindow.CodeText = codeToShow;
         }
 

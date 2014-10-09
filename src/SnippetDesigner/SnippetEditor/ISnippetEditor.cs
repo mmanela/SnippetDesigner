@@ -80,6 +80,11 @@ namespace Microsoft.SnippetDesigner
         string SnippetKind { get; set; }
 
         /// <summary>
+        /// The delimiter used to indicate replacements in snippets
+        /// </summary>
+        string SnippetDelimiter { get; set; }
+
+        /// <summary>
         /// Return the language of the snippet from the gui
         /// Set the language of the snippet in the gui
         /// </summary>
