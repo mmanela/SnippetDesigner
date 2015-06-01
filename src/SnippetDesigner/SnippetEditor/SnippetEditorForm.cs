@@ -56,9 +56,9 @@ namespace Microsoft.SnippetDesigner
         private string snippetTitle = String.Empty;
         private string snippetDescription = String.Empty;
         private string snippetAuthor = String.Empty;
-        private string snippetShortcut = String.Empty;
         private string snippetHelpUrl = String.Empty;
         private string snippetKind = String.Empty;
+        private string snippetShortcut = String.Empty;
         private string snippetDelimiter = Snippet.DefaultDelimiter;
         private readonly CollectionWithEvents<string> snippetKeywords = new CollectionWithEvents<string>();
         private readonly CollectionWithEvents<SnippetType> snippetTypes = new CollectionWithEvents<SnippetType>();
@@ -88,7 +88,7 @@ namespace Microsoft.SnippetDesigner
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            
+
             foreach (var displayLang in LanguageMaps.LanguageMap.DisplayLanguageToXML.Keys.Where(x => !string.IsNullOrEmpty(x)))
             {
                 toolStripLanguageBox.Items.Add(displayLang);
@@ -217,15 +217,11 @@ namespace Microsoft.SnippetDesigner
 
         public string SnippetShortcut
         {
-            get { return snippetShortcut; }
+            get { return this.shortcutTextBox.Text; }
 
             set
             {
-                if (snippetShortcut != value)
-                {
-                    IsFormDirty = true;
-                }
-                snippetShortcut = value;
+                this.shortcutTextBox.Text = value;
             }
         }
 
@@ -391,7 +387,7 @@ namespace Microsoft.SnippetDesigner
                 foreach (DataGridViewRow row in replacementGridView.Rows)
                 {
                     if (row.IsNewRow) continue;
-                    var currId = (string) row.Cells[StringConstants.ColumnID].EditedFormattedValue;
+                    var currId = (string)row.Cells[StringConstants.ColumnID].EditedFormattedValue;
                     currId = currId.Trim();
                     if (String.IsNullOrEmpty(currId)) continue;
 
@@ -402,14 +398,14 @@ namespace Microsoft.SnippetDesigner
                         isObj = true;
                     }
 
-                    var isEditable = (bool) (row.Cells[StringConstants.ColumnEditable]).EditedFormattedValue;
-                    replacements.Add(new Literal((string) row.Cells[StringConstants.ColumnID].EditedFormattedValue,
-                                                 (string) row.Cells[StringConstants.ColumnTooltip].EditedFormattedValue,
-                                                 (string) row.Cells[StringConstants.ColumnDefault].EditedFormattedValue,
-                                                 (string) row.Cells[StringConstants.ColumnFunction].EditedFormattedValue,
+                    var isEditable = (bool)(row.Cells[StringConstants.ColumnEditable]).EditedFormattedValue;
+                    replacements.Add(new Literal((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue,
+                                                 (string)row.Cells[StringConstants.ColumnTooltip].EditedFormattedValue,
+                                                 (string)row.Cells[StringConstants.ColumnDefault].EditedFormattedValue,
+                                                 (string)row.Cells[StringConstants.ColumnFunction].EditedFormattedValue,
                                                  isObj,
                                                  isEditable,
-                                                 (string) row.Cells[StringConstants.ColumnType].EditedFormattedValue
+                                                 (string)row.Cells[StringConstants.ColumnType].EditedFormattedValue
                                          ));
                 }
                 return replacements;
@@ -427,7 +423,7 @@ namespace Microsoft.SnippetDesigner
                         objOrLiteral = Resources.ReplacementObjectName;
                     }
 
-                    object[] row = {literal.ID, literal.ToolTip, literal.DefaultValue, objOrLiteral, literal.Type, literal.Function, literal.Editable};
+                    object[] row = { literal.ID, literal.ToolTip, literal.DefaultValue, objOrLiteral, literal.Type, literal.Function, literal.Editable };
                     int rowIndex = replacementGridView.Rows.Add(row);
                     if (!literal.Object)
                     {
@@ -622,13 +618,18 @@ namespace Microsoft.SnippetDesigner
                     //store the last language
                     previousLanguageSelected = languageText;
 
-                    //refresh the properties window
-                    var sEditor = (this as SnippetEditor);
-                    if (sEditor != null)
-                    {
-                        sEditor.RefreshPropertiesWindow();
-                    }
+                    RefreshPropertiesWindow();
                 }
+            }
+        }
+
+        private void RefreshPropertiesWindow()
+        {
+            //refresh the properties window
+            var sEditor = (this as SnippetEditor);
+            if (sEditor != null)
+            {
+                sEditor.RefreshPropertiesWindow();
             }
         }
 
@@ -710,7 +711,7 @@ namespace Microsoft.SnippetDesigner
             {
                 if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnID)
                 {
-                    previousIDValue = (string) grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
+                    previousIDValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue;
                     return;
                 }
             }
@@ -735,7 +736,7 @@ namespace Microsoft.SnippetDesigner
                 IsFormDirty = true;
                 if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnID)
                 {
-                    var newIdValue = (string) grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                    var newIdValue = (string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
                     if (newIdValue == null)
                     {
                         //if null make it empty
@@ -770,7 +771,7 @@ namespace Microsoft.SnippetDesigner
                 }
                 else if (grid.Columns[e.ColumnIndex].Name == StringConstants.ColumnReplacementKind)
                 {
-                    if ((string) grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue == Resources.ReplacementLiteralName)
+                    if ((string)grid.Rows[e.RowIndex].Cells[e.ColumnIndex].EditedFormattedValue == Resources.ReplacementLiteralName)
                     {
                         SetOrDisableTypeField(false, e.RowIndex);
                     }
@@ -846,7 +847,7 @@ namespace Microsoft.SnippetDesigner
             var allReplacements = new List<string>();
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                string idValue = ((string) row.Cells[StringConstants.ColumnID].EditedFormattedValue).Trim();
+                string idValue = ((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue).Trim();
                 if (idValue.Length > 0)
                 {
                     allReplacements.Add(idValue);
@@ -865,7 +866,7 @@ namespace Microsoft.SnippetDesigner
 
                 foreach (DataGridViewRow row in replacementGridView.Rows)
                 {
-                    if ((string) row.Cells[StringConstants.ColumnID].Value == currentWord)
+                    if ((string)row.Cells[StringConstants.ColumnID].Value == currentWord)
                     {
                         replacementGridView.ClearSelection();
                         row.Selected = true;
@@ -878,7 +879,7 @@ namespace Microsoft.SnippetDesigner
 
         public void InsertEndMarker()
         {
-            ReplaceAll(string.Format(EndMarkerFormat,SnippetDelimiter), "", false);
+            ReplaceAll(string.Format(EndMarkerFormat, SnippetDelimiter), "", false);
             var caretPosition = CodeWindow.TextView.Caret.Position.BufferPosition.Position;
             CodeWindow.TextBuffer.Insert(caretPosition, string.Format(EndMarkerFormat, SnippetDelimiter));
         }
@@ -905,7 +906,7 @@ namespace Microsoft.SnippetDesigner
             DataGridViewRow rowToDelete = null;
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                if ((string) row.Cells[StringConstants.ColumnID].Value == textToChange)
+                if ((string)row.Cells[StringConstants.ColumnID].Value == textToChange)
                 {
                     rowToDelete = row;
                     break;
@@ -959,7 +960,7 @@ namespace Microsoft.SnippetDesigner
             bool existsAlready = false;
             foreach (DataGridViewRow row in replacementGridView.Rows)
             {
-                if ((string) row.Cells[StringConstants.ColumnID].EditedFormattedValue == textToChange ||
+                if ((string)row.Cells[StringConstants.ColumnID].EditedFormattedValue == textToChange ||
                     textToChange.Trim() == String.Empty)
                 {
                     //this replacement already exists or is nothing don't add it to the replacement list
@@ -971,7 +972,7 @@ namespace Microsoft.SnippetDesigner
             string newText = TurnTextIntoReplacementSymbol(textToChange);
             if (!existsAlready)
             {
-                object[] newRow = {textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true};
+                object[] newRow = { textToChange, textToChange, textToChange, Resources.ReplacementLiteralName, String.Empty, String.Empty, true };
                 try
                 {
                     int rowIndex = replacementGridView.Rows.Add(newRow);
@@ -1188,6 +1189,19 @@ namespace Microsoft.SnippetDesigner
         {
             SnippetDesignerPackage.Instance.ActiveSnippetLanguage = SnippetLanguage;
             SnippetDesignerPackage.Instance.ActiveSnippetTitle = SnippetTitle;
+        }
+
+        private void shortcutTextBox_TextChanged(object sender, EventArgs e)
+        {
+            string newShortcut = shortcutTextBox.Text; 
+            
+            if (!String.IsNullOrEmpty(newShortcut) && newShortcut != snippetShortcut)
+            {
+                snippetShortcut = newShortcut;
+                IsFormDirty = true;
+            }
+
+            RefreshPropertiesWindow();
         }
     }
 }

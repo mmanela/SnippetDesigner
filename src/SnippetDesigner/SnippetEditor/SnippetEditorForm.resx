@@ -134,26 +134,20 @@
   <data name="languageLabel.Size" type="System.Drawing.Size, System.Drawing">
     <value>65, 22</value>
   </data>
-  <data name="toolStripLanguageBox.Items" xml:space="preserve">
-    <value>C#</value>
-  </data>
-  <data name="toolStripLanguageBox.Items1" xml:space="preserve">
-    <value>Visual Basic</value>
-  </data>
-  <data name="toolStripLanguageBox.Items2" xml:space="preserve">
-    <value>JavaScript</value>
-  </data>
-  <data name="toolStripLanguageBox.Items3" xml:space="preserve">
-    <value>SQL</value>
-  </data>
-  <data name="toolStripLanguageBox.Items4" xml:space="preserve">
-    <value>HTML</value>
-  </data>
-  <data name="toolStripLanguageBox.Items5" xml:space="preserve">
-    <value>XML</value>
-  </data>
   <data name="toolStripLanguageBox.Size" type="System.Drawing.Size, System.Drawing">
     <value>121, 25</value>
+  </data>
+  <data name="shortcutLabel.Size" type="System.Drawing.Size, System.Drawing">
+    <value>55, 22</value>
+  </data>
+  <data name="shortcutLabel.Text" xml:space="preserve">
+    <value>Shortcut:</value>
+  </data>
+  <data name="shortcutLabel.ToolTipText" xml:space="preserve">
+    <value>Keyboard shortcut to insert this snippet</value>
+  </data>
+  <data name="shortcutTextBox.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 25</value>
   </data>
   <data name="topCommandBar.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
@@ -198,6 +192,9 @@
   <data name="snippetCodeWindow.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
+  <data name="snippetCodeWindow.MinimumSize" type="System.Drawing.Size, System.Drawing">
+    <value>250, 100</value>
+  </data>
   <data name="snippetCodeWindow.Size" type="System.Drawing.Size, System.Drawing">
     <value>845, 515</value>
   </data>
@@ -208,7 +205,7 @@
     <value>snippetCodeWindow</value>
   </data>
   <data name="&gt;&gt;snippetCodeWindow.Type" xml:space="preserve">
-    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.2.3.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.4.5629.19650, Culture=neutral, PublicKeyToken=8cfc085d5269c705</value>
   </data>
   <data name="&gt;&gt;snippetCodeWindow.Parent" xml:space="preserve">
     <value>codeReplacementsSplitter.Panel1</value>
@@ -431,6 +428,18 @@
   </data>
   <data name="&gt;&gt;toolStripLanguageBox.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;shortcutLabel.Name" xml:space="preserve">
+    <value>shortcutLabel</value>
+  </data>
+  <data name="&gt;&gt;shortcutLabel.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripLabel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;shortcutTextBox.Name" xml:space="preserve">
+    <value>shortcutTextBox</value>
+  </data>
+  <data name="&gt;&gt;shortcutTextBox.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripTextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;ID.Name" xml:space="preserve">
     <value>ID</value>
