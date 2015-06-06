@@ -56,9 +56,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <RunRegRiched>true</RunRegRiched>
     <Prefer32Bit>false</Prefer32Bit>
+    <CodeAnalysisIgnoreGeneratedCode>true</CodeAnalysisIgnoreGeneratedCode>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -231,7 +232,6 @@
     <Compile Include="SnippetIndex\SnippetIndexItemCollection.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="SnippetDesignerPackage.cs" />
-    <Compile Include="VsColorHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ScreenShot.png">

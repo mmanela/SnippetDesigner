@@ -35,7 +35,7 @@ namespace Microsoft.SnippetDesigner
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true)]
-    [InstalledProductRegistration("#100", "#102", "1.6.0", IconResourceID = 404)]
+    [InstalledProductRegistration("#100", "#102", "1.6.1", IconResourceID = 404)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(SnippetExplorerToolWindow))]
