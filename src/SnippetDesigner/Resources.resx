@@ -361,4 +361,7 @@
   <data name="DisplayNameXAML" xml:space="preserve">
     <value>XAML</value>
   </data>
+  <data name="DisplayNameSQLServerDataTools" xml:space="preserve">
+    <value>Microsoft SQL Server Data Tools, T-SQL Language Services</value>
+  </data>
 </root>

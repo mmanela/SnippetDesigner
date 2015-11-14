@@ -133,6 +133,15 @@ namespace Microsoft.SnippetDesigner {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Microsoft SQL Server Data Tools, T-SQL Language Services.
+        /// </summary>
+        internal static string DisplayNameSQLServerDataTools {
+            get {
+                return ResourceManager.GetString("DisplayNameSQLServerDataTools", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Visual Basic.
         /// </summary>
         internal static string DisplayNameVisualBasic {
