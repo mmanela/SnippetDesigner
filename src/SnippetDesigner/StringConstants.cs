@@ -48,6 +48,7 @@ namespace Microsoft.SnippetDesigner
         public const string SchemaNameJavaScript = "jscript";
         public const string SchemaNameJavaScriptVS11 = "javascript";
         public const string SchemaNameSQL = "sql";
+        public const string SchemaNameSQLServerDataTools = "SQL_SSDT";
         public const string SchemaNameHTML = "html";
         public const string SchemaNameXAML = "xaml";
 
@@ -57,6 +58,7 @@ namespace Microsoft.SnippetDesigner
         public const string SnippetDirNameVisualBasic = "Visual Basic";
         public const string SnippetDirNameXML = "XML";
         public const string SnippetDirNameSQL = "SQL_SSDT";
+        public const string SnippetDirNameSQLServerDataTools = "SQL_SSDT";
         public const string SnippetDirNameHTML = "My HTML Snippets";
         public const string SnippetDirNameJavaScript = "My JScript Snippets";
         public const string SnippetDirNameJavaScriptVS11 = "JavaScript";

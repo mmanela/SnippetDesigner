@@ -11,6 +11,7 @@ namespace Microsoft.SnippetDesigner
         XML,
         JavaScript,
         SQL,
+        SQLServerDataTools,
         HTML, 
         XAML
     }
@@ -59,6 +60,8 @@ namespace Microsoft.SnippetDesigner
                     return Resources.DisplayNameJavaScript;
                 case Language.SQL:
                     return Resources.DisplayNameSQL;
+                case Language.SQLServerDataTools:
+                    return Resources.DisplayNameSQLServerDataTools;
                 case Language.HTML:
                     return Resources.DisplayNameHTML;
                 case Language.XAML:
@@ -91,6 +94,8 @@ namespace Microsoft.SnippetDesigner
                                : StringConstants.SchemaNameJavaScriptVS11;
                 case Language.SQL:
                     return StringConstants.SchemaNameSQL;
+                case Language.SQLServerDataTools:
+                    return StringConstants.SchemaNameSQLServerDataTools;
                 case Language.HTML:
                     return StringConstants.SchemaNameHTML;
                 case Language.XAML:
@@ -122,6 +127,7 @@ namespace Microsoft.SnippetDesigner
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameJavaScript] = Resources.DisplayNameJavaScript;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameJavaScriptVS11] = Resources.DisplayNameJavaScript;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameSQL] = Resources.DisplayNameSQL;
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameSQLServerDataTools] = Resources.DisplayNameSQLServerDataTools;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameHTML] = Resources.DisplayNameHTML;
 
 
@@ -146,6 +152,7 @@ namespace Microsoft.SnippetDesigner
                                                                         ? StringConstants.SchemaNameJavaScript
                                                                         : StringConstants.SchemaNameJavaScriptVS11;
             displayLanguageToXML[Resources.DisplayNameSQL] = StringConstants.SchemaNameSQL;
+            displayLanguageToXML[Resources.DisplayNameSQLServerDataTools] = StringConstants.SchemaNameSQLServerDataTools;
             displayLanguageToXML[Resources.DisplayNameHTML] = StringConstants.SchemaNameHTML;
 
             displayLanguageToXML[String.Empty] = String.Empty;
