@@ -31,6 +31,7 @@ _build/
 _nuget/
 _package/
 _Chutzpah.*
+packages
 _UpgradeReport_Files/
 UpgradeLog.*
 *.cache

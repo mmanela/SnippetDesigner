@@ -362,6 +362,6 @@
     <value>XAML</value>
   </data>
   <data name="DisplayNameSQLServerDataTools" xml:space="preserve">
-    <value>Microsoft SQL Server Data Tools, T-SQL Language Services</value>
+    <value>SSDT</value>
   </data>
 </root>
