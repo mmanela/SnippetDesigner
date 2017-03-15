@@ -15,7 +15,7 @@ namespace SnippetDesignerComponents
         public SnippetReplacementFormat()
         {
             DisplayName = "Snippet Replacement";
-            BackgroundColor = Colors.Yellow;
+            BackgroundColor = Colors.PaleGreen;
         }
     }
 }
