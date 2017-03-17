@@ -344,7 +344,7 @@ namespace Microsoft.SnippetDesigner
 
             if (isFileNew)
             {
-                initialFileName = Path.Combine(initialFileName, SnippetTitle);
+                initialFileName = Path.Combine(initialFileName, SnippetTitle) + StringConstants.SnippetExtension;
             }
             else
             {
