@@ -148,6 +148,7 @@
       <HintPath>..\packages\VSSDK.TextManager.Interop.9.9.0.4\lib\net20\Microsoft.VisualStudio.TextManager.Interop.9.0.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
     <Reference Include="System.Design" />
@@ -247,6 +248,11 @@
     <Compile Include="SnippetIndex\SnippetIndexItemCollection.cs" />
     <Compile Include="StringConstants.cs" />
     <Compile Include="SnippetDesignerPackage.cs" />
+    <Compile Include="Tagger\ClassificationFormat.cs" />
+    <Compile Include="Tagger\ClassificationType.cs" />
+    <Compile Include="Tagger\SnippetRegexPatterns.cs" />
+    <Compile Include="Tagger\SnippetReplacementTagger.cs" />
+    <Compile Include="Tagger\SnippetReplacementTaggerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ScreenShot.png">
@@ -275,12 +281,6 @@
     <ProjectReference Include="..\RegistryTools\RegistryTools.csproj">
       <Project>{F49D29B5-63FE-4A5E-B20C-D7B785FCE9BC}</Project>
       <Name>RegistryTools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SnippetDesignerComponents\SnippetDesignerComponents.csproj">
-      <Project>{11CE2924-DBFB-4DE5-A118-EF921195AD97}</Project>
-      <Name>SnippetDesignerComponents</Name>
-      <IncludeOutputGroupsInVSIX>BuiltProjectOutputGroup%3bBuiltProjectOutputGroupDependencies%3bGetCopyToOutputDirectoryItems%3bSatelliteDllsProjectOutputGroup%3b</IncludeOutputGroupsInVSIX>
-      <IncludeOutputGroupsInVSIXLocalOnly>DebugSymbolsProjectOutputGroup%3b</IncludeOutputGroupsInVSIXLocalOnly>
     </ProjectReference>
     <ProjectReference Include="..\SnippetLibrary\SnippetLibrary.csproj">
       <Project>{05A6F322-8297-4D9F-B91C-5B77CA1064D8}</Project>

@@ -355,7 +355,7 @@ namespace Microsoft.SnippetDesigner
             int can;
             string fileaNameNew;
             IVsUIShell uiShell = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
-            int hr = uiShell.SaveDocDataToFile(VSSAVEFLAGS.VSSAVE_SaveAs, this, initialFileName, out fileaNameNew, out can);
+            int hr = uiShell.SaveDocDataToFile (VSSAVEFLAGS.VSSAVE_SaveAs, this, initialFileName, out fileaNameNew, out can);
         }
 
         /// <summary>
