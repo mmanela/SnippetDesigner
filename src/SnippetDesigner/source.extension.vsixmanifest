@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="d21b0d98-7dad-421e-895e-424a0a4e6f0e" Version="1.6.3" Language="en-US" Publisher="Matthew Manela" />
+    <Identity Id="d21b0d98-7dad-421e-895e-424a0a4e6f0e" Version="1.6.4" Language="en-US" Publisher="Matthew Manela" />
     <DisplayName>Snippet Designer</DisplayName>
     <Description>Snippet Designer is a Visual Studio plug in which allows you to create and search for snippets inside the IDE</Description>
     <MoreInfo>https://github.com/mmanela/SnippetDesigner</MoreInfo>
