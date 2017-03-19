@@ -122,6 +122,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // 
             resources.ApplyResources(this.searchOptionBar, "searchOptionBar");
             this.searchOptionBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.searchOptionBar.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.searchOptionBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showCountLabel,
             this.showCountComboBox,
@@ -234,6 +235,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // 
             // snippetExplorerContextMenu
             // 
+            this.snippetExplorerContextMenu.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.snippetExplorerContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
             this.deleteToolStripMenuItem,

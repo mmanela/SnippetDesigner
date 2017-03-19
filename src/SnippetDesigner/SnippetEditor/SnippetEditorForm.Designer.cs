@@ -64,6 +64,7 @@ namespace Microsoft.SnippetDesigner
             // topCommandBar
             // 
             this.topCommandBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.topCommandBar.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.topCommandBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.snippetsLabel,
             this.toolStripSnippetTitles,
@@ -216,6 +217,7 @@ namespace Microsoft.SnippetDesigner
             // 
             // replacementGridMenu
             // 
+            this.replacementGridMenu.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.replacementGridMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.removeReplacementToolStripMenuItem});
             this.replacementGridMenu.Name = "replacementGridMenu";
