@@ -145,6 +145,11 @@ namespace Microsoft.SnippetDesigner
             get { return VSVersion.Equals("12.0"); }
         }
 
+        public bool IsVisualStudio2017
+        {
+            get { return VSVersion.Equals("15.0"); }
+        }
+
         /// <summary>
         /// Get the export snippet data
         /// contains language and code of the snippet

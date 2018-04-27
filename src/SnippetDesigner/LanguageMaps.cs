@@ -13,7 +13,8 @@ namespace Microsoft.SnippetDesigner
         SQL,
         SQLServerDataTools,
         HTML, 
-        XAML
+        XAML,
+        TypeScript
     }
 
     /// <summary>
@@ -66,6 +67,8 @@ namespace Microsoft.SnippetDesigner
                     return Resources.DisplayNameHTML;
                 case Language.XAML:
                     return Resources.DisplayNameXAML;
+                case Language.TypeScript:
+                    return Resources.DisplayNameTypeScript;
                 default:
                     return String.Empty;
             }
@@ -100,6 +103,8 @@ namespace Microsoft.SnippetDesigner
                     return StringConstants.SchemaNameHTML;
                 case Language.XAML:
                     return StringConstants.SchemaNameXAML;
+                case Language.TypeScript:
+                    return StringConstants.SchemaNameTypeScript;
                 default:
                     return String.Empty;
             }
@@ -130,6 +135,10 @@ namespace Microsoft.SnippetDesigner
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameSQLServerDataTools] = Resources.DisplayNameSQLServerDataTools;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameHTML] = Resources.DisplayNameHTML;
 
+            if (SnippetDesignerPackage.Instance.IsVisualStudio2017)
+            {
+                snippetSchemaLanguageToDisplay[StringConstants.SchemaNameTypeScript] = Resources.DisplayNameTypeScript;
+            }
 
             snippetSchemaLanguageToDisplay[String.Empty] = String.Empty;
 
@@ -154,6 +163,11 @@ namespace Microsoft.SnippetDesigner
             displayLanguageToXML[Resources.DisplayNameSQL] = StringConstants.SchemaNameSQL;
             displayLanguageToXML[Resources.DisplayNameSQLServerDataTools] = StringConstants.SchemaNameSQLServerDataTools;
             displayLanguageToXML[Resources.DisplayNameHTML] = StringConstants.SchemaNameHTML;
+
+            if (SnippetDesignerPackage.Instance.IsVisualStudio2017)
+            {
+                displayLanguageToXML[Resources.DisplayNameTypeScript] = StringConstants.SchemaNameTypeScript;
+            }
 
             displayLanguageToXML[String.Empty] = String.Empty;
         }
