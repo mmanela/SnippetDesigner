@@ -51,6 +51,7 @@ namespace Microsoft.SnippetDesigner
         public const string SchemaNameSQLServerDataTools = "SQL_SSDT";
         public const string SchemaNameHTML = "html";
         public const string SchemaNameXAML = "xaml";
+        public const string SchemaNameTypeScript = "typescript";
 
         public const string SnippetDirectoryName = "Code Snippets";
         public const string SnippetDirNameCPP = "Visual C++";

@@ -364,4 +364,7 @@
   <data name="DisplayNameSQLServerDataTools" xml:space="preserve">
     <value>SSDT</value>
   </data>
+  <data name="DisplayNameTypeScript" xml:space="preserve">
+    <value>TypeScript</value>
+  </data>
 </root>
