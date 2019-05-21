@@ -17,9 +17,9 @@ You can install the extension using the Visual Studio Extension Manager or by go
 * [Building the code](https://github.com/mmanela/SnippetDesginer/wiki/Building-the-code)
 
 ## Prerequisites 
+* Visual Studio 2019
+* Visual Studio 2017
 * Visual Studio 2015
-* Visual Studio 2013
-* Visual Studio 2012
 
 ## Features
  
