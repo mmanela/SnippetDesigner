@@ -267,21 +267,21 @@ namespace Microsoft.SnippetDesigner
         internal System.Windows.Forms.ToolStripLabel languageLabel;
         internal System.Windows.Forms.ToolStripComboBox toolStripLanguageBox;
         internal CodeWindow snippetCodeWindow;
-        private System.Windows.Forms.SplitContainer codeReplacementsSplitter;
-        private System.Windows.Forms.TableLayoutPanel replacementTable;
+        internal System.Windows.Forms.SplitContainer codeReplacementsSplitter;
+        internal System.Windows.Forms.TableLayoutPanel replacementTable;
         internal System.Windows.Forms.DataGridView replacementGridView;
-        private System.Windows.Forms.ToolStripComboBox toolStripSnippetTitles;
-        private System.Windows.Forms.ContextMenuStrip replacementGridMenu;
-        private System.Windows.Forms.ToolStripMenuItem removeReplacementToolStripMenuItem;
-        private System.Windows.Forms.DataGridViewTextBoxColumn ID;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Tooltip;
-        private System.Windows.Forms.DataGridViewTextBoxColumn DefaultsTo;
-        private System.Windows.Forms.DataGridViewComboBoxColumn ReplacementKind;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Type;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Function;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn Editable;
-        private System.Windows.Forms.ToolStripLabel shortcutLabel;
-        private System.Windows.Forms.ToolStripTextBox shortcutTextBox;
+        internal System.Windows.Forms.ToolStripComboBox toolStripSnippetTitles;
+        internal System.Windows.Forms.ContextMenuStrip replacementGridMenu;
+        internal System.Windows.Forms.ToolStripMenuItem removeReplacementToolStripMenuItem;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn ID;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn Tooltip;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn DefaultsTo;
+        internal System.Windows.Forms.DataGridViewComboBoxColumn ReplacementKind;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn Type;
+        internal System.Windows.Forms.DataGridViewTextBoxColumn Function;
+        internal System.Windows.Forms.DataGridViewCheckBoxColumn Editable;
+        internal System.Windows.Forms.ToolStripLabel shortcutLabel;
+        internal System.Windows.Forms.ToolStripTextBox shortcutTextBox;
 
     }
 }

@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.PlatformUI;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
@@ -134,7 +135,52 @@ namespace Microsoft.SnippetDesigner
             snippetCodeWindow.CodeWindowHost = this; //tell the code window this is its parent codeWindowHost
 
             logger = package.Logger;
+
+            SetPropertyGridColors();
         }
+
+
+        public void SetPropertyGridColors()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            IVsUIShell5 shell = (IVsUIShell5)GetVsService(typeof(SVsUIShell)); 
+             var backgroundColor2 = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemBackgroundColorKey);
+            var backgroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowBackgroundColorKey);
+            var foregroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowTextColorKey);
+            var lineColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
+            var disabledColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemGrayTextColorKey);
+            var highlightColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightColorKey);
+            var highlightTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightTextColorKey);
+            var hyperLinkColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextColorKey);
+            var hyperLinkActiveColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextPressedColorKey);
+            var buttonFaceColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonFaceBrushKey);
+            var buttonTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonTextColorKey);
+            var toolWindowContentGridColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
+            var gridHeadingBackgroundColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingBackgroundColorKey);
+            var gridHeadingTextColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingTextColorKey);
+
+            this.codeReplacementsSplitter.BackColor = backgroundColor;
+            this.languageLabel.BackColor = backgroundColor;
+            this.languageLabel.ForeColor = foregroundColor;
+            this.replacementLabel.BackColor = backgroundColor;
+            this.replacementLabel.ForeColor = foregroundColor;
+            this.replacementTable.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
+            this.shortcutLabel.BackColor = backgroundColor;
+            this.shortcutLabel.ForeColor = foregroundColor;
+            this.shortcutTextBox.BackColor = backgroundColor;
+            this.shortcutTextBox.ForeColor = foregroundColor;
+            this.snippetCodeWindow.BackColor = backgroundColor;
+            this.snippetCodeWindow.ForeColor = foregroundColor;
+            this.snippetsLabel.BackColor = backgroundColor;
+            this.snippetsLabel.ForeColor = foregroundColor;
+            this.toolStripLanguageBox.BackColor = backgroundColor;
+            this.toolStripLanguageBox.ForeColor = foregroundColor;
+            this.toolStripSnippetTitles.BackColor = backgroundColor;
+            this.toolStripSnippetTitles.ForeColor = foregroundColor;
+            this.topCommandBar.BackColor = backgroundColor;
+            this.topCommandBar.ForeColor = foregroundColor;
+        }
+
 
 
         /// <summary>
@@ -145,12 +191,13 @@ namespace Microsoft.SnippetDesigner
         public object GetVsService(Type serviceType)
         {
             ThreadHelper.ThrowIfNotOnUIThread();
+            IOleServiceProvider oleSp = ServiceProvider;
             if (ServiceProvider == null)
             {
-                return null;
+                oleSp = (IOleServiceProvider)SnippetDesignerPackage.Instance.GetService(typeof(IOleServiceProvider));
             }
             //create a generic service provider from the OleServiceProvider of visual studio
-            ServiceProvider sp = new ServiceProvider(ServiceProvider, false);
+            var sp = new ServiceProvider(oleSp, false);
             if (sp != null)
             {
                 return sp.GetService(serviceType); //get the requested service

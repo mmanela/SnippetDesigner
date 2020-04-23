@@ -84,80 +84,19 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.languageLabel.ForeColor = foregroundColor;
             this.languageFilters.BackColor = backgroundColor;
             this.languageFilters.ForeColor = foregroundColor;
+
             this.panel1.BackColor = backgroundColor;
             this.panel1.ForeColor = foregroundColor;
             this.panel2.BackColor = backgroundColor;
             this.panel2.ForeColor = foregroundColor;
             this.tableLayoutPanel1.BackColor = backgroundColor;
-            this.tableLayoutPanel1.ForeColor = foregroundColor;
+            //this.tableLayoutPanel1.ForeColor = foregroundColor;
             this.tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
             this.toolStripSeparator1.BackColor = backgroundColor;
             this.toolStripSeparator1.ForeColor = foregroundColor;
-            this.searchResultView.BackColor = backgroundColor;
-            this.searchResultView.ForeColor = foregroundColor;
-            this.searchResultView.GridColor = backgroundColor;
+            this.snippetExplorerSplitter.BackColor = backgroundColor;
             this.previewCodeWindow.ForeColor = foregroundColor;
             this.previewCodeWindow.BackColor = backgroundColor;
-            this.snippetExplorerSplitter.ForeColor = foregroundColor;
-            this.snippetExplorerSplitter.BackColor = backgroundColor;
-
-            /*
-             *        //
-        //
-        public static ThemeResourceKey ToolWindowContentGridBrushKey { get; }
-        //
-        public static ThemeResourceKey ToolWindowContentGridColorKey { get; }
-        // Returns:
-        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
-        public static ThemeResourceKey GridLineBrushKey { get; }
-        //
-        // Returns:
-        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
-        public static ThemeResourceKey GridLineColorKey { get; }
-        //
-        // Returns:
-        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
-        public static ThemeResourceKey GridHeadingTextBrushKey { get; }
-        //
-        // Returns:
-        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
-        public static ThemeResourceKey GridHeadingTextColorKey { get; }
-        //
-        // Returns:
-        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
-        public static ThemeResourceKey GridHeadingBackgroundBrushKey { get; }
-        //
-        // Returns:
-        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
-        public static ThemeResourceKey GridHeadingBackgroundColorKey { get; }
-
-
-            _propertyGrid.ViewBackColor = backgroundColor;
-            _propertyGrid.ViewForeColor = foregroundColor;
-            _propertyGrid.ViewBorderColor = lineColor;
-
-            _propertyGrid.HelpBackColor = backgroundColor;
-            _propertyGrid.HelpForeColor = foregroundColor;
-            _propertyGrid.HelpBorderColor = backgroundColor;
-
-            _propertyGrid.CategoryForeColor = foregroundColor;
-            _propertyGrid.CategorySplitterColor = lineColor;
-
-            _propertyGrid.CommandsActiveLinkColor = hyperLinkActiveColor;
-            _propertyGrid.CommandsDisabledLinkColor = disabledColor;
-            _propertyGrid.CommandsLinkColor = hyperLinkColor;
-            _propertyGrid.CommandsForeColor = foregroundColor;
-            _propertyGrid.CommandsBackColor = backgroundColor;
-            _propertyGrid.CommandsDisabledLinkColor = disabledColor;
-            _propertyGrid.CommandsBorderColor = backgroundColor;
-
-            _propertyGrid.SelectedItemWithFocusForeColor = highlightTextColor;
-            _propertyGrid.SelectedItemWithFocusBackColor = highlightColor;
-
-            _propertyGrid.DisabledItemForeColor = disabledColor;
-
-            _propertyGrid.CanShowVisualStyleGlyphs = false;
-            */
         }
 
         /// <summary>
