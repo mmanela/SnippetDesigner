@@ -55,7 +55,7 @@ namespace Microsoft.SnippetDesigner.OptionPages
         {
             get
             {
-                return indexedSnippetDirectories.Union(SnippetDirectories.Instance.DefaultSnippetDirectories);
+                return indexedSnippetDirectories.Union(SnippetDirectories.Instance.Value.DefaultSnippetDirectories);
             }
         }
 

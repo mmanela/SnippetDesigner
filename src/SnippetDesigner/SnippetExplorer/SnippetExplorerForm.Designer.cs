@@ -159,7 +159,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchResultView.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
             this.searchResultView.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.AllCells;
             this.searchResultView.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells;
-            this.searchResultView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.searchResultView.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.searchResultView.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.searchResultView.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
             this.searchResultView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -270,6 +270,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // searchBox
             // 
             resources.ApplyResources(this.searchBox, "searchBox");
+            this.searchBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.searchBox.Name = "searchBox";
             this.searchBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.searchBox_KeyDown);
             // 

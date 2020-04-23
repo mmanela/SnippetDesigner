@@ -91,6 +91,7 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 if (trackSel == null)
                 {
                     //get the trackselection service and return its interface
@@ -107,6 +108,7 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 //get service on the window frame for this codeWindowHost
                 return GetVsService(typeof (SVsWindowFrame)) as IVsWindowFrame;
             }
@@ -142,6 +144,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>An object which type is as requested</returns>
         public object GetVsService(Type serviceType)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (ServiceProvider == null)
             {
                 return null;
@@ -217,6 +220,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void ShowPropertiesWindow()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             //show the properties window
             IVsUIShell vsShell = GetVsService(typeof (SVsUIShell)) as IVsUIShell;
             Guid propWinGuid = new Guid(Constants.vsWindowKindProperties);
@@ -233,6 +237,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         internal void RefreshPropertiesWindow()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (TrackSelection != null && selContainer != null)
             {
                 TrackSelection.OnSelectChange(selContainer);
@@ -246,6 +251,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void InitializeNewSnippet()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // until someone change the file, we can consider it not dirty as
             // the user would be annoyed if we prompt him to save an empty file
             isDirty = false;
@@ -301,6 +307,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         public void ShowContextMenu()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // Get a reference to the UIShell.
             IVsUIShell uiShell = Package.GetGlobalService(typeof (SVsUIShell)) as IVsUIShell;
             if (null == uiShell)
@@ -325,6 +332,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void CreateSaveAsDialog()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             string currLang = String.Empty;
             if (toolStripLanguageBox.SelectedIndex > -1)
             {
@@ -506,6 +514,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int SetSite(IOleServiceProvider psp)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             ServiceProvider = psp;
             //Guid to be used in SetGuidProperty as a ref parameter to tell frame that we want texteditor key bindings
             Guid cmdUI_TextEditor = GuidList.textEditorFactory;
@@ -521,6 +530,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int TranslateAccelerator(MSG[] messagesToTranslate)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             int hr = VSConstants.S_FALSE;
             if (messagesToTranslate == null)
             {
@@ -577,6 +587,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>Result of the operation</returns>
         private int SetFileChangeNotification(string fileNameToNotify, bool startNotify)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "\t **** Inside SetFileChangeNotification ****"));
 
             int result = VSConstants.E_FAIL;
@@ -646,6 +657,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int Exec(ref Guid commandGroup, uint commandID, uint commandOption, IntPtr pvaIn, IntPtr pvaOut)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             int hr = (int) VisualStudio.OLE.Interop.Constants.OLECMDERR_E_NOTSUPPORTED;
             if (commandGroup == VSConstants.GUID_VSStandardCommandSet97)
             {
@@ -715,6 +727,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int QueryStatus(ref Guid commandGroup, uint commandCount, OLECMD[] prgCmds, IntPtr cmdText)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             int hr = (int) VisualStudio.OLE.Interop.Constants.OLECMDERR_E_NOTSUPPORTED;
 
 
@@ -742,6 +755,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         public int QueryService(ref Guid guidService, ref Guid riid, out IntPtr ppvObject)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (ServiceProvider != null)
                 return ServiceProvider.QueryService(ref guidService, ref riid, out ppvObject);
             else
@@ -776,6 +790,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the funtion succeeds</returns>
         int IPersistFileFormat.SaveCompleted(string fileSaved)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             //Make sure we just did a save as or a save n a new file otherwise the following isnt needed
             if (previousFileName.Length > 0 && fileSaved.Length > 0 && previousFileName != fileSaved)
             {
@@ -873,6 +888,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.GetClassID(out Guid classID)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             ((IPersist) this).GetClassID(out classID);
             return VSConstants.S_OK;
         }
@@ -908,6 +924,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.Load(string fileToLoad, uint formatMode, int isReadOnly)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (fileToLoad == null)
             {
                 return VSConstants.E_INVALIDARG;
@@ -975,6 +992,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IPersistFileFormat.IsDirty(out int dirty)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             IVsPersistDocData bufferDoc = (IVsPersistDocData) snippetCodeWindow.TextBufferAdapter;
             if(bufferDoc == null)
             {
@@ -1035,6 +1053,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the function succeeds</returns>
         int IVsPersistDocData.IsDocDataDirty(out int dirty)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return ((IPersistFileFormat) this).IsDirty(out dirty);
         }
 
@@ -1061,6 +1080,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         int IVsPersistDocData.SaveDocData(VSSAVEFLAGS saveFlag, out string newFilePath, out int saveCanceled)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             newFilePath = null;
             saveCanceled = 0;
             int hr = VSConstants.S_OK;
@@ -1157,6 +1177,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_Ok if the method succeeds</returns>
         int IVsPersistDocData.LoadDocData(string fileToLoad)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             //set the buffer moniker
             IVsUserData udata = (IVsUserData) CodeWindow.TextBufferAdapter;
             //generate random gui
@@ -1178,6 +1199,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the mthod succeeds</returns>
         int IVsPersistDocData.SetUntitledDocPath(string pszDocDataPath)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return ((IPersistFileFormat) this).InitNew(snippetFormat);
         }
 
@@ -1189,6 +1211,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the method succeeds</returns>
         int IVsPersistDocData.GetGuidEditorType(out Guid classID)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return ((IPersistFileFormat) this).GetClassID(out classID);
         }
 
@@ -1246,6 +1269,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if the mthod succeeds</returns>
         int IVsPersistDocData.ReloadDocData(uint ignoreNextChange)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return ((IPersistFileFormat) this).Load(fileName, ignoreNextChange, 0);
         }
 
@@ -1271,6 +1295,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void NotifyDocChanged()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // Make sure that we have a file name
             if (fileName.Length == 0)
                 return;
@@ -1360,6 +1385,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="e"></param>
         private void OnFileChangeEvent(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             //Disable the timer
             reloadTimer.Enabled = false;
             // string message = this.GetResourceString("@101");    //get the message string from the resource

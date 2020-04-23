@@ -36,7 +36,7 @@ namespace Microsoft.SnippetDesigner
         protected string lastCharacterEntered;
 
         //hash which maps the display names of the languages to the path to their user snippet directory
-        internal readonly Dictionary<string, string> snippetDirectories = SnippetDirectories.Instance.UserSnippetDirectories;
+        internal readonly Dictionary<string, string> snippetDirectories = null;
 
         //the value of the id cell you entered before edit
         //the purpose of this is so if you modify a replcement id in the gridview we can know which ids in the codewindow
@@ -83,6 +83,8 @@ namespace Microsoft.SnippetDesigner
             textSearchService = SnippetDesignerPackage.Instance.ComponentModel.GetService<ITextSearchService>();
 
             validPotentialReplacementRegex = SnippetRegexPatterns.BuildValidPotentialReplacementRegex();
+            snippetDirectories = SnippetDirectories.Instance.Value.UserSnippetDirectories;
+            
         }
 
         protected override void OnLoad(EventArgs e)

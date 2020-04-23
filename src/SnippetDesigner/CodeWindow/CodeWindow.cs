@@ -214,6 +214,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
+            VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             if (disposing)
             {
                 if (components != null)
@@ -263,6 +264,7 @@ namespace Microsoft.SnippetDesigner
 
         public void InitializeEditor()
         {
+            VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             IOleServiceProvider oleServiceProvider = codeWindowHost.ServiceProvider;
             bufferAdapter = editorAdapterFactoryService.CreateVsTextBufferAdapter(oleServiceProvider, codeSnippetContentType);
             int result = bufferAdapter.InitializeContent("", 0);
@@ -305,6 +307,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns>S_OK if success</returns>
         private int CreateVsCodeWindow()
         {
+            VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             InitializeEditor();
 
             int hr = VSConstants.S_OK;

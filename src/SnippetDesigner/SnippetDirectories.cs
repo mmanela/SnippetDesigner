@@ -5,6 +5,7 @@ using System.IO;
 using System.Security;
 using System.Text.RegularExpressions;
 using Microsoft.RegistryTools;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 
@@ -15,7 +16,7 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     internal class SnippetDirectories
     {
-        public static SnippetDirectories Instance = new SnippetDirectories();
+        public static Lazy<SnippetDirectories> Instance = new Lazy<SnippetDirectories>(() => new SnippetDirectories());
 
 
         private readonly Dictionary<string, string> registryPathReplacements = new Dictionary<string, string>();
@@ -47,8 +48,9 @@ namespace Microsoft.SnippetDesigner
         /// <summary>
         /// Initializes a new instance of the <see cref="SnippetDirectories"/> class.
         /// </summary>
-        private SnippetDirectories()
+        public SnippetDirectories()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             var version = SnippetDesignerPackage.Instance.VSVersion;
             IUIHostLocale localeHost = (IUIHostLocale)SnippetDesignerPackage.Instance.GetService(typeof(IUIHostLocale));
             uint lcid = (uint)CultureInfo.CurrentCulture.LCID;
@@ -227,6 +229,7 @@ namespace Microsoft.SnippetDesigner
         /// <returns></returns>
         private static string GetInstallRoot(string version)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             string fullName = SnippetDesignerPackage.Instance.Dte.Application.FullName;
 
             string vsDirPath = Path.GetFullPath(Path.Combine(fullName, @"..\..\..\"));

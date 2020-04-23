@@ -2,6 +2,7 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.OLE.Interop;
+using Microsoft.VisualStudio.Shell;
 
 namespace Microsoft.SnippetDesigner
 {
@@ -40,6 +41,7 @@ namespace Microsoft.SnippetDesigner
 
         public int Exec(ref Guid pguidCmdGroup, uint nCmdID, uint nCmdexecopt, IntPtr pvaIn, IntPtr pvaOut)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             int hr = (int) Constants.OLECMDERR_E_NOTSUPPORTED;
             if (pguidCmdGroup == VSConstants.VSStd2K)
             {
@@ -112,6 +114,7 @@ namespace Microsoft.SnippetDesigner
 
         public int QueryStatus(ref Guid pguidCmdGroup, uint cCmds, OLECMD[] prgCmds, IntPtr pCmdText)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (pguidCmdGroup == VSConstants.VSStd2K && prgCmds != null)
             {
                 switch (prgCmds[0].cmdID)

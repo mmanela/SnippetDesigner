@@ -7,6 +7,9 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using EnvDTE80;
 using Microsoft.SnippetDesigner.OptionPages;
+using Microsoft.VisualStudio.PlatformUI;
+using Microsoft.VisualStudio.Shell;
+using Microsoft.VisualStudio.Shell.Interop;
 using SnippetDesignerComponents;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
@@ -25,7 +28,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private string codeLanguageCellName = "Language";
         private string pathCellName = "Path";
         private DTE2 dte2;
-        private const int MinResultCount = 25; 
+        private const int MinResultCount = 25;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SnippetExplorerForm"/> class.
@@ -44,6 +47,141 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             showCountComboBox.Items.Add(50);
             showCountComboBox.Items.Add(100);
             showCountComboBox.Items.Add(1000);
+
+            SetPropertyGridColors();
+        }
+
+        public void SetPropertyGridColors()
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            IVsUIShell5 shell = (IVsUIShell5)GetVsService(typeof(SVsUIShell));
+            var backgroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowBackgroundColorKey);
+            var foregroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowTextColorKey);
+            var lineColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
+            var disabledColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemGrayTextColorKey);
+            var highlightColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightColorKey);
+            var highlightTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightTextColorKey);
+            var hyperLinkColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextColorKey);
+            var hyperLinkActiveColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextPressedColorKey);
+            var buttonFaceColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonFaceBrushKey);
+            var buttonTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonTextColorKey);
+            var toolWindowContentGridColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
+            var gridHeadingBackgroundColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingBackgroundColorKey);
+            var gridHeadingTextColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingTextColorKey);
+
+
+            this.searchButton.BackColor = buttonFaceColor;
+            this.searchButton.ForeColor = buttonTextColor;
+            this.searchOptionBar.BackColor = backgroundColor;
+            this.searchOptionBar.ForeColor = foregroundColor;
+            this.searchBox.BackColor = backgroundColor;
+            this.searchBox.ForeColor = foregroundColor;
+            this.showCountComboBox.BackColor = backgroundColor;
+            this.showCountComboBox.ForeColor = foregroundColor;
+            this.showCountLabel.BackColor = backgroundColor;
+            this.showCountLabel.ForeColor = foregroundColor;
+            this.languageLabel.BackColor = backgroundColor;
+            this.languageLabel.ForeColor = foregroundColor;
+            this.languageFilters.BackColor = backgroundColor;
+            this.languageFilters.ForeColor = foregroundColor;
+            this.panel1.BackColor = backgroundColor;
+            this.panel1.ForeColor = foregroundColor;
+            this.panel2.BackColor = backgroundColor;
+            this.panel2.ForeColor = foregroundColor;
+            this.tableLayoutPanel1.BackColor = backgroundColor;
+            this.tableLayoutPanel1.ForeColor = foregroundColor;
+            this.tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
+            this.toolStripSeparator1.BackColor = backgroundColor;
+            this.toolStripSeparator1.ForeColor = foregroundColor;
+            this.searchResultView.BackColor = backgroundColor;
+            this.searchResultView.ForeColor = foregroundColor;
+            this.searchResultView.GridColor = backgroundColor;
+            this.previewCodeWindow.ForeColor = foregroundColor;
+            this.previewCodeWindow.BackColor = backgroundColor;
+            this.snippetExplorerSplitter.ForeColor = foregroundColor;
+            this.snippetExplorerSplitter.BackColor = backgroundColor;
+
+            /*
+             *        //
+        //
+        public static ThemeResourceKey ToolWindowContentGridBrushKey { get; }
+        //
+        public static ThemeResourceKey ToolWindowContentGridColorKey { get; }
+        // Returns:
+        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
+        public static ThemeResourceKey GridLineBrushKey { get; }
+        //
+        // Returns:
+        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
+        public static ThemeResourceKey GridLineColorKey { get; }
+        //
+        // Returns:
+        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
+        public static ThemeResourceKey GridHeadingTextBrushKey { get; }
+        //
+        // Returns:
+        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
+        public static ThemeResourceKey GridHeadingTextColorKey { get; }
+        //
+        // Returns:
+        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
+        public static ThemeResourceKey GridHeadingBackgroundBrushKey { get; }
+        //
+        // Returns:
+        //     Returns Microsoft.VisualStudio.Shell.ThemeResourceKey.
+        public static ThemeResourceKey GridHeadingBackgroundColorKey { get; }
+
+
+            _propertyGrid.ViewBackColor = backgroundColor;
+            _propertyGrid.ViewForeColor = foregroundColor;
+            _propertyGrid.ViewBorderColor = lineColor;
+
+            _propertyGrid.HelpBackColor = backgroundColor;
+            _propertyGrid.HelpForeColor = foregroundColor;
+            _propertyGrid.HelpBorderColor = backgroundColor;
+
+            _propertyGrid.CategoryForeColor = foregroundColor;
+            _propertyGrid.CategorySplitterColor = lineColor;
+
+            _propertyGrid.CommandsActiveLinkColor = hyperLinkActiveColor;
+            _propertyGrid.CommandsDisabledLinkColor = disabledColor;
+            _propertyGrid.CommandsLinkColor = hyperLinkColor;
+            _propertyGrid.CommandsForeColor = foregroundColor;
+            _propertyGrid.CommandsBackColor = backgroundColor;
+            _propertyGrid.CommandsDisabledLinkColor = disabledColor;
+            _propertyGrid.CommandsBorderColor = backgroundColor;
+
+            _propertyGrid.SelectedItemWithFocusForeColor = highlightTextColor;
+            _propertyGrid.SelectedItemWithFocusBackColor = highlightColor;
+
+            _propertyGrid.DisabledItemForeColor = disabledColor;
+
+            _propertyGrid.CanShowVisualStyleGlyphs = false;
+            */
+        }
+
+        /// <summary>
+        /// Retrieves the requested service from the Shell.
+        /// </summary>
+        /// <param name="serviceType">Service that is being requested</param>
+        /// <returns>An object which type is as requested</returns>
+        public object GetVsService(Type serviceType)
+        {
+            ThreadHelper.ThrowIfNotOnUIThread();
+            if (ServiceProvider == null)
+            {
+                return null;
+            }
+            //create a generic service provider from the OleServiceProvider of visual studio
+            ServiceProvider sp = new ServiceProvider(ServiceProvider, false);
+            if (sp != null)
+            {
+                return sp.GetService(serviceType); //get the requested service
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>
@@ -72,23 +210,23 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             if (!snippetIndex.IsIndexLoading)
             {
                 Invoke(
-                    (MethodInvoker) delegate { statusLabel.Text = ""; });
+                    (MethodInvoker)delegate { statusLabel.Text = ""; });
             }
             else
             {
                 Invoke(
-                    (MethodInvoker) delegate { statusLabel.Text = "Loading Snippet Index..."; });
+                    (MethodInvoker)delegate { statusLabel.Text = "Loading Snippet Index..."; });
             }
 
             if (!snippetIndex.IsIndexUpdating)
             {
                 Invoke(
-                    (MethodInvoker) delegate { statusLabel.Text = ""; });
+                    (MethodInvoker)delegate { statusLabel.Text = ""; });
             }
             else
             {
                 Invoke(
-                    (MethodInvoker) delegate { statusLabel.Text = "Updating Snippet Index..."; });
+                    (MethodInvoker)delegate { statusLabel.Text = "Updating Snippet Index..."; });
             }
         }
 
@@ -108,7 +246,11 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         public IOleServiceProvider ServiceProvider
         {
-            get { return (IOleServiceProvider) SnippetDesignerPackage.Instance.GetService(typeof (IOleServiceProvider)); }
+            get
+            {
+                ThreadHelper.ThrowIfNotOnUIThread();
+                return (IOleServiceProvider)SnippetDesignerPackage.Instance.GetService(typeof(IOleServiceProvider));
+            }
         }
 
         /// <summary>
@@ -279,6 +421,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// <param name="rowIndex">Index of the row.</param>
         private void OpenSnippetInDesigner(int rowIndex)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             if (rowIndex >= 0)
             {
                 var item = searchResultView.Rows[rowIndex].Tag as SnippetIndexItem;
@@ -315,6 +458,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// <param name="rowIndex">row to be deleted</param>
         private bool DeleteSnippet(int rowIndex)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             bool deleteHappened = false;
             if (searchResultView.SelectedRows.Count > 0)
             {

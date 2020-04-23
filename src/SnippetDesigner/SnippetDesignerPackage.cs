@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using EnvDTE;
 using EnvDTE80;
@@ -34,7 +35,7 @@ namespace Microsoft.SnippetDesigner
     /// </summary>
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
-    [PackageRegistration(UseManagedResourcesOnly = true)]
+    [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
     [InstalledProductRegistration("#100", "#102", "1.6.5", IconResourceID = 404)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
@@ -42,8 +43,8 @@ namespace Microsoft.SnippetDesigner
     // Options pages
     [ProvideOptionPage(typeof(SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
     [ProvideOptionPage(typeof(ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
-    [ProvideAutoLoad(GuidList.autoLoadOnNoSolution)]
-    [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists)]
+    [ProvideAutoLoad(GuidList.autoLoadOnNoSolution, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideEditorExtension(typeof(EditorFactory), StringConstants.SnippetExtension, 70,
         ProjectGuid = GuidList.miscellaneousFilesProject,
         DefaultName = "Snippet Designer",
@@ -53,7 +54,7 @@ namespace Microsoft.SnippetDesigner
     [ProvideEditorLogicalView(typeof(EditorFactory), GuidList.editorFactoryLogicalView)]
     [Guid(GuidList.SnippetDesignerPkgString)]
     [ComVisible(true)]
-    public sealed class SnippetDesignerPackage : Package, IVsSelectionEvents, IDisposable, IVsInstalledProduct
+    public sealed class SnippetDesignerPackage : AsyncPackage, IVsSelectionEvents, IDisposable, IVsInstalledProduct
     {
         internal static SnippetDesignerPackage Instance;
         private EditorFactory editorFactory;
@@ -158,6 +159,7 @@ namespace Microsoft.SnippetDesigner
 
         internal static string GetResourceString(string resourceName)
         {
+            VisualStudio.Shell.ThreadHelper.ThrowIfNotOnUIThread();
             string resourceValue;
             var resourceManager = (IVsResourceManager)GetGlobalService(typeof(SVsResourceManager));
             if (resourceManager == null)
@@ -176,9 +178,11 @@ namespace Microsoft.SnippetDesigner
             return GetResourceString(string.Format("@{0}", resourceID));
         }
 
-        public string GetVisualStudioResourceString(uint resourceId)
+        public async Task<string> GetVisualStudioResourceStringAsync(uint resourceId)
         {
-            var shell = (IVsShell)GetService(typeof(SVsShell));
+
+            await JoinableTaskFactory.SwitchToMainThreadAsync();
+            var shell = (IVsShell)await GetServiceAsync(typeof(SVsShell));
             string localizedResource = null;
             if (shell != null)
                 shell.LoadPackageString(ref GuidList.VsEnvironmentPackage, resourceId, out localizedResource);
@@ -234,6 +238,7 @@ namespace Microsoft.SnippetDesigner
         /// </summary>
         private void ShowSnippetExplorer(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // Get the instance number 0 of this tool window. This window is single instance so this instance
             // is actually the only one.
             // The last flag is set to true so that if the tool window does not exists it will be created.
@@ -258,6 +263,7 @@ namespace Microsoft.SnippetDesigner
         {
             get
             {
+                ThreadHelper.ThrowIfNotOnUIThread();
                 string lang = String.Empty;
                 TextDocument codeDoc = CurrentTextDocument;
                 if (codeDoc != null)
@@ -291,6 +297,7 @@ namespace Microsoft.SnippetDesigner
 
         internal TextDocument GetTextDocumentFromWindow(Window window)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             TextDocument codeDoc = null;
             if (Dte != null)
             {
@@ -327,6 +334,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="e"></param>
         private void ExportToSnippet(object sender, EventArgs e)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // The selected item is the active window pane
             // in Visual Studio. 
 
@@ -389,11 +397,14 @@ namespace Microsoft.SnippetDesigner
 
         private string GetNextAvailableNewSnippetTitle()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             int i = 1;
             string newTitle = null;
 
             newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
+#pragma warning disable VSTHRD010 // Invoke single-threaded types on Main thread
             while (Dte.Windows.Cast<Window>().Any(window => window.Caption.Equals(newTitle)))
+#pragma warning restore VSTHRD010 // Invoke single-threaded types on Main thread
             {
                 newTitle = string.Format(StringConstants.NewSnippetTitleFormat, i++);
             }
@@ -404,11 +415,13 @@ namespace Microsoft.SnippetDesigner
 
         private IOleCommandTarget GetShellCommandDispatcher()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return GetService(typeof(SUIHostCommandDispatcher)) as IOleCommandTarget;
         }
 
         private bool LaunchNewFile(string fileName)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             IntPtr inArgPtr = Marshal.AllocCoTaskMem(512);
             Marshal.GetNativeVariantForObject(fileName, inArgPtr);
 
@@ -426,16 +439,18 @@ namespace Microsoft.SnippetDesigner
         /// Initialization of the package; this method is called right after the package is sited, so this is the place
         /// where you can put all the initilaization code that rely on services provided by VisualStudio.
         /// </summary>
-        protected override void Initialize()
+        protected override async System.Threading.Tasks.Task InitializeAsync(CancellationToken cancellationToken, IProgress<ServiceProgressData> progress)
         {
             try
             {
-                base.Initialize();
+                await base.InitializeAsync(cancellationToken, progress);
+
                 Trace.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering Initialize() of: {0}", ToString()));
 
+                await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
                 //create the dte automation object so rest of package can access the automation model
-                Dte = (DTE2)GetService(typeof(DTE));
+                Dte = (DTE2)await GetServiceAsync(typeof(DTE));
                 if (Dte == null)
                 {
                     //if dte is null then we throw a excpetion
@@ -445,7 +460,6 @@ namespace Microsoft.SnippetDesigner
 
                 VSVersion = Dte.Version;
 
-
                 Logger = new Logger(this);
                 Settings = GetDialogPage(typeof(SnippetDesignerOptions)) as SnippetDesignerOptions;
 
@@ -453,34 +467,25 @@ namespace Microsoft.SnippetDesigner
                 editorFactory = new EditorFactory(this);
                 RegisterEditorFactory(editorFactory);
 
-
-                //Set up Selection Events so that I can tell when a new window in VS has become active.
-                uint cookieForSelection = 0;
-                var selMonitor = GetService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
-
-                if (selMonitor != null)
-                    selMonitor.AdviseSelectionEvents(this, out cookieForSelection);
-
-
                 // Add our command handlers for menu (commands must exist in the .vstc file)
 
                 // Create the command for the tool window
                 var snippetExplorerCommandID = new CommandID(GuidList.SnippetDesignerCmdSet,
                                                              (int)PkgCmdIDList.cmdidSnippetExplorer);
-                DefineCommandHandler(ShowSnippetExplorer, snippetExplorerCommandID);
+                await DefineCommandHandlerAsync(ShowSnippetExplorer, snippetExplorerCommandID);
 
 
                 //DefineCommandHandler not used for these since extra properties need to be set
                 // Create the command for the context menu export snippet
                 var contextcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
                                                  (int)PkgCmdIDList.cmdidExportToSnippet);
-                snippetExportCommand = DefineCommandHandler(ExportToSnippet, contextcmdID);
+                snippetExportCommand = await DefineCommandHandlerAsync(ExportToSnippet, contextcmdID);
                 snippetExportCommand.Visible = false;
 
                 // commandline command for exporting as snippet
                 var exportCmdLineID = new CommandID(GuidList.SnippetDesignerCmdSet,
                                                     (int)PkgCmdIDList.cmdidExportToSnippetCommandLine);
-                OleMenuCommand snippetExportCommandLine = DefineCommandHandler(ExportToSnippet, exportCmdLineID);
+                OleMenuCommand snippetExportCommandLine = await DefineCommandHandlerAsync(ExportToSnippet, exportCmdLineID);
                 snippetExportCommandLine.ParametersDescription = StringConstants.ArgumentStartMarker;
                 //a space means arguments are coming
 
@@ -488,7 +493,7 @@ namespace Microsoft.SnippetDesigner
                 // Create the command for CreateSnippet
                 var createcmdID = new CommandID(GuidList.SnippetDesignerCmdSet,
                                                 (int)PkgCmdIDList.cmdidCreateSnippet);
-                OleMenuCommand createCommand = DefineCommandHandler(CreateSnippet, createcmdID);
+                OleMenuCommand createCommand = await DefineCommandHandlerAsync(CreateSnippet, createcmdID);
                 createCommand.ParametersDescription = StringConstants.ArgumentStartMarker;
 
                 //initialize the snippet index
@@ -497,15 +502,29 @@ namespace Microsoft.SnippetDesigner
                     delegate
                     {
                         SnippetIndex.ReadIndexFile();
-                        SnippetIndex.CreateOrUpdateIndexFile();
+
+                        ThreadHelper.JoinableTaskFactory.Run(async delegate
+                        {
+                            await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
+                            SnippetIndex.CreateOrUpdateIndexFile();
+                        });
                     }
                     );
+
+
+                //Set up Selection Events so that I can tell when a new window in VS has become active.
+                uint cookieForSelection = 0;
+                var selMonitor = await GetServiceAsync(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
+
+                if (selMonitor != null)
+                    selMonitor.AdviseSelectionEvents(this, out cookieForSelection);
             }
             catch (Exception e)
             {
                 Debug.WriteLine(e);
                 throw;
             }
+
         }
 
 
@@ -517,7 +536,7 @@ namespace Microsoft.SnippetDesigner
         /// <param name="id">The CommandID (Guid/ID pair) as defined in the .ctc file</param>
         /// <param name="handler">Method that should be called to implement the command</param>
         /// <returns>The menu command. This can be used to set parameter such as the default visibility once the package is loaded</returns>
-        internal OleMenuCommand DefineCommandHandler(EventHandler handler, CommandID id)
+        internal async System.Threading.Tasks.Task<OleMenuCommand> DefineCommandHandlerAsync(EventHandler handler, CommandID id)
         {
             // if the package is zombied, we don't want to add commands
             if (Zombied)
@@ -528,7 +547,7 @@ namespace Microsoft.SnippetDesigner
             {
                 // Get the OleCommandService object provided by the MPF; this object is the one
                 // responsible for handling the collection of commands implemented by the package.
-                menuCommandService = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
+                menuCommandService = await GetServiceAsync(typeof(IMenuCommandService)) as OleMenuCommandService;
             }
             OleMenuCommand command = null;
             if (null != menuCommandService)
@@ -579,10 +598,10 @@ namespace Microsoft.SnippetDesigner
                         || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameJavaScript2.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase)
-                        
+
                         // Only allow C++ if this VS is newer than VS 2010
                         || (!IsVisualStudio2010 && StringConstants.ExportNameCPP.Equals(lang, StringComparison.OrdinalIgnoreCase))
-                        
+
                         )
                     {
                         //make the export context menu item visible

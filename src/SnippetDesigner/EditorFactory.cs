@@ -38,6 +38,7 @@ namespace Microsoft.SnippetDesigner
 
         public object GetService(Type serviceType)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             return vsServiceProvider.GetService(serviceType);
         }
 
@@ -170,6 +171,7 @@ namespace Microsoft.SnippetDesigner
         // other objects. Only unmanaged resources can be disposed.
         private void Dispose(bool disposing)
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             // Check to see if Dispose has already been called.
             if (!disposed)
             {
