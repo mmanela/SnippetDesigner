@@ -6,7 +6,7 @@ The Snippet Designer is a plugin which enhances the Visual Studio IDE to allow a
 You can install the extension using the Visual Studio Extension Manager or by going to the [Snippet Designer Visual Studio Gallery page](http://visualstudiogallery.msdn.microsoft.com/B08B0375-139E-41D7-AF9B-FAEE50F68392)
 
 ## Recent News
-* 4/29/2020 - Updated to support color themesand support for async extension model for VS 2019.
+* **4/29/2020** - Updated to support color themesand support for async extension model for VS 2019.
 * **[Snippet Designer now supports C++](http://matthewmanela.com/blog/snippet-designer-now-supports-c/)**
 * [Snippet Designer now supports Visual Studio 2012 RC](http://matthewmanela.com/blog/snippet-designer-now-supports-visual-studio-2012-rc/)
 * [Snippet Designer 1.4.0 Released!](http://matthewmanela.com/blog/snippet-designer-1-4-0-released/)
