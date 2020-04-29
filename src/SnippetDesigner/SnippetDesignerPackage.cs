@@ -36,15 +36,15 @@ namespace Microsoft.SnippetDesigner
     // This attribute tells the registration utility (regpkg.exe) that this class needs
     // to be registered as package.
     [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
-    [InstalledProductRegistration("#100", "#102", "1.6.5", IconResourceID = 404)]
+    [InstalledProductRegistration("#100", "#102", "1.8.1", IconResourceID = 404)]
     [ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     [ProvideToolWindow(typeof(SnippetExplorerToolWindow))]
     // Options pages
     [ProvideOptionPage(typeof(SnippetDesignerOptions), "Snippet Designer", "General Options", 14340, 17770, true)]
     [ProvideOptionPage(typeof(ResetOptions), "Snippet Designer", "Reset", 14340, 17771, true)]
-    [ProvideAutoLoad(GuidList.autoLoadOnNoSolution, PackageAutoLoadFlags.BackgroundLoad)]
-    [ProvideAutoLoad(GuidList.autoLoadOnSolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExistsAndFullyLoaded_string, PackageAutoLoadFlags.BackgroundLoad)]
+    [ProvideAutoLoad(VSConstants.UICONTEXT.NoSolution_string, PackageAutoLoadFlags.BackgroundLoad)]
     [ProvideEditorExtension(typeof(EditorFactory), StringConstants.SnippetExtension, 70,
         ProjectGuid = GuidList.miscellaneousFilesProject,
         DefaultName = "Snippet Designer",
@@ -148,7 +148,12 @@ namespace Microsoft.SnippetDesigner
 
         public bool IsVisualStudio2017
         {
-            get { return VSVersion.Equals("15.0"); }
+            get { return VSVersion.StartsWith("15."); }
+        }
+
+        public bool IsVisualStudio2019
+        {
+            get { return VSVersion.StartsWith("16."); }
         }
 
         /// <summary>
@@ -249,7 +254,6 @@ namespace Microsoft.SnippetDesigner
             {
                 throw new COMException(Resources.CanNotCreateWindow);
             }
-            Guid textEditor = GuidList.textEditorFactory;
             var windowFrame = (IVsWindowFrame)window.Frame;
             ErrorHandler.ThrowOnFailure(windowFrame.Show());
         }

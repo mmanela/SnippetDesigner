@@ -72,6 +72,11 @@ namespace Microsoft.SnippetDesigner
             {
                 using (RegistryKey subKey = key.OpenSubKey(subKeyName))
                 {
+                    if (subKey == null)
+                    {
+                        return;
+                    }
+
                     foreach (string name in subKey.GetValueNames())
                     {
                         string possiblePathString = subKey.GetValue(name) as string;

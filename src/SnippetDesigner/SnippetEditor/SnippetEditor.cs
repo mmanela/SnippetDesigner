@@ -143,41 +143,31 @@ namespace Microsoft.SnippetDesigner
         public void SetPropertyGridColors()
         {
             ThreadHelper.ThrowIfNotOnUIThread();
-            IVsUIShell5 shell = (IVsUIShell5)GetVsService(typeof(SVsUIShell)); 
-             var backgroundColor2 = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemBackgroundColorKey);
-            var backgroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowBackgroundColorKey);
+            IVsUIShell5 shell = (IVsUIShell5)GetVsService(typeof(SVsUIShell));
+            var searchBoxBackgroundColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SearchBoxBackgroundColorKey);
+            var backgroundColorLighter = VsColors.GetThemedGDIColor(shell, EnvironmentColors.BrandedUIBackgroundColorKey);
+            var backgroundColorDarker = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowBackgroundColorKey);
             var foregroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowTextColorKey);
-            var lineColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
-            var disabledColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemGrayTextColorKey);
-            var highlightColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightColorKey);
-            var highlightTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightTextColorKey);
-            var hyperLinkColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextColorKey);
-            var hyperLinkActiveColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextPressedColorKey);
-            var buttonFaceColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonFaceBrushKey);
-            var buttonTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonTextColorKey);
-            var toolWindowContentGridColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
-            var gridHeadingBackgroundColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingBackgroundColorKey);
-            var gridHeadingTextColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingTextColorKey);
 
-            this.codeReplacementsSplitter.BackColor = backgroundColor;
-            this.languageLabel.BackColor = backgroundColor;
+            this.codeReplacementsSplitter.BackColor = backgroundColorDarker;
+            this.languageLabel.BackColor = backgroundColorLighter;
             this.languageLabel.ForeColor = foregroundColor;
-            this.replacementLabel.BackColor = backgroundColor;
+            this.replacementLabel.BackColor = backgroundColorLighter;
             this.replacementLabel.ForeColor = foregroundColor;
             this.replacementTable.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
-            this.shortcutLabel.BackColor = backgroundColor;
+            this.shortcutLabel.BackColor = backgroundColorLighter;
             this.shortcutLabel.ForeColor = foregroundColor;
-            this.shortcutTextBox.BackColor = backgroundColor;
+            this.shortcutTextBox.BackColor = searchBoxBackgroundColorKey;
             this.shortcutTextBox.ForeColor = foregroundColor;
-            this.snippetCodeWindow.BackColor = backgroundColor;
+            this.snippetCodeWindow.BackColor = backgroundColorDarker;
             this.snippetCodeWindow.ForeColor = foregroundColor;
-            this.snippetsLabel.BackColor = backgroundColor;
+            this.snippetsLabel.BackColor = backgroundColorLighter;
             this.snippetsLabel.ForeColor = foregroundColor;
-            this.toolStripLanguageBox.BackColor = backgroundColor;
+            this.toolStripLanguageBox.BackColor = searchBoxBackgroundColorKey;
             this.toolStripLanguageBox.ForeColor = foregroundColor;
-            this.toolStripSnippetTitles.BackColor = backgroundColor;
+            this.toolStripSnippetTitles.BackColor = searchBoxBackgroundColorKey;
             this.toolStripSnippetTitles.ForeColor = foregroundColor;
-            this.topCommandBar.BackColor = backgroundColor;
+            this.topCommandBar.BackColor = backgroundColorLighter;
             this.topCommandBar.ForeColor = foregroundColor;
         }
 

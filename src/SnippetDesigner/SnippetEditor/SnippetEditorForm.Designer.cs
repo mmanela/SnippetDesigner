@@ -38,7 +38,6 @@ namespace Microsoft.SnippetDesigner
             this.shortcutLabel = new System.Windows.Forms.ToolStripLabel();
             this.shortcutTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.codeReplacementsSplitter = new System.Windows.Forms.SplitContainer();
-            this.snippetCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
             this.replacementTable = new System.Windows.Forms.TableLayoutPanel();
             this.replacementGridView = new System.Windows.Forms.DataGridView();
             this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -51,6 +50,7 @@ namespace Microsoft.SnippetDesigner
             this.replacementGridMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeReplacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replacementLabel = new System.Windows.Forms.Label();
+            this.snippetCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
             this.topCommandBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.codeReplacementsSplitter)).BeginInit();
             this.codeReplacementsSplitter.Panel1.SuspendLayout();
@@ -63,6 +63,8 @@ namespace Microsoft.SnippetDesigner
             // 
             // topCommandBar
             // 
+            resources.ApplyResources(this.topCommandBar, "topCommandBar");
+            this.topCommandBar.GripMargin = new System.Windows.Forms.Padding(1);
             this.topCommandBar.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.topCommandBar.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.topCommandBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -72,7 +74,6 @@ namespace Microsoft.SnippetDesigner
             this.toolStripLanguageBox,
             this.shortcutLabel,
             this.shortcutTextBox});
-            resources.ApplyResources(this.topCommandBar, "topCommandBar");
             this.topCommandBar.Name = "topCommandBar";
             this.topCommandBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.topCommandBar.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
@@ -110,8 +111,8 @@ namespace Microsoft.SnippetDesigner
             // 
             // shortcutTextBox
             // 
-            this.shortcutTextBox.Name = "shortcutTextBox";
             resources.ApplyResources(this.shortcutTextBox, "shortcutTextBox");
+            this.shortcutTextBox.Name = "shortcutTextBox";
             this.shortcutTextBox.TextChanged += new System.EventHandler(this.shortcutTextBox_TextChanged);
             // 
             // codeReplacementsSplitter
@@ -126,13 +127,6 @@ namespace Microsoft.SnippetDesigner
             // codeReplacementsSplitter.Panel2
             // 
             this.codeReplacementsSplitter.Panel2.Controls.Add(this.replacementTable);
-            // 
-            // snippetCodeWindow
-            // 
-            resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
-            this.snippetCodeWindow.CodeText = "";
-            this.snippetCodeWindow.Name = "snippetCodeWindow";
-            this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
             // 
             // replacementTable
             // 
@@ -234,6 +228,13 @@ namespace Microsoft.SnippetDesigner
             resources.ApplyResources(this.replacementLabel, "replacementLabel");
             this.replacementLabel.Name = "replacementLabel";
             // 
+            // snippetCodeWindow
+            // 
+            resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
+            this.snippetCodeWindow.CodeText = "";
+            this.snippetCodeWindow.Name = "snippetCodeWindow";
+            this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
+            // 
             // SnippetEditorForm
             // 
             resources.ApplyResources(this, "$this");
@@ -253,7 +254,6 @@ namespace Microsoft.SnippetDesigner
             ((System.ComponentModel.ISupportInitialize)(this.replacementGridView)).EndInit();
             this.replacementGridMenu.ResumeLayout(false);
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 

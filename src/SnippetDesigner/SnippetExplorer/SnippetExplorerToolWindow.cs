@@ -4,7 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.VisualStudio.Shell;
-
+using Microsoft.VisualStudio.Utilities;
 
 namespace Microsoft.SnippetDesigner.SnippetExplorer
 {
@@ -44,8 +44,6 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             // the strip being 16x16.
             this.BitmapResourceID = 301;
             this.BitmapIndex = 2;
-
-            snippetExplorerForm = new SnippetExplorerForm();
         }
 
 
@@ -57,7 +55,15 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             get
             {
-                return (IWin32Window)snippetExplorerForm;
+
+                using (DpiAwareness.EnterDpiScope(DpiAwarenessContext.SystemAware))
+                {
+                    if (snippetExplorerForm == null)
+                    {
+                        snippetExplorerForm = new SnippetExplorerForm();
+                    }
+                    return snippetExplorerForm;
+                }
             }
         }
     }

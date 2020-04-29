@@ -35,6 +35,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         /// </summary>
         public SnippetExplorerForm()
         {
+            ThreadHelper.ThrowIfNotOnUIThread();
             InitializeComponent();
             previewCodeWindow.CodeWindowHost = this;
 
@@ -55,48 +56,42 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         {
             ThreadHelper.ThrowIfNotOnUIThread();
             IVsUIShell5 shell = (IVsUIShell5)GetVsService(typeof(SVsUIShell));
-            var backgroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowBackgroundColorKey);
+            
+            var backgroundColorDarker = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowBackgroundColorKey);
+            var backgroundColorLighter = VsColors.GetThemedGDIColor(shell, EnvironmentColors.BrandedUIBackgroundColorKey);
+            var searchBoxBackgroundColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SearchBoxBackgroundColorKey);
             var foregroundColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowTextColorKey);
-            var lineColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
-            var disabledColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemGrayTextColorKey);
-            var highlightColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightColorKey);
-            var highlightTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemHighlightTextColorKey);
-            var hyperLinkColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextColorKey);
-            var hyperLinkActiveColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ControlLinkTextPressedColorKey);
             var buttonFaceColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonFaceBrushKey);
             var buttonTextColor = VsColors.GetThemedGDIColor(shell, EnvironmentColors.SystemButtonTextColorKey);
-            var toolWindowContentGridColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.ToolWindowContentGridColorKey);
-            var gridHeadingBackgroundColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingBackgroundColorKey);
-            var gridHeadingTextColorKey = VsColors.GetThemedGDIColor(shell, EnvironmentColors.GridHeadingTextColorKey);
 
 
             this.searchButton.BackColor = buttonFaceColor;
             this.searchButton.ForeColor = buttonTextColor;
-            this.searchOptionBar.BackColor = backgroundColor;
+            this.searchOptionBar.BackColor = backgroundColorLighter;
             this.searchOptionBar.ForeColor = foregroundColor;
-            this.searchBox.BackColor = backgroundColor;
+            this.searchBox.BackColor = searchBoxBackgroundColorKey;
             this.searchBox.ForeColor = foregroundColor;
-            this.showCountComboBox.BackColor = backgroundColor;
+            this.showCountComboBox.BackColor = searchBoxBackgroundColorKey;
             this.showCountComboBox.ForeColor = foregroundColor;
-            this.showCountLabel.BackColor = backgroundColor;
+            this.showCountLabel.BackColor = backgroundColorLighter;
             this.showCountLabel.ForeColor = foregroundColor;
-            this.languageLabel.BackColor = backgroundColor;
+            this.languageLabel.BackColor = backgroundColorLighter;
             this.languageLabel.ForeColor = foregroundColor;
-            this.languageFilters.BackColor = backgroundColor;
+            this.languageFilters.BackColor = backgroundColorLighter;
             this.languageFilters.ForeColor = foregroundColor;
 
-            this.panel1.BackColor = backgroundColor;
+            this.panel1.BackColor = backgroundColorLighter;
             this.panel1.ForeColor = foregroundColor;
-            this.panel2.BackColor = backgroundColor;
+            this.panel2.BackColor = backgroundColorLighter;
             this.panel2.ForeColor = foregroundColor;
-            this.tableLayoutPanel1.BackColor = backgroundColor;
+            this.tableLayoutPanel1.BackColor = backgroundColorLighter;
             //this.tableLayoutPanel1.ForeColor = foregroundColor;
             this.tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
-            this.toolStripSeparator1.BackColor = backgroundColor;
+            this.toolStripSeparator1.BackColor = backgroundColorLighter;
             this.toolStripSeparator1.ForeColor = foregroundColor;
-            this.snippetExplorerSplitter.BackColor = backgroundColor;
+            this.snippetExplorerSplitter.BackColor = backgroundColorLighter;
             this.previewCodeWindow.ForeColor = foregroundColor;
-            this.previewCodeWindow.BackColor = backgroundColor;
+            this.previewCodeWindow.BackColor = backgroundColorDarker;
         }
 
         /// <summary>

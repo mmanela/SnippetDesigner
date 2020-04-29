@@ -125,6 +125,9 @@
   <data name="snippetExplorerSplitter.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
+  <data name="snippetExplorerSplitter.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 6, 6, 6</value>
+  </data>
   <data name="snippetExplorerSplitter.Orientation" type="System.Windows.Forms.Orientation, System.Windows.Forms">
     <value>Horizontal</value>
   </data>
@@ -135,17 +138,20 @@
   <data name="panel1.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
+  <data name="languageFilters.ColumnWidth" type="System.Int32, mscorlib">
+    <value>150</value>
+  </data>
   <data name="languageFilters.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
   <data name="languageFilters.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 17</value>
+    <value>6, 33</value>
   </data>
   <data name="languageFilters.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 10, 3, 0</value>
+    <value>6, 18, 6, 0</value>
   </data>
   <data name="languageFilters.Size" type="System.Drawing.Size, System.Drawing">
-    <value>331, 46</value>
+    <value>607, 82</value>
   </data>
   <data name="languageFilters.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
@@ -175,16 +181,16 @@
     <value>NoControl</value>
   </data>
   <data name="languageLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 0</value>
+    <value>6, 1</value>
   </data>
   <data name="languageLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 3, 5</value>
+    <value>0, 0, 6, 9</value>
   </data>
   <data name="languageLabel.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 4</value>
+    <value>0, 0, 0, 7</value>
   </data>
   <data name="languageLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>73, 17</value>
+    <value>126, 32</value>
   </data>
   <data name="languageLabel.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -208,13 +214,16 @@
     <value>Fill</value>
   </data>
   <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 35</value>
+    <value>6, 50</value>
+  </data>
+  <data name="panel1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 6, 6, 6</value>
   </data>
   <data name="panel1.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 0, 0, 0</value>
+    <value>6, 1, 0, 1</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 65</value>
+    <value>615, 118</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -238,28 +247,31 @@
     <value>Fill</value>
   </data>
   <data name="showCountLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>42, 22</value>
+    <value>74, 36</value>
   </data>
   <data name="showCountLabel.Text" xml:space="preserve">
     <value>Show: </value>
   </data>
   <data name="showCountComboBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>121, 25</value>
+    <value>219, 42</value>
   </data>
   <data name="statusLabel.Font" type="System.Drawing.Font, System.Drawing">
     <value>Tahoma, 8.25pt</value>
   </data>
   <data name="statusLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>0, 22</value>
+    <value>0, 36</value>
   </data>
   <data name="searchOptionBar.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 103</value>
+    <value>0, 174</value>
   </data>
   <data name="searchOptionBar.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 0, 3</value>
+    <value>0, 0, 0, 6</value>
+  </data>
+  <data name="searchOptionBar.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>0, 1, 4, 1</value>
   </data>
   <data name="searchOptionBar.Size" type="System.Drawing.Size, System.Drawing">
-    <value>342, 25</value>
+    <value>627, 44</value>
   </data>
   <data name="searchOptionBar.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -282,14 +294,20 @@
   <data name="Icon.HeaderText" xml:space="preserve">
     <value />
   </data>
+  <data name="Icon.MinimumWidth" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
   <data name="Icon.Width" type="System.Int32, mscorlib">
-    <value>19</value>
+    <value>33</value>
   </data>
   <metadata name="Title.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="Title.HeaderText" xml:space="preserve">
     <value>Title</value>
+  </data>
+  <data name="Title.MinimumWidth" type="System.Int32, mscorlib">
+    <value>9</value>
   </data>
   <data name="Title.Width" type="System.Int32, mscorlib">
     <value>52</value>
@@ -299,6 +317,9 @@
   </metadata>
   <data name="Description.HeaderText" xml:space="preserve">
     <value>Description</value>
+  </data>
+  <data name="Description.MinimumWidth" type="System.Int32, mscorlib">
+    <value>9</value>
   </data>
   <data name="Description.Visible" type="System.Boolean, mscorlib">
     <value>False</value>
@@ -312,8 +333,11 @@
   <data name="Language.HeaderText" xml:space="preserve">
     <value>Language</value>
   </data>
+  <data name="Language.MinimumWidth" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
   <data name="Language.Width" type="System.Int32, mscorlib">
-    <value>81</value>
+    <value>105</value>
   </data>
   <metadata name="Path.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
@@ -321,29 +345,32 @@
   <data name="Path.HeaderText" xml:space="preserve">
     <value>Path</value>
   </data>
+  <data name="Path.MinimumWidth" type="System.Int32, mscorlib">
+    <value>9</value>
+  </data>
   <data name="Path.Width" type="System.Int32, mscorlib">
-    <value>55</value>
+    <value>74</value>
   </data>
   <metadata name="snippetExplorerContextMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
   <data name="openToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>107, 22</value>
+    <value>146, 36</value>
   </data>
   <data name="openToolStripMenuItem.Text" xml:space="preserve">
     <value>Open</value>
   </data>
   <data name="deleteToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>107, 22</value>
+    <value>146, 36</value>
   </data>
   <data name="deleteToolStripMenuItem.Text" xml:space="preserve">
     <value>Delete</value>
   </data>
   <data name="toolStripSeparator1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>104, 6</value>
+    <value>143, 6</value>
   </data>
   <data name="snippetExplorerContextMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>108, 54</value>
+    <value>147, 82</value>
   </data>
   <data name="&gt;&gt;snippetExplorerContextMenu.Name" xml:space="preserve">
     <value>snippetExplorerContextMenu</value>
@@ -355,10 +382,16 @@
     <value>Fill</value>
   </data>
   <data name="searchResultView.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 134</value>
+    <value>6, 230</value>
+  </data>
+  <data name="searchResultView.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 6, 6, 6</value>
+  </data>
+  <data name="searchResultView.RowHeadersWidth" type="System.Int32, mscorlib">
+    <value>72</value>
   </data>
   <data name="searchResultView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 212</value>
+    <value>615, 408</value>
   </data>
   <data name="searchResultView.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -382,13 +415,13 @@
     <value>Top, Left, Right</value>
   </data>
   <data name="searchBox.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>6, 6</value>
   </data>
   <data name="searchBox.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>3, 10, 3, 3</value>
+    <value>6, 18, 6, 6</value>
   </data>
   <data name="searchBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>252, 20</value>
+    <value>459, 20</value>
   </data>
   <data name="searchBox.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -415,10 +448,13 @@
     <value>NoControl</value>
   </data>
   <data name="searchButton.Location" type="System.Drawing.Point, System.Drawing">
-    <value>261, 0</value>
+    <value>477, 0</value>
+  </data>
+  <data name="searchButton.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 6, 6, 6</value>
   </data>
   <data name="searchButton.Size" type="System.Drawing.Size, System.Drawing">
-    <value>75, 26</value>
+    <value>138, 32</value>
   </data>
   <data name="searchButton.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -442,10 +478,13 @@
     <value>Fill</value>
   </data>
   <data name="panel2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 3</value>
+    <value>6, 6</value>
+  </data>
+  <data name="panel2.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 6, 6, 6</value>
   </data>
   <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>336, 26</value>
+    <value>615, 32</value>
   </data>
   <data name="panel2.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -475,7 +514,7 @@
     <value>5</value>
   </data>
   <data name="tableLayoutPanel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>342, 349</value>
+    <value>627, 644</value>
   </data>
   <data name="tableLayoutPanel1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -514,10 +553,10 @@
     <value>0, 0</value>
   </data>
   <data name="previewCodeWindow.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>5, 5, 5, 5</value>
+    <value>9, 9, 9, 9</value>
   </data>
   <data name="previewCodeWindow.Size" type="System.Drawing.Size, System.Drawing">
-    <value>342, 221</value>
+    <value>627, 409</value>
   </data>
   <data name="previewCodeWindow.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -526,7 +565,7 @@
     <value>previewCodeWindow</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Type" xml:space="preserve">
-    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.6.7418.27765, Culture=neutral, PublicKeyToken=8cfc085d5269c705</value>
+    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.8.7424.17259, Culture=neutral, PublicKeyToken=8cfc085d5269c705</value>
   </data>
   <data name="&gt;&gt;previewCodeWindow.Parent" xml:space="preserve">
     <value>snippetExplorerSplitter.Panel2</value>
@@ -547,10 +586,13 @@
     <value>1</value>
   </data>
   <data name="snippetExplorerSplitter.Size" type="System.Drawing.Size, System.Drawing">
-    <value>342, 574</value>
+    <value>627, 1060</value>
   </data>
   <data name="snippetExplorerSplitter.SplitterDistance" type="System.Int32, mscorlib">
-    <value>349</value>
+    <value>644</value>
+  </data>
+  <data name="snippetExplorerSplitter.SplitterWidth" type="System.Int32, mscorlib">
+    <value>7</value>
   </data>
   <data name="snippetExplorerSplitter.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -571,10 +613,13 @@
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
+    <value>11, 24</value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>6, 6, 6, 6</value>
   </data>
   <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
-    <value>342, 574</value>
+    <value>627, 1060</value>
   </data>
   <data name="&gt;&gt;showCountLabel.Name" xml:space="preserve">
     <value>showCountLabel</value>

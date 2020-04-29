@@ -120,25 +120,29 @@
   <metadata name="topCommandBar.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>0, 0</value>
   </metadata>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="topCommandBar.AutoSize" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="snippetsLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>102, 37</value>
+    <value>50, 25</value>
   </data>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="toolStripSnippetTitles.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
   <data name="toolStripSnippetTitles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>238, 40</value>
+    <value>121, 23</value>
   </data>
   <data name="languageLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>131, 37</value>
+    <value>65, 20</value>
   </data>
   <data name="toolStripLanguageBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>238, 40</value>
+    <value>121, 23</value>
   </data>
   <data name="shortcutLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>110, 37</value>
+    <value>55, 20</value>
   </data>
   <data name="shortcutLabel.Text" xml:space="preserve">
     <value>Shortcut:</value>
@@ -146,19 +150,21 @@
   <data name="shortcutLabel.ToolTipText" xml:space="preserve">
     <value>Keyboard shortcut to insert this snippet</value>
   </data>
+  <data name="shortcutTextBox.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt</value>
+  </data>
   <data name="shortcutTextBox.Size" type="System.Drawing.Size, System.Drawing">
-    <value>196, 40</value>
+    <value>100, 23</value>
   </data>
   <data name="topCommandBar.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
   <data name="topCommandBar.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>0, 0, 2, 0</value>
+    <value>1, 2, 2, 0</value>
   </data>
   <data name="topCommandBar.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1690, 40</value>
+    <value>845, 30</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="topCommandBar.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
@@ -181,10 +187,7 @@
     <value>Fill</value>
   </data>
   <data name="codeReplacementsSplitter.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 40</value>
-  </data>
-  <data name="codeReplacementsSplitter.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 6, 6, 6</value>
+    <value>0, 30</value>
   </data>
   <data name="codeReplacementsSplitter.Orientation" type="System.Windows.Forms.Orientation, System.Windows.Forms">
     <value>Horizontal</value>
@@ -198,14 +201,11 @@
   <data name="snippetCodeWindow.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="snippetCodeWindow.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 6, 6, 6</value>
-  </data>
   <data name="snippetCodeWindow.MinimumSize" type="System.Drawing.Size, System.Drawing">
-    <value>500, 192</value>
+    <value>250, 100</value>
   </data>
   <data name="snippetCodeWindow.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1690, 995</value>
+    <value>845, 511</value>
   </data>
   <data name="snippetCodeWindow.TabIndex" type="System.Int32, mscorlib">
     <value>15</value>
@@ -214,7 +214,7 @@
     <value>snippetCodeWindow</value>
   </data>
   <data name="&gt;&gt;snippetCodeWindow.Type" xml:space="preserve">
-    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.6.6287.20653, Culture=neutral, PublicKeyToken=8cfc085d5269c705</value>
+    <value>Microsoft.SnippetDesigner.CodeWindow, SnippetDesigner, Version=1.8.7422.18551, Culture=neutral, PublicKeyToken=8cfc085d5269c705</value>
   </data>
   <data name="&gt;&gt;snippetCodeWindow.Parent" xml:space="preserve">
     <value>codeReplacementsSplitter.Panel1</value>
@@ -261,14 +261,8 @@
   <metadata name="replacementGridMenu.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>130, 5</value>
   </metadata>
-  <data name="removeReplacementToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
-    <value>346, 38</value>
-  </data>
-  <data name="removeReplacementToolStripMenuItem.Text" xml:space="preserve">
-    <value>Remove Replacement</value>
-  </data>
   <data name="replacementGridMenu.Size" type="System.Drawing.Size, System.Drawing">
-    <value>347, 42</value>
+    <value>190, 26</value>
   </data>
   <data name="&gt;&gt;replacementGridMenu.Name" xml:space="preserve">
     <value>replacementGridMenu</value>
@@ -280,13 +274,10 @@
     <value>Fill</value>
   </data>
   <data name="replacementGridView.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 31</value>
-  </data>
-  <data name="replacementGridView.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 6, 6, 6</value>
+    <value>3, 16</value>
   </data>
   <data name="replacementGridView.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1678, 483</value>
+    <value>839, 249</value>
   </data>
   <data name="replacementGridView.TabIndex" type="System.Int32, mscorlib">
     <value>26</value>
@@ -313,13 +304,10 @@
     <value>NoControl</value>
   </data>
   <data name="replacementLabel.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 0</value>
-  </data>
-  <data name="replacementLabel.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 0, 6, 0</value>
+    <value>3, 0</value>
   </data>
   <data name="replacementLabel.Size" type="System.Drawing.Size, System.Drawing">
-    <value>149, 25</value>
+    <value>75, 13</value>
   </data>
   <data name="replacementLabel.TabIndex" type="System.Int32, mscorlib">
     <value>23</value>
@@ -345,14 +333,11 @@
   <data name="replacementTable.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="replacementTable.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 6, 6, 6</value>
-  </data>
   <data name="replacementTable.RowCount" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
   <data name="replacementTable.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1690, 520</value>
+    <value>845, 268</value>
   </data>
   <data name="replacementTable.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -385,13 +370,10 @@
     <value>1</value>
   </data>
   <data name="codeReplacementsSplitter.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1690, 1523</value>
+    <value>845, 783</value>
   </data>
   <data name="codeReplacementsSplitter.SplitterDistance" type="System.Int32, mscorlib">
-    <value>995</value>
-  </data>
-  <data name="codeReplacementsSplitter.SplitterWidth" type="System.Int32, mscorlib">
-    <value>8</value>
+    <value>511</value>
   </data>
   <data name="codeReplacementsSplitter.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -408,6 +390,12 @@
   <data name="&gt;&gt;codeReplacementsSplitter.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="removeReplacementToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>189, 22</value>
+  </data>
+  <data name="removeReplacementToolStripMenuItem.Text" xml:space="preserve">
+    <value>Remove Replacement</value>
+  </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -415,7 +403,7 @@
     <value>339</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>12, 25</value>
+    <value>6, 13</value>
   </data>
   <data name="$this.AutoScroll" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -423,11 +411,8 @@
   <data name="$this.AutoSizeMode" type="System.Windows.Forms.AutoSizeMode, System.Windows.Forms">
     <value>GrowAndShrink</value>
   </data>
-  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
-    <value>6, 6, 6, 6</value>
-  </data>
   <data name="$this.Size" type="System.Drawing.Size, System.Drawing">
-    <value>1690, 1563</value>
+    <value>845, 813</value>
   </data>
   <data name="&gt;&gt;snippetsLabel.Name" xml:space="preserve">
     <value>snippetsLabel</value>
