@@ -174,6 +174,7 @@ namespace Microsoft.SnippetDesigner
         private void UpdateIndexItemData(SnippetIndexItem item, Snippet snippetData)
         {
             item.Title = snippetData.Title;
+            item.Shortcut = snippetData.Shortcut;
             item.Author = snippetData.Author;
             item.Description = snippetData.Description;
             item.Keywords = String.Join(",", snippetData.Keywords.ToArray());

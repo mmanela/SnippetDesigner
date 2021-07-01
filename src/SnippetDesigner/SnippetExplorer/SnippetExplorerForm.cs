@@ -24,6 +24,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private SnippetIndex snippetIndex; // class which gets snippet data and how to display
         private string iconCellName = "Icon";
         private string titleCellName = "Title";
+        private string shortcutCellName = "Shortcut";
         private string descriptionCellName = "Description";
         private string codeLanguageCellName = "Language";
         private string pathCellName = "Path";
@@ -315,6 +316,7 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
                 int newRowIndex = searchResultView.Rows.Add();
                 DataGridViewRow newRow = searchResultView.Rows[newRowIndex];
                 newRow.Cells[titleCellName].Value = item.Title;
+                newRow.Cells[shortcutCellName].Value = item.Shortcut;
                 newRow.Cells[codeLanguageCellName].Value = item.Language;
                 newRow.Cells[descriptionCellName].Value = item.Description;
                 newRow.Cells[pathCellName].Value = item.File;
