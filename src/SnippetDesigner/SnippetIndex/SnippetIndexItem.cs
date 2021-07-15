@@ -17,6 +17,9 @@ namespace Microsoft.SnippetDesigner
         [XmlElement("Title")]
         public string Title { get; set; }
 
+        [XmlElement("Shortcut")]
+        public string Shortcut { get; set; }
+
         [XmlElement("Author")]
         public string Author { get; set; }
 

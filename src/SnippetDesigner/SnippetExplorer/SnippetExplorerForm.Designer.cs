@@ -47,8 +47,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchResultView = new System.Windows.Forms.DataGridView();
             this.Icon = new System.Windows.Forms.DataGridViewImageColumn();
             this.Title = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Shortcut = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Language = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Path = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.snippetExplorerContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -166,8 +167,9 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             this.searchResultView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Icon,
             this.Title,
-            this.Description,
+            this.Shortcut,
             this.Language,
+            this.Description,
             this.Path});
             this.searchResultView.ContextMenuStrip = this.snippetExplorerContextMenu;
             resources.ApplyResources(this.searchResultView, "searchResultView");
@@ -212,26 +214,39 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
             resources.ApplyResources(this.Title, "Title");
             this.Title.Name = "Title";
             this.Title.ReadOnly = true;
+            this.Title.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
-            // Description
+            // Shortcut
             // 
-            resources.ApplyResources(this.Description, "Description");
-            this.Description.Name = "Description";
-            this.Description.ReadOnly = true;
+            resources.ApplyResources(this.Shortcut, "Shortcut");
+            this.Shortcut.Name = "Shortcut";
+            this.Shortcut.ReadOnly = true;
             // 
             // Language
             // 
+            this.Language.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.Language.DividerWidth = 1;
             resources.ApplyResources(this.Language, "Language");
             this.Language.Name = "Language";
             this.Language.ReadOnly = true;
+            this.Language.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            // 
+            // Description
+            // 
+            this.Description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
+            resources.ApplyResources(this.Description, "Description");
+            this.Description.Name = "Description";
+            this.Description.ReadOnly = true;
+            this.Description.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // Path
             // 
+            this.Path.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None;
             this.Path.DividerWidth = 1;
             resources.ApplyResources(this.Path, "Path");
             this.Path.Name = "Path";
             this.Path.ReadOnly = true;
+            this.Path.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             // 
             // snippetExplorerContextMenu
             // 
@@ -329,14 +344,14 @@ namespace Microsoft.SnippetDesigner.SnippetExplorer
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.TextBox searchBox;
         private System.Windows.Forms.Button searchButton;
-        private System.Windows.Forms.DataGridViewImageColumn Icon;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Title;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Description;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Language;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Path;
         private System.Windows.Forms.CheckedListBox languageFilters;
         private System.Windows.Forms.ToolStripLabel showCountLabel;
         private System.Windows.Forms.ToolStripComboBox showCountComboBox;
-
+        private System.Windows.Forms.DataGridViewImageColumn Icon;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Title;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Shortcut;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Language;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Description;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Path;
     }
 }

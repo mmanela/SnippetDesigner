@@ -38,6 +38,7 @@ namespace Microsoft.SnippetDesigner
             this.shortcutLabel = new System.Windows.Forms.ToolStripLabel();
             this.shortcutTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.codeReplacementsSplitter = new System.Windows.Forms.SplitContainer();
+            this.snippetCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
             this.replacementTable = new System.Windows.Forms.TableLayoutPanel();
             this.replacementGridView = new System.Windows.Forms.DataGridView();
             this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -50,7 +51,8 @@ namespace Microsoft.SnippetDesigner
             this.replacementGridMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.removeReplacementToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.replacementLabel = new System.Windows.Forms.Label();
-            this.snippetCodeWindow = new Microsoft.SnippetDesigner.CodeWindow();
+            this.descriptionLabel = new System.Windows.Forms.ToolStripLabel();
+            this.descriptionTextBox = new System.Windows.Forms.ToolStripTextBox();
             this.topCommandBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.codeReplacementsSplitter)).BeginInit();
             this.codeReplacementsSplitter.Panel1.SuspendLayout();
@@ -73,7 +75,9 @@ namespace Microsoft.SnippetDesigner
             this.languageLabel,
             this.toolStripLanguageBox,
             this.shortcutLabel,
-            this.shortcutTextBox});
+            this.shortcutTextBox,
+            this.descriptionLabel,
+            this.descriptionTextBox});
             this.topCommandBar.Name = "topCommandBar";
             this.topCommandBar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
             this.topCommandBar.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
@@ -111,8 +115,8 @@ namespace Microsoft.SnippetDesigner
             // 
             // shortcutTextBox
             // 
-            resources.ApplyResources(this.shortcutTextBox, "shortcutTextBox");
             this.shortcutTextBox.Name = "shortcutTextBox";
+            resources.ApplyResources(this.shortcutTextBox, "shortcutTextBox");
             this.shortcutTextBox.TextChanged += new System.EventHandler(this.shortcutTextBox_TextChanged);
             // 
             // codeReplacementsSplitter
@@ -127,6 +131,13 @@ namespace Microsoft.SnippetDesigner
             // codeReplacementsSplitter.Panel2
             // 
             this.codeReplacementsSplitter.Panel2.Controls.Add(this.replacementTable);
+            // 
+            // snippetCodeWindow
+            // 
+            resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
+            this.snippetCodeWindow.CodeText = "";
+            this.snippetCodeWindow.Name = "snippetCodeWindow";
+            this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
             // 
             // replacementTable
             // 
@@ -164,6 +175,7 @@ namespace Microsoft.SnippetDesigner
             // 
             this.ID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.ID.HeaderText = global::Microsoft.SnippetDesigner.Resources.SnippetFormColumnHeaderID;
+            resources.ApplyResources(this.ID, "ID");
             this.ID.Name = "ID";
             this.ID.ToolTipText = global::Microsoft.SnippetDesigner.Resources.SnippetFormTipID;
             // 
@@ -171,6 +183,7 @@ namespace Microsoft.SnippetDesigner
             // 
             this.Tooltip.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Tooltip.HeaderText = global::Microsoft.SnippetDesigner.Resources.SnippetFormColumnHeaderTooltip;
+            resources.ApplyResources(this.Tooltip, "Tooltip");
             this.Tooltip.Name = "Tooltip";
             this.Tooltip.ToolTipText = global::Microsoft.SnippetDesigner.Resources.SnippetFormTipToolTip;
             // 
@@ -178,6 +191,7 @@ namespace Microsoft.SnippetDesigner
             // 
             this.DefaultsTo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.DefaultsTo.HeaderText = global::Microsoft.SnippetDesigner.Resources.SnippetFormColumnHeaderDefault;
+            resources.ApplyResources(this.DefaultsTo, "DefaultsTo");
             this.DefaultsTo.Name = "DefaultsTo";
             this.DefaultsTo.ToolTipText = global::Microsoft.SnippetDesigner.Resources.SnippetFormTipDefault;
             // 
@@ -187,12 +201,14 @@ namespace Microsoft.SnippetDesigner
             this.ReplacementKind.Items.AddRange(new object[] {
             global::Microsoft.SnippetDesigner.Resources.ReplacementLiteralName,
             global::Microsoft.SnippetDesigner.Resources.ReplacementObjectName});
+            resources.ApplyResources(this.ReplacementKind, "ReplacementKind");
             this.ReplacementKind.Name = "ReplacementKind";
             this.ReplacementKind.ToolTipText = global::Microsoft.SnippetDesigner.Resources.SnippetFormTipReplacementKind;
             // 
             // Type
             // 
             this.Type.HeaderText = global::Microsoft.SnippetDesigner.Resources.SnippetFormColumnHeaderType;
+            resources.ApplyResources(this.Type, "Type");
             this.Type.Name = "Type";
             this.Type.ToolTipText = global::Microsoft.SnippetDesigner.Resources.SnippetFormTipReplacementType;
             // 
@@ -200,12 +216,14 @@ namespace Microsoft.SnippetDesigner
             // 
             this.Function.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.Function.HeaderText = global::Microsoft.SnippetDesigner.Resources.SnippetFormColumnHeaderFunction;
+            resources.ApplyResources(this.Function, "Function");
             this.Function.Name = "Function";
             this.Function.ToolTipText = global::Microsoft.SnippetDesigner.Resources.SnippetFormTipFunction;
             // 
             // Editable
             // 
             this.Editable.HeaderText = global::Microsoft.SnippetDesigner.Resources.SnippetFormColumnHeaderEditable;
+            resources.ApplyResources(this.Editable, "Editable");
             this.Editable.Name = "Editable";
             this.Editable.ToolTipText = global::Microsoft.SnippetDesigner.Resources.SnippetFormTipEditable;
             // 
@@ -228,12 +246,15 @@ namespace Microsoft.SnippetDesigner
             resources.ApplyResources(this.replacementLabel, "replacementLabel");
             this.replacementLabel.Name = "replacementLabel";
             // 
-            // snippetCodeWindow
+            // descriptionLabel
             // 
-            resources.ApplyResources(this.snippetCodeWindow, "snippetCodeWindow");
-            this.snippetCodeWindow.CodeText = "";
-            this.snippetCodeWindow.Name = "snippetCodeWindow";
-            this.snippetCodeWindow.Paint += new System.Windows.Forms.PaintEventHandler(this.mainObjectsRepaiont_Paint);
+            this.descriptionLabel.Name = "descriptionLabel";
+            resources.ApplyResources(this.descriptionLabel, "descriptionLabel");
+            // 
+            // descriptionTextBox
+            // 
+            this.descriptionTextBox.Name = "descriptionTextBox";
+            resources.ApplyResources(this.descriptionTextBox, "descriptionTextBox");
             // 
             // SnippetEditorForm
             // 
@@ -282,6 +303,7 @@ namespace Microsoft.SnippetDesigner
         internal System.Windows.Forms.DataGridViewCheckBoxColumn Editable;
         internal System.Windows.Forms.ToolStripLabel shortcutLabel;
         internal System.Windows.Forms.ToolStripTextBox shortcutTextBox;
-
+        private System.Windows.Forms.ToolStripLabel descriptionLabel;
+        private System.Windows.Forms.ToolStripTextBox descriptionTextBox;
     }
 }
