@@ -177,15 +177,23 @@ namespace Microsoft.SnippetDesigner
 
         public string SnippetDescription
         {
-            get { return snippetDescription; }
+            get {
+                //return snippetDescription; 
+                return this.descriptionTextBox.Text;
+            }
 
             set
             {
-                if (snippetDescription != value)
+                //if (snippetDescription != value)
+                //{
+                //    IsFormDirty = true;
+                //}
+                //snippetDescription = value;
+                if (this.descriptionTextBox.Text != value)
                 {
                     IsFormDirty = true;
                 }
-                snippetDescription = value;
+                this.descriptionTextBox.Text = value;
             }
         }
 
@@ -223,6 +231,10 @@ namespace Microsoft.SnippetDesigner
 
             set
             {
+                if (this.shortcutTextBox.Text != value)
+                {
+                    IsFormDirty = true;
+                }
                 this.shortcutTextBox.Text = value;
             }
         }
