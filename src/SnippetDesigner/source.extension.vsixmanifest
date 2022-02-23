@@ -1,29 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
-  <Metadata>
-    <Identity Id="d21b0d98-7dad-421e-895e-424a0a4e6f0e" Version="1.8.1" Language="en-US" Publisher="Matthew Manela" />
-    <DisplayName>Snippet Designer</DisplayName>
-    <Description xml:space="preserve">Snippet Designer is a Visual Studio plug in which allows you to create and search for snippets inside the IDE</Description>
-    <MoreInfo>https://github.com/mmanela/SnippetDesigner</MoreInfo>
-    <License>EULA.rtf</License>
-    <Icon>Product.ico</Icon>
-    <PreviewImage>ScreenShot.png</PreviewImage>
-    <Tags>snippet languages editor</Tags>
-  </Metadata>
-  <Installation InstalledByMsi="false">
-		<InstallationTarget Version="[17.0,)" Id="Microsoft.VisualStudio.Community" >
-			<ProductArchitecture>amd64</ProductArchitecture>
-		</InstallationTarget>
-		<InstallationTarget Version="[14.0,17.0)" Id="Microsoft.VisualStudio.Community" />
-  </Installation>
-  <Dependencies>
-    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" d:Source="Manual" Version="[4.5,)" />
-  </Dependencies>
-  <Prerequisites>
-    <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[15.0,)" DisplayName="Visual Studio core editor" />
-  </Prerequisites>
-  <Assets>
-    <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
-    <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
-  </Assets>
+    <Metadata>
+        <Identity Id="d21b0d98-7dad-421e-895e-424a0a4e6f0e" Version="1.9" Language="en-US" Publisher="Matthew Manela" />
+        <DisplayName>Snippet Designer</DisplayName>
+        <Description xml:space="preserve">Snippet Designer is a Visual Studio plug in which allows you to create and search for snippets inside the IDE</Description>
+        <MoreInfo>https://github.com/mmanela/SnippetDesigner</MoreInfo>
+        <License>EULA.rtf</License>
+        <Icon>Product.ico</Icon>
+        <PreviewImage>ScreenShot.png</PreviewImage>
+        <Tags>snippet languages editor</Tags>
+    </Metadata>
+    <Installation InstalledByMsi="false">
+        <InstallationTarget Version="[17.0,)" Id="Microsoft.VisualStudio.Community" >
+            <ProductArchitecture>amd64</ProductArchitecture>
+        </InstallationTarget>
+        <InstallationTarget Version="[16.0,17.0)" Id="Microsoft.VisualStudio.Community" />
+    </Installation> 
+    <Prerequisites>
+        <Prerequisite Id="Microsoft.VisualStudio.Component.CoreEditor" Version="[16.0,)" DisplayName="Visual Studio core editor" />
+    </Prerequisites>
+    <Assets>
+        <Asset Type="Microsoft.VisualStudio.VsPackage" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%;PkgdefProjectOutputGroup|" />
+        <Asset Type="Microsoft.VisualStudio.MefComponent" d:Source="Project" d:ProjectName="%CurrentProject%" Path="|%CurrentProject%|" />
+    </Assets>
 </PackageManifest>

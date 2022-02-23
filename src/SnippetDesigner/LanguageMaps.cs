@@ -12,7 +12,7 @@ namespace Microsoft.SnippetDesigner
         JavaScript,
         SQL,
         SQLServerDataTools,
-        HTML, 
+        HTML,
         XAML,
         TypeScript
     }
@@ -92,9 +92,7 @@ namespace Microsoft.SnippetDesigner
                 case Language.XML:
                     return StringConstants.SchemaNameXML;
                 case Language.JavaScript:
-                    return SnippetDesignerPackage.Instance.IsVisualStudio2010
-                               ? StringConstants.SchemaNameJavaScript
-                               : StringConstants.SchemaNameJavaScriptVS11;
+                    return StringConstants.SchemaNameJavaScriptVS11;
                 case Language.SQL:
                     return StringConstants.SchemaNameSQL;
                 case Language.SQLServerDataTools:
@@ -116,18 +114,16 @@ namespace Microsoft.SnippetDesigner
         public LanguageMaps()
         {
             //hash from schema names to display names
-            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010)
-            {
-                snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCPP] = Resources.DisplayNameCPP;
-            }
+
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCPP] = Resources.DisplayNameCPP;
+
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameVisualBasic] = Resources.DisplayNameVisualBasic;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp] = Resources.DisplayNameCSharp;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameCSharp2] = Resources.DisplayNameCSharp;
 
-            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010 && !SnippetDesignerPackage.Instance.IsVisualStudio2012)
-            {
-                snippetSchemaLanguageToDisplay[StringConstants.SchemaNameXAML] = Resources.DisplayNameXAML;
-            }
+
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameXAML] = Resources.DisplayNameXAML;
+
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameXML] = Resources.DisplayNameXML;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameJavaScript] = Resources.DisplayNameJavaScript;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameJavaScriptVS11] = Resources.DisplayNameJavaScript;
@@ -135,39 +131,33 @@ namespace Microsoft.SnippetDesigner
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameSQLServerDataTools] = Resources.DisplayNameSQLServerDataTools;
             snippetSchemaLanguageToDisplay[StringConstants.SchemaNameHTML] = Resources.DisplayNameHTML;
 
-            if (SnippetDesignerPackage.Instance.IsVisualStudio2017)
-            {
-                snippetSchemaLanguageToDisplay[StringConstants.SchemaNameTypeScript] = Resources.DisplayNameTypeScript;
-            }
+
+            snippetSchemaLanguageToDisplay[StringConstants.SchemaNameTypeScript] = Resources.DisplayNameTypeScript;
+
 
             snippetSchemaLanguageToDisplay[String.Empty] = String.Empty;
 
 
 
             //hash from display names to schema names
-            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010)
-            {
-                displayLanguageToXML[Resources.DisplayNameCPP] = StringConstants.SchemaNameCPP;
-            }
+
+            displayLanguageToXML[Resources.DisplayNameCPP] = StringConstants.SchemaNameCPP;
+
             displayLanguageToXML[Resources.DisplayNameVisualBasic] = StringConstants.SchemaNameVisualBasic;
             displayLanguageToXML[Resources.DisplayNameCSharp] = StringConstants.SchemaNameCSharp;
 
-            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010 && !SnippetDesignerPackage.Instance.IsVisualStudio2012)
-            {
-                displayLanguageToXML[Resources.DisplayNameXAML] = StringConstants.SchemaNameXAML;
-            }
+
+            displayLanguageToXML[Resources.DisplayNameXAML] = StringConstants.SchemaNameXAML;
+
             displayLanguageToXML[Resources.DisplayNameXML] = StringConstants.SchemaNameXML;
-            displayLanguageToXML[Resources.DisplayNameJavaScript] = SnippetDesignerPackage.Instance.IsVisualStudio2010
-                                                                        ? StringConstants.SchemaNameJavaScript
-                                                                        : StringConstants.SchemaNameJavaScriptVS11;
+            displayLanguageToXML[Resources.DisplayNameJavaScript] = StringConstants.SchemaNameJavaScriptVS11;
             displayLanguageToXML[Resources.DisplayNameSQL] = StringConstants.SchemaNameSQL;
             displayLanguageToXML[Resources.DisplayNameSQLServerDataTools] = StringConstants.SchemaNameSQLServerDataTools;
             displayLanguageToXML[Resources.DisplayNameHTML] = StringConstants.SchemaNameHTML;
 
-            if (SnippetDesignerPackage.Instance.IsVisualStudio2017)
-            {
-                displayLanguageToXML[Resources.DisplayNameTypeScript] = StringConstants.SchemaNameTypeScript;
-            }
+
+            displayLanguageToXML[Resources.DisplayNameTypeScript] = StringConstants.SchemaNameTypeScript;
+
 
             displayLanguageToXML[String.Empty] = String.Empty;
         }

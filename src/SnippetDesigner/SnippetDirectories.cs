@@ -253,6 +253,12 @@ namespace Microsoft.SnippetDesigner
         private void GetUserSnippetDirectories()
         {
             string vsDocDir = RegistryLocations.GetVisualStudioUserDataPath(SnippetDesignerPackage.Instance.VSVersion);
+
+            if (string.IsNullOrEmpty(vsDocDir) && !string.IsNullOrEmpty(SnippetDesignerPackage.Instance.VisualStudioName))
+            {
+                var documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                vsDocDir = Path.Combine(documentsPath, SnippetDesignerPackage.Instance.VisualStudioName);
+            }
             string snippetDir = Path.Combine(vsDocDir, StringConstants.SnippetDirectoryName);
             userSnippetDirectories[Resources.DisplayNameCSharp] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameCSharp, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameVisualBasic] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameVisualBasic, StringConstants.MySnippetsDir));
@@ -260,23 +266,18 @@ namespace Microsoft.SnippetDesigner
             userSnippetDirectories[Resources.DisplayNameSQL] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameSQL, StringConstants.MySnippetsDir));
             userSnippetDirectories[Resources.DisplayNameSQLServerDataTools] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameSQLServerDataTools, StringConstants.MySnippetsDir));
 
-            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010)
-            {
-                userSnippetDirectories[Resources.DisplayNameCPP] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameCPP, StringConstants.MySnippetsDir));
-                userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameJavaScriptVS11, StringConstants.MySnippetsDir));
-            }
+            userSnippetDirectories[Resources.DisplayNameCPP] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameCPP, StringConstants.MySnippetsDir));
+            userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(snippetDir, Path.Combine(StringConstants.SnippetDirNameJavaScriptVS11, StringConstants.MySnippetsDir));
 
 
-            if (!SnippetDesignerPackage.Instance.IsVisualStudio2010 && !SnippetDesignerPackage.Instance.IsVisualStudio2012)
-            {
-                userSnippetDirectories[Resources.DisplayNameXAML] = Path.Combine(snippetDir, StringConstants.SnippetDirNameXAML);
-            }
+
+            userSnippetDirectories[Resources.DisplayNameXAML] = Path.Combine(snippetDir, StringConstants.SnippetDirNameXAML);
+
 
             var webDevSnippetDir = Path.Combine(snippetDir, StringConstants.VisualWebDeveloper);
-            if (SnippetDesignerPackage.Instance.IsVisualStudio2010)
-            {
-                userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameJavaScript);
-            }
+
+            userSnippetDirectories[Resources.DisplayNameJavaScript] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameJavaScript);
+
 
 
             userSnippetDirectories[Resources.DisplayNameHTML] = Path.Combine(webDevSnippetDir, StringConstants.SnippetDirNameHTML);

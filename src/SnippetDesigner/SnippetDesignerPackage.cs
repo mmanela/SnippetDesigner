@@ -131,21 +131,6 @@ namespace Microsoft.SnippetDesigner
 
         public string VSVersion { get; private set; }
 
-        public bool IsVisualStudio2010
-        {
-            get { return VSVersion.Equals("10.0"); }
-        }
-
-        public bool IsVisualStudio2012
-        {
-            get { return VSVersion.Equals("11.0"); }
-        }
-
-        public bool IsVisualStudio2013
-        {
-            get { return VSVersion.Equals("12.0"); }
-        }
-
         public bool IsVisualStudio2017
         {
             get { return VSVersion.StartsWith("15."); }
@@ -154,6 +139,41 @@ namespace Microsoft.SnippetDesigner
         public bool IsVisualStudio2019
         {
             get { return VSVersion.StartsWith("16."); }
+        }
+
+        public bool IsVisualStudio2022
+        {
+            get { return VSVersion.StartsWith("17."); }
+        }
+
+
+        /// <summary>
+        /// Get the name of the instance of VS (like Visual Studio 2022)
+        /// NOTE: I would like to find a programatic way of getting this
+        /// </summary>
+        public string VisualStudioName
+        {
+            get
+            {
+                if(IsVisualStudio2022)
+                {
+                    return "Visual Studio 2022";
+                }
+
+
+                if (IsVisualStudio2019)
+                {
+                    return "Visual Studio 2019";
+                }
+
+
+                if (IsVisualStudio2017)
+                {
+                    return "Visual Studio 2017";
+                }
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -602,9 +622,7 @@ namespace Microsoft.SnippetDesigner
                         || StringConstants.ExportNameJavaScript.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameJavaScript2.Equals(lang, StringComparison.OrdinalIgnoreCase)
                         || StringConstants.ExportNameHTML.Equals(lang, StringComparison.OrdinalIgnoreCase)
-
-                        // Only allow C++ if this VS is newer than VS 2010
-                        || (!IsVisualStudio2010 && StringConstants.ExportNameCPP.Equals(lang, StringComparison.OrdinalIgnoreCase))
+                        ||  StringConstants.ExportNameCPP.Equals(lang, StringComparison.OrdinalIgnoreCase)
 
                         )
                     {
