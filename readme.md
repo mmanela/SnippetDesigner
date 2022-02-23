@@ -2,6 +2,10 @@
 
 The Snippet Designer is a plugin which enhances the Visual Studio IDE to allow a richer and more productive code snippet experience. 
 
+
+## Update
+The main branch targets only VS 2022. There is a branch (pre-2022) for other versions.
+
 ## Download
 You can install the extension using the Visual Studio Extension Manager or by going to the [Snippet Designer Visual Studio Gallery page](http://visualstudiogallery.msdn.microsoft.com/B08B0375-139E-41D7-AF9B-FAEE50F68392)
 
